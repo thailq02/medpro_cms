@@ -1,3 +1,7 @@
+export interface CommonReactProps {
+  children: React.ReactNode;
+}
+
 export enum IAccountRole {
   ADMIN = 0,
   DOCTOR = 1,
@@ -7,4 +11,5 @@ export enum IAccountRole {
 export interface IAccountInfo {
   accessToken?: string;
   refreshToken?: string;
+  role?: number;
 }

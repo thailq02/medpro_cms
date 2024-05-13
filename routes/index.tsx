@@ -1,49 +1,50 @@
-import {AppProps} from "next/app";
-import {useRouter} from "next/router";
+"use client";
 import React from "react";
-import Config from "../config";
+import {AppProps} from "next/app";
+import {useRouter, usePathname} from "next/navigation";
+import Config from "@/config";
 import RouteList, {IRoute} from "@/routes/RouteList";
+import DashboardLayout from "@/components/Layout/DashboardLayout";
+import {CommonReactProps} from "@/types";
 
 export default function Routes({
-  Component,
-  pageProps,
-  router,
-}: AppProps): JSX.Element | null {
-  const routerNext = useRouter();
+  children,
+}: CommonReactProps): JSX.Element | null {
+  const pathname = usePathname();
+  const login = pathname === Config.PATHNAME.LOGIN;
+  console.log("login", login);
 
-  const login = routerNext.pathname === Config.PATHNAME.LOGIN;
+  // const isRoute = (key: keyof IRoute): boolean => {
+  //   for (const route of RouteList) {
+  //     if (router.pathname === route.path) {
+  //       // route["path"] => "/" => !!route["path"] => true
+  //       return !!route[key];
+  //     }
+  //   }
+  //   return false;
+  // };
 
-  const isRoute = (key: keyof IRoute): boolean => {
-    for (const route of RouteList) {
-      if (router.pathname === route.path) {
-        // route["path"] => "/" => !!route["path"] => true
-        return !!route[key];
-      }
-    }
-    return false;
-  };
+  // const isRouteRequireRole = (): boolean => {
+  //   for (const route of RouteList) {
+  //     if (router.pathname === route.path) {
+  //       return !!route.role;
+  //     }
+  //   }
+  //   return false;
+  // };
 
-  const isRouteRequireRole = (): boolean => {
-    for (const route of RouteList) {
-      if (router.pathname === route.path) {
-        return !!route.role;
-      }
-    }
-    return false;
-  };
+  // const isUserRoleAuthorized = (): boolean => {
+  //   // const userRole = ApiUser.getUserRole();
+  //   const userRole = 1;
+  //   if (userRole) {
+  //     for (const route of RouteList) {
+  //       if (router.pathname === route.path) {
+  //         return !!route.role?.includes(userRole);
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // };
 
-  const isUserRoleAuthorized = (): boolean => {
-    // const userRole = ApiUser.getUserRole();
-    const userRole = 1;
-    if (userRole) {
-      for (const route of RouteList) {
-        if (router.pathname === route.path) {
-          return !!route.role?.includes(userRole);
-        }
-      }
-    }
-    return false;
-  };
-
-  return <div>Routes</div>;
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

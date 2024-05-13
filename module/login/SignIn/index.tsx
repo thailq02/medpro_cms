@@ -1,18 +1,44 @@
 "use client";
-
 import "./index.scss";
 import React from "react";
 import {Formik} from "formik";
 import {Form, Image, Input, Row} from "antd";
 import {ButtonSubmit} from "@/components/ButtonSubmit";
+import {useDispatch} from "react-redux";
+import {loginUser} from "@/redux/slices/UserSlice";
+import ApiUser, {ILoginResponse} from "@/apiRequest/ApiUser";
+import {useMutation} from "@tanstack/react-query";
+import {ILoginForm} from "@/module/login/SignIn/form-config";
+import {useRouter} from "next/navigation";
+import Config from "config";
 
 interface SignInProps {
   changeTab: (tab: string) => void;
 }
 
 export default function SignIn({changeTab}: SignInProps): JSX.Element {
-  const handleLogin = (value: any) => {
-    console.log(value);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const loginMutation = useMutation({
+    mutationFn: ApiUser.login,
+  });
+  const handleLogin = (
+    value: ILoginForm,
+    {setSubmitting}: {setSubmitting: (isSubmitting: boolean) => void},
+  ): void => {
+    loginMutation.mutate(
+      {email: value.email, password: value.password},
+      {
+        onSuccess: (data: {status: number; payload: ILoginResponse}) => {
+          dispatch(loginUser({...data.payload}));
+          // router.push(Config.PATHNAME.HOME);
+          setSubmitting(false);
+        },
+        onError: () => {
+          setSubmitting(false);
+        },
+      },
+    );
   };
   return (
     <Formik initialValues={{email: "", password: ""}} onSubmit={handleLogin}>
@@ -23,7 +49,7 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
         handleBlur,
       }): JSX.Element => (
         <div className="container-sign-in">
-          <Form className="form-sign-in">
+          <Form className="form-sign-in" onFinish={handleSubmit}>
             <div className="header-wrapper">
               <Image
                 className="login-image"

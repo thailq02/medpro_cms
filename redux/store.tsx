@@ -2,6 +2,8 @@ import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import Config from "../config";
 import {persistStore, persistReducer} from "redux-persist";
+import {useDispatch, TypedUseSelectorHook, useSelector} from "react-redux";
+import UserReducer from "./slices/UserSlice";
 
 // Không phải ở môi trường web thì sử dụng storage ảo
 const createNoopStorage = (): {
@@ -33,7 +35,9 @@ const persistConfig = {
   storage: storage,
 };
 
-const rootReducers = combineReducers({});
+const rootReducers = combineReducers({
+  user: UserReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);
 
@@ -52,3 +56,6 @@ export default store;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

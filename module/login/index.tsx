@@ -4,7 +4,7 @@ import SignIn from "@/module/login/SignIn";
 import React, {useState} from "react";
 
 export function Login(): JSX.Element {
-  const [tab, setTab] = useState<string>("signIn");
+  const [tab, setTab] = useState("signIn");
 
   const tabList = {
     signIn: {

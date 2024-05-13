@@ -25,7 +25,8 @@
       "@slices/*": ["redux/slices/*"],
       "@utils/*": ["utils/*"],
       "@styles/*": ["styles/*"],
-      "@api/*": ["api/*"]
+      "@api/*": ["api/*"],
+      "@config/*": ["config/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
