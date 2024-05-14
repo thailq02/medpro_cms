@@ -9,7 +9,7 @@ export enum IAccountRole {
 }
 
 export interface IAccountInfo {
-  accessToken?: string;
-  refreshToken?: string;
+  access_token?: string;
+  refresh_token?: string;
   role?: number;
 }

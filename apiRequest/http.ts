@@ -1,13 +1,28 @@
+import displayError from "@/apiRequest/ErrorMessage/errors";
 import Config from "@/config";
 import store from "@/redux/store";
 
 type EntityErrorPayload = {
   message: string;
   errors: {
-    field: string;
-    msg: string;
-  }[];
+    [key: string]: {
+      msg: string;
+      path: string;
+      [key: string]: any;
+    };
+  };
 };
+
+export enum IStatus {
+  SUCCESS = 200,
+  ERROR = 400,
+}
+
+export interface IDataError {
+  errorCode: string;
+  errorMessage?: any;
+}
+
 export class HttpError extends Error {
   status: number;
   payload: {
@@ -58,7 +73,7 @@ function getAuthorization(defaultOptions: IFetcherOptions) {
   }
   if (defaultOptions.withToken) {
     const state = store.getState();
-    const token = state.user.accessToken;
+    const token = state.user.access_token;
     if (token) {
       return `Bearer ${token}`;
     }
@@ -116,9 +131,15 @@ const request = async <TResponse>(
     status: res.status,
     payload,
   };
+
   // Interseptor
   if (!res.ok) {
     if (res.status === ENTITY_ERROR_STATUS) {
+      const dataError: IDataError = {
+        errorCode: "unique.ValidatorInvalid",
+        errorMessage: "Lỗi validate",
+      };
+      displayError(dataError);
       throw new EntityError(
         data as {
           status: 422;
@@ -130,6 +151,16 @@ const request = async <TResponse>(
     } else {
       throw new HttpError(data);
     }
+  }
+  if (data.payload === undefined) {
+    const dataEmpty: IDataError = {
+      errorCode: "ERROR???",
+      errorMessage: "Data is empty",
+    };
+    if (defaultOptions.displayError) {
+      displayError(dataEmpty);
+    }
+    throw new HttpError({status: IStatus.SUCCESS, payload: dataEmpty});
   }
   return data;
 };

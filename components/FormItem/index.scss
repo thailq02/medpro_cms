@@ -1,0 +1,20 @@
+.ant-form-item-label
+  > label.ant-form-item-required:not(
+    .ant-form-item-required-mark-optional
+  )::before {
+  position: absolute;
+  right: -12px;
+}
+
+.ant-form-item-label > label::after {
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  content: "" !important;
+}
+
+.ant-form-item .ant-form-item-label > label {
+  height: 100%;
+  font-weight: 500;
+  top: 4px;
+  align-items: unset;
+}

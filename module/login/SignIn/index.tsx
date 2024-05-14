@@ -6,11 +6,16 @@ import {Form, Image, Input, Row} from "antd";
 import {ButtonSubmit} from "@/components/ButtonSubmit";
 import {useDispatch} from "react-redux";
 import {loginUser} from "@/redux/slices/UserSlice";
-import ApiUser, {ILoginResponse} from "@/apiRequest/ApiUser";
+import ApiUser from "@/apiRequest/ApiUser";
 import {useMutation} from "@tanstack/react-query";
-import {ILoginForm} from "@/module/login/SignIn/form-config";
+import {
+  IDataLoginRes,
+  ILoginForm,
+  getValidationLoginSchema,
+} from "@/module/login/SignIn/form-config";
 import {useRouter} from "next/navigation";
-import Config from "config";
+import FormItem from "@/components/FormItem";
+import Config from "@/config";
 
 interface SignInProps {
   changeTab: (tab: string) => void;
@@ -19,9 +24,11 @@ interface SignInProps {
 export default function SignIn({changeTab}: SignInProps): JSX.Element {
   const dispatch = useDispatch();
   const router = useRouter();
+
   const loginMutation = useMutation({
     mutationFn: ApiUser.login,
   });
+
   const handleLogin = (
     value: ILoginForm,
     {setSubmitting}: {setSubmitting: (isSubmitting: boolean) => void},
@@ -29,9 +36,9 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
     loginMutation.mutate(
       {email: value.email, password: value.password},
       {
-        onSuccess: (data: {status: number; payload: ILoginResponse}) => {
-          dispatch(loginUser({...data.payload}));
-          // router.push(Config.PATHNAME.HOME);
+        onSuccess: (data: IDataLoginRes) => {
+          dispatch(loginUser({...data.payload.data}));
+          router.push(Config.PATHNAME.HOME);
           setSubmitting(false);
         },
         onError: () => {
@@ -41,7 +48,13 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
     );
   };
   return (
-    <Formik initialValues={{email: "", password: ""}} onSubmit={handleLogin}>
+    <Formik
+      initialValues={{email: "", password: ""}}
+      validateOnChange={false}
+      validateOnBlur
+      // validationSchema={getValidationLoginSchema()}
+      onSubmit={handleLogin}
+    >
       {({
         isSubmitting,
         handleSubmit,
@@ -58,7 +71,7 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
               />
               <h1 className="login-text">Đăng nhập</h1>
             </div>
-            <Form.Item
+            <FormItem
               label="Tài khoản"
               name="email"
               required
@@ -66,12 +79,12 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
             >
               <Input
                 name="email"
+                placeholder="Nhập tài khoản"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Nhập tài khoản"
               />
-            </Form.Item>
-            <Form.Item
+            </FormItem>
+            <FormItem
               label="Mật khẩu"
               name="password"
               required
@@ -79,11 +92,11 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
             >
               <Input.Password
                 name="password"
+                placeholder="Nhập mật khẩu"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Nhập mật khẩu"
               />
-            </Form.Item>
+            </FormItem>
             <Row
               role="button"
               tabIndex={0}
