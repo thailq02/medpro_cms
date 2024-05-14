@@ -6,7 +6,7 @@ import {Form, Image, Input, Row} from "antd";
 import {ButtonSubmit} from "@/components/ButtonSubmit";
 import {useDispatch} from "react-redux";
 import {loginUser} from "@/redux/slices/UserSlice";
-import ApiUser from "@/apiRequest/ApiUser";
+import ApiAuth from "@/apiRequest/ApiAuth";
 import {useMutation} from "@tanstack/react-query";
 import {
   IDataLoginRes,
@@ -16,7 +16,7 @@ import {
 import {useRouter} from "next/navigation";
 import FormItem from "@/components/FormItem";
 import Config from "@/config";
-
+import {useQueryGetMe} from "@utils/hooks/auth";
 interface SignInProps {
   changeTab: (tab: string) => void;
 }
@@ -26,7 +26,7 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
   const router = useRouter();
 
   const loginMutation = useMutation({
-    mutationFn: ApiUser.login,
+    mutationFn: ApiAuth.login,
   });
 
   const handleLogin = (
@@ -52,7 +52,7 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
       initialValues={{email: "", password: ""}}
       validateOnChange={false}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      validationSchema={getValidationLoginSchema()}
       onSubmit={handleLogin}
     >
       {({

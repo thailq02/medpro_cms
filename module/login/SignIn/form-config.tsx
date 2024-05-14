@@ -1,4 +1,4 @@
-import {ILoginResponse} from "@/apiRequest/ApiUser";
+import {ILoginResponse} from "@/apiRequest/ApiAuth";
 import * as Yup from "yup";
 import {Schema} from "yup";
 

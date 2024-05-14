@@ -2,6 +2,7 @@ import React from "react";
 import {CommonReactProps} from "@/types";
 import classNames from "classnames";
 import Config from "@/config";
+import "./index.scss";
 
 export default function Main({children}: CommonReactProps) {
   const isOpen = false;

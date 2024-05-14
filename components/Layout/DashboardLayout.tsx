@@ -2,6 +2,9 @@ import React from "react";
 import {CommonReactProps} from "@/types";
 import Config from "@/config";
 import Sidebar from "@/components/Layout/Sidebar";
+import Main from "@/components/Layout/Main";
+import Navbar from "@/components/Layout/Navbar";
+import "./index.scss";
 
 export default function DashboardLayout({
   children,
@@ -11,14 +14,10 @@ export default function DashboardLayout({
   return (
     <div className="wrapper">
       {useSidebar && <Sidebar />}
-      <div className="content">
-        {useNavbar && <div className="navbar">Navbar</div>}
+      <Main>
+        {useNavbar && <Navbar />}
         {children}
-        {useFooter && <div className="footer">Footer</div>}
-      </div>
-      {useBottomNavigator && (
-        <div className="bottom-navigator">Bottom Navigator</div>
-      )}
+      </Main>
     </div>
   );
 }

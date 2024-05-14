@@ -1,39 +1,31 @@
 import http from "@/apiRequest/http";
-import store from "@/redux/store";
-import {IAccountRole} from "@/types";
 
-export interface ILoginBody {
-  email: string;
-  password: string;
-}
-
-export interface ILoginResponse {
+interface IGetMeResBody {
   message: string;
   data: {
-    access_token: string;
-    refresh_token: string;
-    role: number;
+    _id?: string;
+    name?: string;
+    email?: string;
+    date_of_birth?: string;
+    gender?: number;
+    created_at?: Date;
+    updated_at?: Date;
+    verify?: number;
+    address?: string;
+    username?: string;
+    avatar?: string;
+    role?: number;
+    phone_number?: string;
+    position?: number;
   };
 }
 
 const path = {
-  login: "/auth/login",
+  getMe: "/users/me",
 };
 
 const ApiUser = {
-  login: (body: ILoginBody) => http.post<ILoginResponse>(path.login, body),
-
-  getUserRole: (): IAccountRole | undefined => {
-    const {user} = store.getState();
-    return user?.role;
-  },
-  getAuthToken: (): string | undefined => {
-    const {user} = store.getState();
-    return user?.access_token;
-  },
-  isLogin: function (): boolean {
-    return !!ApiUser.getAuthToken();
-  },
+  getMe: () => http.get<IGetMeResBody>(path.getMe),
 };
 
 export default ApiUser;

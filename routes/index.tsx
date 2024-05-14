@@ -5,7 +5,7 @@ import Config from "@/config";
 import RouteList, {IRoute} from "@/routes/RouteList";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import {CommonReactProps} from "@/types";
-import ApiUser from "@/apiRequest/ApiUser";
+import ApiAuth from "@/apiRequest/ApiAuth";
 import LoginComponent from "@/app/(auth)/login/page";
 import store from "@/redux/store";
 
@@ -36,7 +36,7 @@ export default function Routes({
   };
 
   const isUserRoleAuthorized = (): boolean => {
-    const userRole = ApiUser.getUserRole();
+    const userRole = ApiAuth.getUserRole();
     if (userRole) {
       for (const route of RouteList) {
         if (pathname === route.path) {
@@ -51,7 +51,7 @@ export default function Routes({
     for (const route of RouteList) {
       if (pathname === route.path) {
         if (route.isPrivate === undefined) {
-          if (ApiUser.isLogin()) {
+          if (ApiAuth.isLogin()) {
             return route.isPrivate;
           }
           return true;
@@ -83,7 +83,7 @@ export default function Routes({
   }
 
   if (isPrivateRoute()) {
-    if (ApiUser.isLogin()) {
+    if (ApiAuth.isLogin()) {
       if (isRouteRequireRole()) {
         if (!isUserRoleAuthorized()) {
           router.push(Config.PATHNAME.HOME);
