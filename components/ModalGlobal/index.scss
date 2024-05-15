@@ -1,0 +1,20 @@
+.ant-modal-global {
+  .ant-modal-header {
+    margin-bottom: 20px;
+    .ant-modal-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: black;
+    }
+  }
+  .ant-modal-footer {
+    border-top: none;
+    .ant-btn-primary {
+      color: $white-color;
+      background-color: $blue-color !important;
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}

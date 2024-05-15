@@ -5,6 +5,7 @@ import {persistStore, persistReducer} from "redux-persist";
 import {useDispatch, TypedUseSelectorHook, useSelector} from "react-redux";
 import UserReducer from "./slices/UserSlice";
 import MenuReducer from "./slices/MenuSlice";
+import ModalReducer from "./slices/ModalSlice";
 
 // Không phải ở môi trường web thì sử dụng storage ảo
 const createNoopStorage = (): {
@@ -39,6 +40,7 @@ const persistConfig = {
 const rootReducers = combineReducers({
   user: UserReducer,
   menu: MenuReducer,
+  modal: ModalReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);

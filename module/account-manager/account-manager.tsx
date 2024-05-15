@@ -12,11 +12,24 @@ import {Row, Space} from "antd";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
+import {addModal} from "@/components/ModalGlobal";
+import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
+import ContentModalEditAccount from "@/module/account-manager/modal-edit-account";
 
 export default function AccountManagerComponent() {
+  const handleOpenModalAccount = (id?: string) => {
+    addModal({
+      content: id ? <ContentModalEditAccount /> : <ContentModalCreateAccount />,
+      options: id
+        ? {title: "Sửa tài khoản", widthModal: 800}
+        : {title: "Tạo tài khoản"},
+    });
+  };
+
   const dataSource = [
     {
       key: "1",
+      id: 1,
       name: "Lê Quang Thái",
       age: 21,
       email: "thai@gmail.com",
@@ -25,6 +38,7 @@ export default function AccountManagerComponent() {
     },
     {
       key: "2",
+      id: 2,
       name: "Admin",
       age: 22,
       email: "admin@gmail.com",
@@ -72,13 +86,13 @@ export default function AccountManagerComponent() {
       key: "action",
       width: 150,
       align: "center",
-      render: () => {
+      render: (_, record) => {
         return (
           <Row justify="center">
             <Space direction="horizontal" size={"middle"}>
               <ActionButton
                 type={EButtonAction.EDIT}
-                onClick={() => undefined}
+                onClick={() => handleOpenModalAccount(record.id)}
               />
               <ActionButton
                 type={EButtonAction.DELETE}
@@ -106,7 +120,10 @@ export default function AccountManagerComponent() {
           />,
         ]}
         buttonBox={[
-          <ButtonAdd title="Thêm người dùng" onClick={() => undefined} />,
+          <ButtonAdd
+            title="Tạo tài khoản"
+            onClick={() => handleOpenModalAccount()}
+          />,
         ]}
       />
       <TableGlobal dataSource={dataSource} columns={columns} />

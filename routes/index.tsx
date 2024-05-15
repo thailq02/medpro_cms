@@ -7,6 +7,7 @@ import DashboardLayout from "@/components/Layout/DashboardLayout";
 import {CommonReactProps} from "@/types";
 import ApiAuth from "@/apiRequest/ApiAuth";
 import LoginComponent from "@/app/(auth)/login/page";
+import ModalGlobal from "@/components/ModalGlobal";
 
 export default function Routes({
   children,
@@ -94,5 +95,10 @@ export default function Routes({
     return goToLogin();
   }
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <DashboardLayout>
+      {children}
+      <ModalGlobal />
+    </DashboardLayout>
+  );
 }
