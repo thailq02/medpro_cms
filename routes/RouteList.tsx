@@ -1,5 +1,5 @@
 import {IAccountRole} from "@/types";
-import {UserOutlined} from "@ant-design/icons";
+import {MenuUnfoldOutlined, UserOutlined} from "@ant-design/icons";
 
 export interface IRoute {
   path: string;
@@ -27,7 +27,7 @@ const routes: IRoute[] = [
   {
     path: "/category",
     name: "Quản lý danh mục",
-    icon: <UserOutlined />,
+    icon: <MenuUnfoldOutlined />,
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.ADMIN],

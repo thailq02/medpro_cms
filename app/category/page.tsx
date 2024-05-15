@@ -1,6 +1,6 @@
 import React from "react";
+import CategoryManagement from "@/module/category-management";
 
 export default function index() {
-  console.log("object");
-  return <div>123</div>;
+  return <CategoryManagement />;
 }
