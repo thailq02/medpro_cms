@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import {Roboto} from "next/font/google";
+import "tailwindcss/tailwind.css";
 import "../styles/_app.scss";
 import React from "react";
 import dynamic from "next/dynamic";

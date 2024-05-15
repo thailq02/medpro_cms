@@ -8,6 +8,7 @@ import "./index.scss";
 import {usePathname} from "next/navigation";
 import routes from "@/routes/RouteList";
 import {useQueryGetMe} from "@/utils/hooks/auth";
+import {toggleMenu} from "@/redux/slices/MenuSlice";
 
 function RenderNamePage() {
   const dataRoutes = routes;
@@ -28,9 +29,6 @@ function RenderNamePage() {
 export default function Navbar(): JSX.Element {
   const dispatch = useDispatch();
   const {data} = useQueryGetMe();
-  const toggleMenu: any = () => {
-    console.log("123");
-  };
 
   return (
     <div className="navbar flex items-center justify-between">

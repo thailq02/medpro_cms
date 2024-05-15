@@ -4,13 +4,14 @@
   background-color: $sidebar-background;
   height: 100vh;
   top: 0;
-  // left: -$sidebar-width;
+  left: -$sidebar-width;
   transition: left $transition-layout-time;
   z-index: 999;
 
   &::-webkit-scrollbar {
     width: 0;
   }
+
   .logo-container {
     display: flex;
     justify-content: center;

@@ -5,6 +5,7 @@ import Sidebar from "@/components/Layout/Sidebar";
 import Main from "@/components/Layout/Main";
 import Navbar from "@/components/Layout/Navbar";
 import "./index.scss";
+import Content from "@/components/Layout/Content";
 
 export default function DashboardLayout({
   children,
@@ -16,7 +17,7 @@ export default function DashboardLayout({
       {useSidebar && <Sidebar />}
       <Main>
         {useNavbar && <Navbar />}
-        {children}
+        <Content>{children}</Content>
       </Main>
     </div>
   );

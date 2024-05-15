@@ -1,0 +1,22 @@
+.ant-table-global {
+  .ant-table-thead {
+    .ant-table-cell {
+      background-color: $blue-color !important;
+      color: $white-color !important;
+    }
+  }
+
+  .ant-table-cell {
+    word-break: break-word;
+  }
+
+  .ant-table-column-sorter {
+    color: $white-color !important;
+  }
+}
+
+.allow-double-click {
+  .ant-table-tbody {
+    cursor: pointer;
+  }
+}
