@@ -24,6 +24,14 @@ const routes: IRoute[] = [
     isSidebar: true,
     role: [IAccountRole.ADMIN],
   },
+  {
+    path: "/category",
+    name: "Quản lý danh mục",
+    icon: <UserOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.ADMIN],
+  },
 ];
 
 export default routes;

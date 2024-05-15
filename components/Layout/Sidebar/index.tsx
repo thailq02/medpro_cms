@@ -1,31 +1,38 @@
-import React from "react";
-import "./index.scss";
-import Image from "next/image";
 import type {MenuProps} from "antd";
-import {Menu} from "antd";
 import RouterList from "@/routes/RouteList";
+import React, {useMemo} from "react";
+import Image from "next/image";
 import ApiAuth from "@/apiRequest/ApiAuth";
-import {IAccountRole} from "@/types";
 import {usePathname, useRouter} from "next/navigation";
 import {useAppSelector} from "@/redux/store";
+import {Menu} from "antd";
+import {IAccountRole} from "@/types";
+import "./index.scss";
 
 const RenderMenu: React.FC<{isOpen: boolean}> = React.memo(({isOpen}) => {
   const pathname = usePathname();
   const router = useRouter();
   const userRole = ApiAuth.getUserRole();
-
   /**
    * kiểm tra userRole nó nằm trong mảng role ko
    * nếu ko nằm trong !role?.includes(userRole) => trả true
    * !(...) để lấy những thằng nằm trong mảng role
    */
-  const menuItems = RouterList.filter(({role}) => {
-    // !(role && userRole ? !role?.includes(userRole) : undefined),
-    if (!role || !userRole) {
-      return true;
-    }
-    return role.includes(userRole);
-  }).map(({path, name, children, icon}) => {
+  // const menuItems = RouterList.filter(({role}) => {
+  //   // !(role && userRole ? !role?.includes(userRole) : undefined),
+  //   if (!role || !userRole) {
+  //     return true;
+  //   }
+  //   return role.includes(userRole);
+  // })
+
+  const filteredRoutes = useMemo(() => {
+    return RouterList.filter(({role}) =>
+      role?.includes(userRole ?? IAccountRole.USER),
+    );
+  }, [userRole, RouterList]);
+
+  const menuItems = filteredRoutes.map(({path, name, children, icon}) => {
     if (children) {
       return {
         key: path,
@@ -33,9 +40,15 @@ const RenderMenu: React.FC<{isOpen: boolean}> = React.memo(({isOpen}) => {
         title: name,
         icon: icon,
         children: children
-          .filter(
-            (child) => !child.role?.includes(userRole ?? IAccountRole.USER),
-          )
+          .filter((child) => {
+            if (
+              child.role?.includes(userRole ?? IAccountRole.USER) ||
+              !child.role
+            ) {
+              return true;
+            }
+            return false;
+          })
           .map((child) => ({
             key: path + child.path,
             title: child.name,

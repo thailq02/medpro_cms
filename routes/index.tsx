@@ -7,7 +7,6 @@ import DashboardLayout from "@/components/Layout/DashboardLayout";
 import {CommonReactProps} from "@/types";
 import ApiAuth from "@/apiRequest/ApiAuth";
 import LoginComponent from "@/app/(auth)/login/page";
-import store from "@/redux/store";
 
 export default function Routes({
   children,

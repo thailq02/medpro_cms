@@ -1,6 +1,6 @@
 import React from "react";
 import AccountManager from "@/module/account-manager";
 
-export default function Home() {
+export default function index() {
   return <AccountManager />;
 }
