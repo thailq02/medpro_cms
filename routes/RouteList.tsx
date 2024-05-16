@@ -5,6 +5,7 @@ import {
   MedicineBoxOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 
@@ -67,6 +68,14 @@ const routes: IRoute[] = [
     path: "/specialty",
     name: "Quản lý chuyên khoa",
     icon: <MedicineBoxOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.ADMIN],
+  },
+  {
+    path: "/doctor",
+    name: "Quản lý bác sĩ",
+    icon: <TeamOutlined />,
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.ADMIN],
