@@ -2,6 +2,7 @@ import {IAccountRole} from "@/types";
 import {
   AccountBookOutlined,
   BankOutlined,
+  MedicineBoxOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
   UserOutlined,
@@ -58,6 +59,14 @@ const routes: IRoute[] = [
     path: "/service",
     name: "Quản lý dịch vụ",
     icon: <SettingOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.ADMIN],
+  },
+  {
+    path: "/specialty",
+    name: "Quản lý chuyên khoa",
+    icon: <MedicineBoxOutlined />,
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.ADMIN],
