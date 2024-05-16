@@ -3,6 +3,7 @@ import {
   AccountBookOutlined,
   BankOutlined,
   MenuUnfoldOutlined,
+  SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 
@@ -49,6 +50,14 @@ const routes: IRoute[] = [
     path: "/hospital",
     name: "Quản lý bệnh viện",
     icon: <BankOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.ADMIN],
+  },
+  {
+    path: "/service",
+    name: "Quản lý dịch vụ",
+    icon: <SettingOutlined />,
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.ADMIN],
