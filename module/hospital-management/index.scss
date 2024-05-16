@@ -1,0 +1,21 @@
+.modal-container-hospital {
+  .modal-form-hospital {
+    .avatar-container {
+      display: flex;
+      justify-content: center;
+      .img-avatar {
+        height: 15vh;
+        width: 15vh;
+      }
+    }
+  }
+
+  .modal-create-hospital,
+  .modal-edit-hospital {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: $border-color white;
+  }
+}

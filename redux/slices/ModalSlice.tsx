@@ -1,4 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {CSSProperties} from "react";
 import {useDispatch} from "react-redux";
 
 interface IMenuState {
@@ -9,6 +10,8 @@ interface IMenuState {
     title: string;
     classNames?: string;
     widthModal?: string | number;
+    subtractHeight?: number;
+    bodyStyle?: CSSProperties;
   };
 }
 
@@ -20,6 +23,8 @@ const initialState: IMenuState = {
     title: "",
     classNames: "",
     widthModal: undefined,
+    subtractHeight: 0,
+    bodyStyle: undefined,
   },
 };
 

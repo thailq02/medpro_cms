@@ -1,6 +1,7 @@
 import {IAccountRole} from "@/types";
 import {
   AccountBookOutlined,
+  BankOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -40,6 +41,14 @@ const routes: IRoute[] = [
     path: "/medical-booking-forms",
     name: "Quản lý hình thức đặt khám",
     icon: <AccountBookOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.ADMIN],
+  },
+  {
+    path: "/hospital",
+    name: "Quản lý bệnh viện",
+    icon: <BankOutlined />,
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.ADMIN],

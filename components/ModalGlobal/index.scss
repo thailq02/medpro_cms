@@ -1,4 +1,9 @@
 .ant-modal-global {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .ant-modal-header {
     margin-bottom: 20px;
     .ant-modal-title {
