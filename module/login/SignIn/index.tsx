@@ -78,6 +78,7 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
               labelCol={{span: 24}}
             >
               <Input
+                className="h-[40px]"
                 name="email"
                 placeholder="Nhập tài khoản"
                 onChange={handleChange}
@@ -91,6 +92,7 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
               labelCol={{span: 24}}
             >
               <Input.Password
+                className="h-[40px]"
                 name="password"
                 placeholder="Nhập mật khẩu"
                 onChange={handleChange}

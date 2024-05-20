@@ -4,10 +4,14 @@ import React, {useMemo} from "react";
 import Image from "next/image";
 import ApiAuth from "@/apiRequest/ApiAuth";
 import {usePathname, useRouter} from "next/navigation";
-import {useAppSelector} from "@/redux/store";
+import {persistor, useAppDispatch, useAppSelector} from "@/redux/store";
 import {Menu} from "antd";
 import {IAccountRole} from "@/types";
 import "./index.scss";
+import {ArrowLeftOutlined} from "@ant-design/icons";
+import {toggleMenu} from "@/redux/slices/MenuSlice";
+import ModalConfirmCustom from "@/components/ModalConfirmCustom";
+import {logoutUser} from "@/redux/slices/UserSlice";
 
 const RenderMenu: React.FC<{isOpen: boolean}> = React.memo(({isOpen}) => {
   const pathname = usePathname();
@@ -84,18 +88,53 @@ RenderMenu.displayName = "RenderMenu";
 
 export default function Sidebar() {
   const isOpen = useAppSelector((state) => state.menu.isOpen);
-
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    ModalConfirmCustom({
+      title: "Đăng xuất",
+      content: "Bạn có chắc chắn muốn đăng xuất?",
+      handleOke: () => {
+        persistor
+          .purge()
+          .then(() => {
+            dispatch(logoutUser());
+            window.location.reload();
+          })
+          .catch(() => {
+            window.alert(
+              "Trình duyệt bị lỗi. Xóa Cookie trình duyệt và thử lại",
+            );
+          });
+      },
+    });
+  };
   return (
-    <div
-      className={
-        `sidebar absolute md:static ` +
-        (isOpen ? "left-0" : "md:w-[80px] md:min-w-[80px]")
-      }
-    >
-      <div className="logo-container">
-        <Image src="/img/logo.png" alt="logo" width={50} height={50} />
+    <>
+      <div
+        className={
+          `sidebar absolute md:static ` +
+          (isOpen ? "left-0" : "md:w-[80px] md:min-w-[80px]")
+        }
+      >
+        <div className="logo-container">
+          <Image src="/img/logo.png" alt="logo" width={50} height={50} />
+        </div>
+        <RenderMenu isOpen={isOpen} />
+        <div
+          className="sidebar-item cursor-pointer"
+          role="presentation"
+          onClick={handleLogout}
+        >
+          <ArrowLeftOutlined />
+          {isOpen && <span className="ml-5">Đăng xuất</span>}
+        </div>
       </div>
-      <RenderMenu isOpen={isOpen} />
-    </div>
+      <div
+        className={`sidebar-overlay ${isOpen ? "open md:hidden" : ""}`}
+        role="button"
+        onClick={() => dispatch(toggleMenu())}
+        tabIndex={0}
+      />
+    </>
   );
 }

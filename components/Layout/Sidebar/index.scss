@@ -21,4 +21,55 @@
       color: white;
     }
   }
+
+  .sidebar-item,
+  .menu-container .ant-menu-item,
+  .menu-container .ant-menu-submenu-title {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0 0.5rem 0;
+    padding: 1rem 24px 1rem 24px;
+    color: white !important;
+
+    transition: background-color 0.3s;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      color: white;
+      margin-right: 10px;
+    }
+
+    span {
+      color: white;
+    }
+  }
+}
+
+.sidebar-overlay {
+  background-color: black;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  display: block;
+  visibility: hidden;
+  transition:
+    visibility $transition-layout-time,
+    opacity $transition-layout-time;
+  z-index: 998;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.open {
+    visibility: visible;
+    opacity: 0.3;
+  }
 }

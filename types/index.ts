@@ -1,3 +1,5 @@
+import {IUserLogin} from "@/apiRequest/ApiUser";
+
 export interface CommonReactProps {
   children: React.ReactNode;
 }
@@ -31,7 +33,9 @@ export enum VerifyStatus {
   VERIFIED = 1, // đã xác thực emails
   BANNED = 2, // bị khoá
 }
+
 export interface IAccountInfo {
+  user?: IUserLogin;
   access_token?: string;
   refresh_token?: string;
   role?: number;

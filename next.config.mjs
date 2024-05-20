@@ -10,6 +10,7 @@ const nextConfig = {
     includePaths: [path.join(__dirname, "styles")],
     prependData: `@import "./global";`,
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;

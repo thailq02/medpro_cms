@@ -25,7 +25,6 @@ export default function AccountManagerComponent() {
         : {title: "Tạo tài khoản"},
     });
   };
-
   const dataSource = [
     {
       key: "1",

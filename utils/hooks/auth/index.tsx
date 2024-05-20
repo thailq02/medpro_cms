@@ -4,7 +4,7 @@ import ApiUser from "@/apiRequest/ApiUser";
 
 const useQueryGetMe = () => {
   return useQuery({
-    queryKey: [QUERY_KEY.GET_ME],
+    queryKey: [QUERY_KEY.GET_DATA_USER_IN_USE],
     queryFn: () => ApiUser.getMe(),
   });
 };

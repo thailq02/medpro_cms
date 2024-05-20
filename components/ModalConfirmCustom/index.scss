@@ -1,0 +1,20 @@
+.modal-confirm-custom {
+  .ant-btn-default {
+    color: $white-color !important;
+    background-color: $red-color !important;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .ant-btn-primary {
+    color: $white-color;
+    background-color: $primary !important;
+
+    &:hover {
+      opacity: unset;
+      background-color: $blue-color !important;
+    }
+  }
+}

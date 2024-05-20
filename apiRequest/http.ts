@@ -1,6 +1,7 @@
+import {handleRefreshToken} from "@/apiRequest/ApiAuth";
 import displayError from "@/apiRequest/ErrorMessage/errors";
 import Config from "@/config";
-import store from "@/redux/store";
+import store, {persistor} from "@/redux/store";
 
 type EntityErrorPayload = {
   message: string;
@@ -85,7 +86,7 @@ const request = async <TResponse>(
   method: "GET" | "POST" | "PUT" | "DELETE",
   url: string,
   options?: CustomOptions | undefined,
-) => {
+): Promise<{status: number; payload: TResponse}> => {
   const defaultOptions: CustomOptions = {
     withToken: Config.NETWORK_CONFIG.USE_TOKEN,
     withMetadata: Config.NETWORK_CONFIG.WITH_METADATA,
@@ -147,7 +148,8 @@ const request = async <TResponse>(
         },
       );
     } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
-      console.log("AUTHENTICATION_ERROR_STATUS");
+      await handleRefreshToken();
+      await request<TResponse>(method, url, options);
     } else {
       throw new HttpError(data);
     }
