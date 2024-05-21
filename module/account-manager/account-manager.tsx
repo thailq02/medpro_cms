@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import TableGlobal from "@/components/TableGlobal";
 import {ColumnsType} from "antd/es/table";
@@ -15,50 +14,46 @@ import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
 import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
 import ContentModalEditAccount from "@/module/account-manager/modal-edit-account";
+import {useQueryGetFullUser} from "@/utils/hooks/auth";
+import {IAccountRole} from "@/types";
+import {IUserLogin} from "@/apiRequest/ApiUser";
 
 export default function AccountManagerComponent() {
-  const handleOpenModalAccount = (id?: string) => {
+  const {data, isFetching, refetch} = useQueryGetFullUser();
+  const handleOpenModalAccount = (username?: string) => {
     addModal({
-      content: id ? <ContentModalEditAccount /> : <ContentModalCreateAccount />,
-      options: id
+      content: username ? (
+        <ContentModalEditAccount idSelect={username} refetch={refetch} />
+      ) : (
+        <ContentModalCreateAccount />
+      ),
+      options: username
         ? {title: "Sửa tài khoản", widthModal: 800}
         : {title: "Tạo tài khoản"},
     });
   };
-  const dataSource = [
-    {
-      key: "1",
-      id: 1,
-      name: "Lê Quang Thái",
-      age: 21,
-      email: "thai@gmail.com",
-      phone_number: "0123456789",
-      role: "Doctor",
-    },
-    {
-      key: "2",
-      id: 2,
-      name: "Admin",
-      age: 22,
-      email: "admin@gmail.com",
-      phone_number: "0123456789",
-      role: "Admin",
-    },
-  ];
 
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<IUserLogin> = [
     {
       title: "STT",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "_id",
+      key: "_id",
       width: 80,
       align: "center",
+      fixed: "left",
       render: (_: any, record: any, index: any) => <div>{index + 1}</div>,
     },
     {
       title: "Tên người dùng",
       dataIndex: "name",
       key: "name",
+      align: "center",
+      fixed: "left",
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
       align: "center",
     },
     {
@@ -72,12 +67,23 @@ export default function AccountManagerComponent() {
       dataIndex: "role",
       key: "role",
       align: "center",
+      width: 160,
+      render: (_, record) => {
+        if (record.role === IAccountRole.ADMIN) {
+          return "Admin";
+        } else if (record.role === IAccountRole.DOCTOR) {
+          return "Bác sĩ";
+        } else if (record.role === IAccountRole.USER) {
+          return "Người dùng";
+        }
+      },
     },
     {
       title: "SĐT",
       dataIndex: "phone_number",
       key: "phone_number",
       align: "center",
+      width: 200,
     },
     {
       title: "Hành động",
@@ -85,13 +91,14 @@ export default function AccountManagerComponent() {
       key: "action",
       width: 150,
       align: "center",
+      fixed: "right",
       render: (_, record) => {
         return (
           <Row justify="center">
             <Space direction="horizontal" size={"middle"}>
               <ActionButton
                 type={EButtonAction.EDIT}
-                onClick={() => handleOpenModalAccount(record.id)}
+                onClick={() => handleOpenModalAccount(record.username)}
               />
               <ActionButton
                 type={EButtonAction.DELETE}
@@ -125,7 +132,12 @@ export default function AccountManagerComponent() {
           />,
         ]}
       />
-      <TableGlobal dataSource={dataSource} columns={columns} />
+      <TableGlobal
+        scrollX={2000}
+        dataSource={data?.payload?.data}
+        columns={columns}
+        loading={isFetching}
+      />
     </>
   );
 }

@@ -3,6 +3,7 @@
   min-width: $sidebar-width;
   background-color: $sidebar-background;
   height: 100vh;
+  min-height: 100%;
   top: 0;
   left: -$sidebar-width;
   transition: left $transition-layout-time;

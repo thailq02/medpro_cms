@@ -18,6 +18,11 @@ export enum IStatus {
   SUCCESS = 200,
   ERROR = 400,
 }
+export interface ICommonAuditable {
+  key?: number | string;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export interface IDataError {
   errorCode: string;
@@ -83,7 +88,7 @@ function getAuthorization(defaultOptions: IFetcherOptions) {
 }
 
 const request = async <TResponse>(
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   url: string,
   options?: CustomOptions | undefined,
 ): Promise<{status: number; payload: TResponse}> => {
@@ -187,6 +192,13 @@ const http = {
     options?: Omit<CustomOptions, "body"> | undefined,
   ) {
     return request<TResponse>("PUT", url, {...options, body});
+  },
+  patch<TResponse>(
+    url: string,
+    body: any,
+    options?: Omit<CustomOptions, "body"> | undefined,
+  ) {
+    return request<TResponse>("PATCH", url, {...options, body});
   },
   delete<TResponse>(
     url: string,

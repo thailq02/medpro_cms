@@ -25,9 +25,18 @@ interface IRefreshToken extends ICommonResponse {
     new_refresh_token: string;
   };
 }
+interface IAccountBody {
+  name: string;
+  email: string;
+  password: string;
+  date_of_birth: string;
+  gender: number;
+}
+
 export const path = {
   login: "/auth/login",
   refresh_token: "/auth/refresh-token",
+  create: "/auth/register",
 };
 
 export async function handleRefreshToken() {
@@ -48,6 +57,9 @@ export async function handleRefreshToken() {
 
 const ApiAuth = {
   login: (body: ILoginBody) => http.post<ILoginResponse>(path.login, body),
+
+  createAccount: async (body: IAccountBody) =>
+    await http.post<any>(path.create, body),
 
   getUserRole: (): IAccountRole | undefined => {
     const {user} = store.getState();

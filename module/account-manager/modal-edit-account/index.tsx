@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   GenderType,
@@ -6,85 +7,64 @@ import {
   PositionType,
   VerifyStatus,
 } from "@/types";
-import {Formik} from "formik";
+import {Formik, FormikHelpers} from "formik";
 import {Col, DatePicker, Form, Input, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-
-const listGender = [
-  {
-    value: GenderType.MALE,
-    label: <span>Nam</span>,
-  },
-  {
-    value: GenderType.FEMALE,
-    label: <span>Nữ</span>,
-  },
-];
-
-const listPosition = [
-  {
-    value: PositionType.NONE,
-    label: <span>Người dùng</span>,
-  },
-  {
-    value: PositionType.MASTER,
-    label: <span>Thạc sĩ</span>,
-  },
-  {
-    value: PositionType.DOCTOR,
-    label: <span>Tiến sĩ</span>,
-  },
-  {
-    value: PositionType.ASSOCIATE_PROFESSOR,
-    label: <span>Phó giáo sư</span>,
-  },
-  {
-    value: PositionType.PROFESSOR,
-    label: <span>Giáo sư</span>,
-  },
-];
-
-const listRole = [
-  {
-    value: IAccountRole.ADMIN,
-    label: <span>Admin</span>,
-  },
-  {
-    value: IAccountRole.DOCTOR,
-    label: <span>Bác sĩ</span>,
-  },
-  {
-    value: IAccountRole.USER,
-    label: <span>Người dùng</span>,
-  },
-];
-
-const listVerifyStatus = [
-  {
-    value: VerifyStatus.UNVERIFIED,
-    label: <span>Chưa xác thực</span>,
-  },
-  {
-    value: VerifyStatus.VERIFIED,
-    label: <span>Đã xác thực</span>,
-  },
-  {
-    value: VerifyStatus.BANNED,
-    label: <span>Khoá tài khoản</span>,
-  },
-];
+import {useQueryGetUserByUsername, useUpdateAccount} from "@/utils/hooks/auth";
+import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import dayjs from "dayjs";
+import {OPTIONS} from "@/utils/constants/selectList";
+import {
+  IUpdateAccountForm,
+  getValidationEditAccountSchema,
+} from "@/module/account-manager/modal-edit-account/form-config";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
 export default function ContentModalEditAccount(props: IModalProps) {
-  const handleEditAccount = () => {
-    //
+  const usernameSelect = props.idSelect;
+  const {data} = useQueryGetUserByUsername(usernameSelect);
+  const dispatch = useAppDispatch();
+  const {mutate: UpdateAccount} = useUpdateAccount();
+  const user = data?.payload?.data;
+  const initialValues = React.useMemo(() => {
+    return {
+      name: user?.name || "",
+      email: user?.email,
+      date_of_birth: user?.date_of_birth || "",
+      gender: user?.gender || GenderType.MALE,
+      username: user?.username || "",
+      phone_number: user?.phone_number || "",
+      position: user?.position || PositionType.NONE,
+      role: user?.role || IAccountRole.USER,
+      verify: user?.verify || VerifyStatus.UNVERIFIED,
+      address: user?.address || "",
+    };
+  }, [data]);
+  const handleEditAccount = (
+    values: IUpdateAccountForm,
+    {setSubmitting}: FormikHelpers<IUpdateAccountForm>,
+  ) => {
+    UpdateAccount(
+      {username: usernameSelect as string, body: values},
+      {
+        onSuccess: () => {
+          if (props.refetch) {
+            props.refetch();
+          }
+          dispatch(closeModal());
+        },
+        onError: () => setSubmitting(false),
+      },
+    );
   };
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      enableReinitialize
+      validationSchema={getValidationEditAccountSchema()}
       onSubmit={handleEditAccount}
     >
       {({
@@ -92,6 +72,8 @@ export default function ContentModalEditAccount(props: IModalProps) {
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
+        values,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
@@ -103,37 +85,29 @@ export default function ContentModalEditAccount(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
-                    name="email"
+                  <InputGlobal
+                    name="name"
                     placeholder="Nhập tài khoản"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.name}
                   />
                 </FormItem>
-                <FormItem
-                  label="Email"
-                  name="email"
-                  required
-                  labelCol={{span: 24}}
-                >
-                  <Input
+                <FormItem label="Email" name="email" labelCol={{span: 24}}>
+                  <InputGlobal
                     name="email"
-                    placeholder="Nhập tài khoản"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    placeholder="Nhập email"
+                    value={user?.email}
+                    disabled
                   />
                 </FormItem>
-                <FormItem
-                  label="Mật khẩu"
-                  name="password"
-                  required
-                  labelCol={{span: 24}}
-                >
-                  <Input.Password
-                    name="password"
-                    placeholder="Nhập mật khẩu"
+                <FormItem label="Địa chỉ" name="address" labelCol={{span: 24}}>
+                  <TextAreaGlobal
+                    name="address"
+                    placeholder="Nhập địa chỉ"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.address}
                   />
                 </FormItem>
                 <FormItem
@@ -142,7 +116,16 @@ export default function ContentModalEditAccount(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <DatePicker format={"DD/MM/YYYY"} className="w-full" />
+                  <DatePicker
+                    format={"DD/MM/YYYY"}
+                    className="w-full"
+                    value={dayjs(values.date_of_birth?.toString())}
+                    onChange={(e) => {
+                      const date = new Date(e.toDate()).toISOString();
+                      setFieldValue("date_of_birth", date);
+                    }}
+                    disabledDate={(e) => e > dayjs()}
+                  />
                 </FormItem>
                 <FormItem
                   label="Giới tính"
@@ -150,7 +133,11 @@ export default function ContentModalEditAccount(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Select options={listGender} />
+                  <Select
+                    options={OPTIONS.LIST_GENDER}
+                    value={values.gender}
+                    onChange={(e) => setFieldValue("gender", e)}
+                  />
                 </FormItem>
               </Col>
               <Col span={12}>
@@ -159,11 +146,12 @@ export default function ContentModalEditAccount(props: IModalProps) {
                   name="username"
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="username"
                     placeholder="Nhập username"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.username}
                   />
                 </FormItem>
                 <FormItem
@@ -171,25 +159,38 @@ export default function ContentModalEditAccount(props: IModalProps) {
                   name="phone_number"
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="phone_number"
                     placeholder="Nhập số điện thoại"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.phone_number}
                   />
                 </FormItem>
                 <FormItem label="Vị trí " name="position" labelCol={{span: 24}}>
-                  <Select options={listPosition} />
+                  <Select
+                    options={OPTIONS.LIST_POSITION}
+                    value={values.position}
+                    onChange={(e) => setFieldValue("position", e)}
+                  />
                 </FormItem>
                 <FormItem label="Chức vụ" name="role" labelCol={{span: 24}}>
-                  <Select options={listRole} />
+                  <Select
+                    options={OPTIONS.LIST_ROLE}
+                    value={values.role}
+                    onChange={(e) => setFieldValue("role", e)}
+                  />
                 </FormItem>
                 <FormItem
                   label="Trạng thái"
                   name="verify"
                   labelCol={{span: 24}}
                 >
-                  <Select options={listVerifyStatus} />
+                  <Select
+                    options={OPTIONS.LIST_VERIFY_STATUS}
+                    value={values.verify}
+                    onChange={(e) => setFieldValue("verify", e)}
+                  />
                 </FormItem>
               </Col>
             </Row>

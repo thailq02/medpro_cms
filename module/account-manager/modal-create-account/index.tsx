@@ -1,39 +1,64 @@
-import React from "react";
-import {GenderType} from "@/types";
-import {Formik} from "formik";
+"use client";
+import React, {useMemo} from "react";
+import {Formik, FormikHelpers} from "formik";
 import {Col, DatePicker, Form, Input, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
-import type {BaseOptionType, DefaultOptionType} from "rc-select/lib/Select";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-
-const listGender: (BaseOptionType | DefaultOptionType)[] = [
-  {
-    value: GenderType.MALE,
-    label: <span>Nam</span>,
-  },
-  {
-    value: GenderType.FEMALE,
-    label: <span>Nữ</span>,
-  },
-];
+import {
+  ICreateAccountForm,
+  getValidationCreateAccountSchema,
+} from "@/module/account-manager/modal-create-account/form-config";
+import {InputGlobal} from "@/components/InputGlobal";
+import {useCreateAccount} from "@/utils/hooks/auth";
+import {closeModal} from "@/redux/slices/ModalSlice";
+import {useQueryClient} from "@tanstack/react-query";
+import QUERY_KEY from "@/config/QUERY_KEY";
+import {useAppDispatch} from "@/redux/store";
+import {OPTIONS} from "@/utils/constants/selectList";
+import dayjs from "dayjs";
 
 export default function ContentModalCreateAccount() {
-  const handleLogin = () => {
-    //
+  const {mutate: CreateAccount} = useCreateAccount();
+  const queryClient = useQueryClient();
+  const dispath = useAppDispatch();
+  const initialValues = useMemo(() => {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      date_of_birth: "",
+      gender: 0,
+    };
+  }, []);
+
+  const handleCreateAccount = (
+    values: ICreateAccountForm,
+    {setSubmitting}: FormikHelpers<ICreateAccountForm>,
+  ) => {
+    const value = {...values, confirm_password: values.password};
+    CreateAccount(value, {
+      onSuccess: () => {
+        queryClient.refetchQueries({
+          queryKey: [QUERY_KEY.GET_FULL_USER],
+        });
+        dispath(closeModal());
+      },
+      onError: () => setSubmitting(false),
+    });
   };
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
-      onSubmit={handleLogin}
+      validationSchema={getValidationCreateAccountSchema()}
+      onSubmit={handleCreateAccount}
     >
       {({
         isSubmitting,
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
@@ -45,8 +70,8 @@ export default function ContentModalCreateAccount() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
-                    name="email"
+                  <InputGlobal
+                    name="name"
                     placeholder="Nhập tài khoản"
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -58,7 +83,7 @@ export default function ContentModalCreateAccount() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="email"
                     placeholder="Nhập tài khoản"
                     onChange={handleChange}
@@ -84,7 +109,15 @@ export default function ContentModalCreateAccount() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <DatePicker format={"DD/MM/YYYY"} className="w-full" />
+                  <DatePicker
+                    format={"DD/MM/YYYY"}
+                    className="w-full"
+                    onChange={(e) => {
+                      const date = new Date(e.toDate()).toISOString();
+                      setFieldValue("date_of_birth", date);
+                    }}
+                    disabledDate={(e) => e > dayjs()}
+                  />
                 </FormItem>
                 <FormItem
                   label="Giới tính"
@@ -92,7 +125,7 @@ export default function ContentModalCreateAccount() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Select options={listGender} />
+                  <Select options={OPTIONS.LIST_GENDER} />
                 </FormItem>
               </Col>
             </Row>
