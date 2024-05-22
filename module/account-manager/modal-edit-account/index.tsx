@@ -1,14 +1,8 @@
 "use client";
 import React from "react";
-import {
-  GenderType,
-  IAccountRole,
-  IModalProps,
-  PositionType,
-  VerifyStatus,
-} from "@/types";
+import {GenderType, IModalProps} from "@/types";
 import {Formik, FormikHelpers} from "formik";
-import {Col, DatePicker, Form, Input, Row, Select} from "antd";
+import {Col, DatePicker, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {useQueryGetUserByUsername, useUpdateAccount} from "@/utils/hooks/auth";
@@ -21,8 +15,10 @@ import {
 } from "@/module/account-manager/modal-edit-account/form-config";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
+import {useRouter} from "next/navigation";
 
 export default function ContentModalEditAccount(props: IModalProps) {
+  const router = useRouter();
   const usernameSelect = props.idSelect;
   const {data} = useQueryGetUserByUsername(usernameSelect);
   const dispatch = useAppDispatch();
@@ -34,11 +30,11 @@ export default function ContentModalEditAccount(props: IModalProps) {
       email: user?.email,
       date_of_birth: user?.date_of_birth || "",
       gender: user?.gender || GenderType.MALE,
-      username: user?.username || "",
+      username: user?.username,
       phone_number: user?.phone_number || "",
-      position: user?.position || PositionType.NONE,
-      role: user?.role || IAccountRole.USER,
-      verify: user?.verify || VerifyStatus.UNVERIFIED,
+      position: user?.position,
+      role: user?.role,
+      verify: user?.verify,
       address: user?.address || "",
     };
   }, [data]);
@@ -54,6 +50,7 @@ export default function ContentModalEditAccount(props: IModalProps) {
             props.refetch();
           }
           dispatch(closeModal());
+          router.refresh();
         },
         onError: () => setSubmitting(false),
       },
@@ -167,14 +164,14 @@ export default function ContentModalEditAccount(props: IModalProps) {
                     value={values.phone_number}
                   />
                 </FormItem>
-                <FormItem label="Vị trí " name="position" labelCol={{span: 24}}>
+                <FormItem label="Vị trí" name="position" labelCol={{span: 24}}>
                   <Select
                     options={OPTIONS.LIST_POSITION}
                     value={values.position}
                     onChange={(e) => setFieldValue("position", e)}
                   />
                 </FormItem>
-                <FormItem label="Chức vụ" name="role" labelCol={{span: 24}}>
+                <FormItem label="Vai trò" name="role" labelCol={{span: 24}}>
                   <Select
                     options={OPTIONS.LIST_ROLE}
                     value={values.role}

@@ -126,6 +126,7 @@ const request = async <TResponse>(
         ? "multipart/form-data"
         : "application/json",
       "Authorization": getAuthorization(defaultOptions),
+      ...options?.headers,
     } as any,
     method,
     body,

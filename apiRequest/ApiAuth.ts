@@ -58,6 +58,16 @@ export async function handleRefreshToken() {
 const ApiAuth = {
   login: (body: ILoginBody) => http.post<ILoginResponse>(path.login, body),
 
+  auth: (body: {
+    access_token: string;
+    refresh_token: string;
+    expiresAt: number;
+  }) =>
+    http.post("/api/auth", body, {
+      baseUrl: "",
+      credentials: "include",
+    }),
+
   createAccount: async (body: IAccountBody) =>
     await http.post<any>(path.create, body),
 

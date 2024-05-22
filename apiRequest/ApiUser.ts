@@ -17,7 +17,7 @@ export interface IUserLogin extends ICommonAuditable {
   phone_number?: string;
   position?: number;
 }
-interface IGetMeResBody {
+export interface IGetMeResBody {
   message: string;
   data: IUserLogin;
 }
@@ -25,7 +25,7 @@ interface IGetUserResBody {
   message: string;
   data: IUserLogin;
 }
-interface IGetFullUserResBody {
+export interface IGetFullUserResBody {
   message: string;
   data: IUserLogin[];
 }
@@ -44,8 +44,15 @@ const path = {
 const ApiUser = {
   getMe: () => http.get<IGetMeResBody>(path.getMe),
 
-  getFullUser: async () =>
-    await http.get<IGetFullUserResBody>(path.getFullUser),
+  getMeServer: (access_token: string) =>
+    http.get<IGetMeResBody>(path.getMe, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }),
+
+  getFullUser: () =>
+    http.get<IGetFullUserResBody>(path.getFullUser, {cache: "no-cache"}),
 
   getUserByUsername: async (username: string) =>
     await http.get<IGetUserResBody>(`${path.getUserByUsername}/${username}`, {

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useEffect} from "react";
 import {useRouter, usePathname} from "next/navigation";
 import Config from "@/config";
 import RouteList, {IRoute} from "@/routes/RouteList";
@@ -8,14 +8,25 @@ import {CommonReactProps} from "@/types";
 import ApiAuth from "@/apiRequest/ApiAuth";
 import LoginComponent from "@/app/(auth)/login/page";
 import ModalGlobal from "@/components/ModalGlobal";
+import {IGetMeResBody} from "@/apiRequest/ApiUser";
+import store, {useAppSelector} from "@/redux/store";
+import {loginUser} from "@/redux/slices/UserSlice";
 
 export default function Routes({
   children,
-}: CommonReactProps): JSX.Element | null {
+  user,
+}: CommonReactProps & {
+  user: IGetMeResBody["data"] | undefined;
+}): JSX.Element | null {
   const router = useRouter();
+  const userStore = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    store.dispatch(loginUser({...userStore, user}));
+  }, [user]);
+
   const pathname = usePathname();
   const login = pathname === Config.PATHNAME.LOGIN;
-
   const isRoute = (key: keyof IRoute): boolean => {
     for (const route of RouteList) {
       if (pathname === route.path) {
@@ -94,7 +105,6 @@ export default function Routes({
     }
     return goToLogin();
   }
-
   return (
     <DashboardLayout>
       {children}

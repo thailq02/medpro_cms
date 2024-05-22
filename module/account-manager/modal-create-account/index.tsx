@@ -11,15 +11,14 @@ import {
 import {InputGlobal} from "@/components/InputGlobal";
 import {useCreateAccount} from "@/utils/hooks/auth";
 import {closeModal} from "@/redux/slices/ModalSlice";
-import {useQueryClient} from "@tanstack/react-query";
-import QUERY_KEY from "@/config/QUERY_KEY";
 import {useAppDispatch} from "@/redux/store";
 import {OPTIONS} from "@/utils/constants/selectList";
 import dayjs from "dayjs";
+import {useRouter} from "next/navigation";
 
 export default function ContentModalCreateAccount() {
+  const router = useRouter();
   const {mutate: CreateAccount} = useCreateAccount();
-  const queryClient = useQueryClient();
   const dispath = useAppDispatch();
   const initialValues = useMemo(() => {
     return {
@@ -38,10 +37,8 @@ export default function ContentModalCreateAccount() {
     const value = {...values, confirm_password: values.password};
     CreateAccount(value, {
       onSuccess: () => {
-        queryClient.refetchQueries({
-          queryKey: [QUERY_KEY.GET_FULL_USER],
-        });
         dispath(closeModal());
+        router.refresh();
       },
       onError: () => setSubmitting(false),
     });

@@ -6,6 +6,11 @@ const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
     prependData: `@import "./global";`,

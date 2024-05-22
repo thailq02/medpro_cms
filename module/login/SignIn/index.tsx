@@ -16,7 +16,8 @@ import {
 import {useRouter} from "next/navigation";
 import FormItem from "@/components/FormItem";
 import Config from "@/config";
-import {useQueryGetMe} from "@utils/hooks/auth";
+import {jwtDecode} from "jwt-decode";
+
 interface SignInProps {
   changeTab: (tab: string) => void;
 }
@@ -36,10 +37,19 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
     loginMutation.mutate(
       {email: value.email, password: value.password},
       {
-        onSuccess: (data: IDataLoginRes) => {
+        onSuccess: async (data: IDataLoginRes) => {
+          const {access_token, refresh_token} = data.payload.data;
+          const decoded = jwtDecode(access_token);
+          const expiredAt = decoded.exp;
+          await ApiAuth.auth({
+            access_token,
+            refresh_token,
+            expiresAt: expiredAt as number,
+          });
           dispatch(loginUser({...data.payload.data}));
-          router.push(Config.PATHNAME.HOME);
           setSubmitting(false);
+          router.push(Config.PATHNAME.HOME);
+          router.refresh();
         },
         onError: () => {
           setSubmitting(false);

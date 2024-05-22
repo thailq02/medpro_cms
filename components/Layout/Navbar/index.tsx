@@ -1,16 +1,14 @@
 "use client";
 
+import routes from "@/routes/RouteList";
+import React from "react";
+import {usePathname} from "next/navigation";
+import {useDispatch} from "react-redux";
+import {useAppSelector} from "@/redux/store";
+import {toggleMenu} from "@/redux/slices/MenuSlice";
 import {MenuOutlined, UserOutlined} from "@ant-design/icons";
 import {Avatar} from "antd";
-import React, {useEffect} from "react";
-import {useDispatch} from "react-redux";
 import "./index.scss";
-import {usePathname} from "next/navigation";
-import routes from "@/routes/RouteList";
-import {useQueryGetMe} from "@/utils/hooks/auth";
-import {toggleMenu} from "@/redux/slices/MenuSlice";
-import {useAppSelector} from "@/redux/store";
-import {loginUser} from "@/redux/slices/UserSlice";
 
 function RenderNamePage() {
   const dataRoutes = routes;
@@ -31,14 +29,6 @@ function RenderNamePage() {
 export default function Navbar(): JSX.Element {
   const user = useAppSelector((state) => state.user);
   const dispatch = useDispatch();
-  const dataUser = useQueryGetMe();
-  const fullName = dataUser?.data?.payload?.data?.name;
-
-  useEffect(() => {
-    dataUser.refetch().then((data) => {
-      dispatch(loginUser({...user, user: data?.data?.payload?.data}));
-    });
-  }, [user.access_token, user.refresh_token]);
 
   return (
     <div className="navbar flex items-center justify-between">
@@ -55,7 +45,9 @@ export default function Navbar(): JSX.Element {
       <div className="group-user-info">
         <div className="cursor-pointer flex items-center">
           <Avatar size="default" icon={<UserOutlined />} />
-          <span className="text-[14px] ml-2 hidden md:flex">{fullName}</span>
+          <span className="text-[14px] ml-2 hidden md:flex">
+            {user?.user?.name ?? ""}
+          </span>
         </div>
       </div>
     </div>

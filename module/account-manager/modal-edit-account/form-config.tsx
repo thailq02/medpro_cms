@@ -1,3 +1,4 @@
+"use client";
 import * as Yup from "yup";
 import {Schema} from "yup";
 import REGEX_VALIDATION from "@/utils/constants/regexValidation";
