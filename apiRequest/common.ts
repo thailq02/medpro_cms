@@ -1,8 +1,14 @@
+export const AT_COOKIE_NAME = "accessToken";
+
 export interface ICommonAuditable {
   key?: number | string;
   created_at?: string;
   updated_at?: string;
 }
+export type NonNullableFields<T> = {
+  [P in keyof T]: NonNullable<T[P]>;
+};
+
 export type ParamsType = Record<
   string,
   string | number | boolean | string[] | number[] | boolean[]

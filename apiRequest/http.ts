@@ -3,6 +3,7 @@ import displayError from "@/apiRequest/ErrorMessage/errors";
 import Config from "@/config";
 import {IStatus, ParamsType} from "@/apiRequest/common";
 import {handleRefreshToken} from "@/apiRequest/ApiAuth";
+import {notification} from "antd";
 
 type EntityErrorPayload = {
   message: string;
@@ -55,7 +56,7 @@ type CustomOptions = Omit<IFetcherOptions, "method"> & {
 
 const ENTITY_ERROR_STATUS = 422;
 const AUTHENTICATION_ERROR_STATUS = 401;
-
+const BAD_REQUEST_ERROR_STATUS = 400;
 interface IFetcherOptions extends RequestInit {
   token?: string;
   withToken?: boolean;
@@ -152,6 +153,12 @@ const request = async <TResponse>(
     } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
       await handleRefreshToken();
       await request<TResponse>(method, url, options);
+    } else if (res.status === BAD_REQUEST_ERROR_STATUS) {
+      notification.error({
+        message: (data.payload as any).message || "Xóa danh mục thất bại",
+        duration: 3,
+      });
+      throw data;
     } else {
       throw new HttpError(data);
     }

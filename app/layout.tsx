@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import Routes from "@/routes";
 import {cookies} from "next/headers";
 import ApiUser, {IGetMeResBody} from "@/apiRequest/ApiUser";
+import {AT_COOKIE_NAME} from "@/apiRequest/common";
 const ReduxProvider = dynamic(() => import("@/redux/redux-provider"), {
   ssr: false,
 });
@@ -27,7 +28,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = cookies();
-  const access_token = cookieStore.get("accessToken");
+  const access_token = cookieStore.get(AT_COOKIE_NAME);
   let user: IGetMeResBody["data"] | undefined = undefined;
   try {
     if (access_token) {

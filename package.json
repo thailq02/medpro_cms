@@ -35,6 +35,7 @@
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "sass": "^1.77.0",
+    "slugify": "^1.6.6",
     "yup": "^1.4.0"
   },
   "devDependencies": {

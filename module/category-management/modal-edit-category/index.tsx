@@ -1,38 +1,92 @@
-import React from "react";
+"use client";
+import React, {useMemo} from "react";
 import {IModalProps} from "@/types";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Select} from "antd";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import {InputGlobal} from "@/components/InputGlobal";
+import {ICategoryBody} from "@/apiRequest/ApiCategory";
+import {
+  useQueryGetCategoryById,
+  useUpdateCategory,
+} from "@/utils/hooks/category";
+import {
+  IEditCategoryForm,
+  RequiredEditCategoryForm,
+  getValidationEditCategorySchema,
+} from "@/module/category-management/modal-edit-category/form-config";
+import slugify from "slugify";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
-const listCategories = [
-  {
-    value: 1,
-    label: <span>Bệnh viện công</span>,
-  },
-  {
-    value: 2,
-    label: <span>Cơ sở y tế</span>,
-  },
-];
-
-export default function ContentModalEditCategory(props: IModalProps) {
-  const handleLogin = () => {
-    //
+export default function ContentModalEditCategory({
+  listCategory,
+  props,
+}: {
+  props: IModalProps;
+  listCategory: ICategoryBody[];
+}) {
+  const {idSelect, refetch} = props;
+  const dispatch = useAppDispatch();
+  const {data: category} = useQueryGetCategoryById(idSelect);
+  const {mutate: UpdateCategoryMutation} = useUpdateCategory();
+  const initialValues = useMemo(() => {
+    return {
+      name: category?.payload?.data.name || "",
+      slug: category?.payload?.data.slug || "",
+      parent_id: category?.payload?.data.parent_id || null,
+    };
+  }, [category]);
+  const listCategories = useMemo(() => {
+    return listCategory.map((cate) => {
+      return {
+        value: cate._id,
+        label: <span key={cate._id}>{cate.name}</span>,
+      };
+    });
+  }, [listCategory]);
+  const handleEditCategory = (
+    values: IEditCategoryForm,
+    {setSubmitting}: FormikHelpers<RequiredEditCategoryForm>,
+  ) => {
+    const _parent_id = Boolean(values.parent_id) ? values.parent_id : null;
+    const data = Boolean(values.slug)
+      ? {...values, parent_id: _parent_id}
+      : {
+          ...values,
+          parent_id: _parent_id,
+          slug: slugify(values.name, {
+            lower: true,
+            trim: true,
+          }),
+        };
+    UpdateCategoryMutation(
+      {id: idSelect as string, body: data},
+      {
+        onSuccess: () => {
+          dispatch(closeModal());
+          refetch!();
+        },
+        onError: () => setSubmitting(false),
+      },
+    );
   };
+  if (!category) return;
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
-      onSubmit={handleLogin}
+      validationSchema={getValidationEditCategorySchema()}
+      onSubmit={handleEditCategory}
     >
       {({
         isSubmitting,
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
+        values,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
@@ -44,11 +98,12 @@ export default function ContentModalEditCategory(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
-                    name="email"
+                  <InputGlobal
+                    name="name"
                     placeholder="Nhập tên danh mục"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.name}
                   />
                 </FormItem>
                 <FormItem
@@ -57,11 +112,12 @@ export default function ContentModalEditCategory(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="slug"
                     placeholder="Nhập slug"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.slug}
                   />
                 </FormItem>
                 <FormItem
@@ -70,7 +126,14 @@ export default function ContentModalEditCategory(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Select options={listCategories} />
+                  <Select
+                    options={[
+                      ...listCategories,
+                      {value: "", label: "Không có danh mục cha"},
+                    ]}
+                    value={values.parent_id === null ? "" : values.parent_id}
+                    onChange={(value) => setFieldValue("parent_id", value)}
+                  />
                 </FormItem>
               </Col>
             </Row>

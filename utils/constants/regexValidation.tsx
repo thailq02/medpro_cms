@@ -10,6 +10,7 @@ const REGEX_SYMBOL = /[!@#$%^&*(),.?":{}|<>]/;
 const REGEX_DATE_IOS8601 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const REGEX_USERNAME = /^[A-Za-z0-9_]+$/;
 const REGEX_NO_SPACE = /\S/;
+const REGEX_SLUG = /^\S+$/;
 
 const REGEX_VALIDATION = {
   REGEX_STRING: Yup.string()
@@ -59,6 +60,7 @@ const REGEX_VALIDATION = {
   REGEX_USERNAME: Yup.string()
     .trim()
     .matches(REGEX_USERNAME, "Username không hợp lệ"),
+  REGEX_SLUG: Yup.string().matches(REGEX_SLUG, "Slug không hợp lệ"),
 };
 
 export default REGEX_VALIDATION;

@@ -56,6 +56,7 @@ export default function ContentModalEditAccount(props: IModalProps) {
       },
     );
   };
+  if (!data) return;
   return (
     <Formik
       initialValues={initialValues}
