@@ -15,19 +15,20 @@ import {addModal} from "@/components/ModalGlobal";
 import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
 import ContentModalEditAccount from "@/module/account-manager/modal-edit-account";
 import {IAccountRole} from "@/types";
-import {IGetFullUserResBody, IUserLogin} from "@/apiRequest/ApiUser";
+import {IUserLogin} from "@/apiRequest/ApiUser";
+import {useDeleteAccount, useQueryGetFullUser} from "@/utils/hooks/auth";
+import useSearchParams, {
+  paramsDefaultCommon,
+} from "@/utils/hooks/searchParams/useSearchParams";
 
-type AccountList = IGetFullUserResBody["data"];
-
-export default function AccountManager({
-  accountList,
-}: {
-  accountList: AccountList;
-}) {
+export default function AccountManager() {
+  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const {mutate: DeleteAccountMutation} = useDeleteAccount();
+  const {data, isFetching, refetch} = useQueryGetFullUser(params);
   const handleOpenModalAccount = (username?: string) => {
     addModal({
       content: username ? (
-        <ContentModalEditAccount idSelect={username} />
+        <ContentModalEditAccount idSelect={username} refetch={refetch} />
       ) : (
         <ContentModalCreateAccount />
       ),
@@ -35,6 +36,9 @@ export default function AccountManager({
         ? {title: "Sửa tài khoản", widthModal: 800}
         : {title: "Tạo tài khoản"},
     });
+  };
+  const handleDeleteAccount = (username: string) => {
+    DeleteAccountMutation(username, {onSuccess: () => refetch()});
   };
 
   const columns: ColumnsType<IUserLogin> = [
@@ -45,7 +49,9 @@ export default function AccountManager({
       width: 80,
       align: "center",
       fixed: "left",
-      render: (_: any, record: any, index: any) => <div>{index + 1}</div>,
+      render: (_: any, record: any, index: any) => (
+        <div>{index + (params.page - 1) * params.limit + 1}</div>
+      ),
     },
     {
       title: "Tên người dùng",
@@ -106,7 +112,7 @@ export default function AccountManager({
               />
               <ActionButton
                 type={EButtonAction.DELETE}
-                onClick={() => undefined}
+                onClick={() => handleDeleteAccount(record.username as string)}
               />
             </Space>
           </Row>
@@ -138,9 +144,15 @@ export default function AccountManager({
       />
       <TableGlobal
         scrollX={2000}
-        dataSource={accountList}
+        dataSource={data?.payload.data}
         columns={columns}
-        // loading={isFetching}
+        onChange={handleChangePagination}
+        pagination={{
+          total: data?.payload.meta.total_items,
+          current: data?.payload.meta.current_page,
+          pageSize: data?.payload.meta.limit,
+        }}
+        loading={isFetching}
       />
     </>
   );

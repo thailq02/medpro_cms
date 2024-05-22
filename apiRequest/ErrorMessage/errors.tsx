@@ -19,14 +19,16 @@ export default function displayError(dataError: IDataError): void {
   } else {
     errorMessage = dataError.errorMessage ?? "Somethings Wrong";
   }
-  notification.error({
-    message: "Something is wrong. Please try again",
-    description:
-      typeof errorMessage === "string"
-        ? errorMessage
-        : Object.values(errorMessage).map((val, index) => {
-            return <div key={index}>{toString(val)}</div>;
-          }),
-    duration: 3,
-  });
+  if (typeof window !== "undefined") {
+    notification.error({
+      message: "Something is wrong. Please try again",
+      description:
+        typeof errorMessage === "string"
+          ? errorMessage
+          : Object.values(errorMessage).map((val, index) => {
+              return <div key={index}>{toString(val)}</div>;
+            }),
+      duration: 3,
+    });
+  }
 }

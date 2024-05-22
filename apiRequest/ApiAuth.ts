@@ -1,6 +1,6 @@
+import store from "@/redux/store";
 import http from "@/apiRequest/http";
 import {loginUser} from "@/redux/slices/UserSlice";
-import store from "@/redux/store";
 import {IAccountRole} from "@/types";
 
 export interface ICommonResponse {

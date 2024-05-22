@@ -1,5 +1,6 @@
-import http, {ICommonAuditable} from "@/apiRequest/http";
+import http from "@/apiRequest/http";
 import {IUpdateAccountForm} from "@/module/account-manager/modal-edit-account/form-config";
+import {CommonParams, ICommonAuditable, IMetaData} from "@/apiRequest/common";
 
 export interface IUserLogin extends ICommonAuditable {
   _id?: string;
@@ -17,6 +18,11 @@ export interface IUserLogin extends ICommonAuditable {
   phone_number?: string;
   position?: number;
 }
+export interface IParamsGetUser {
+  limit?: number;
+  page?: number;
+}
+
 export interface IGetMeResBody {
   message: string;
   data: IUserLogin;
@@ -28,6 +34,7 @@ interface IGetUserResBody {
 export interface IGetFullUserResBody {
   message: string;
   data: IUserLogin[];
+  meta: IMetaData;
 }
 interface IUpdateUser {
   username: string;
@@ -39,6 +46,7 @@ const path = {
   getUserByUsername: "/users",
   getMe: "/users/me",
   updateUser: "/users",
+  deleteUser: "/users",
 };
 
 const ApiUser = {
@@ -51,8 +59,11 @@ const ApiUser = {
       },
     }),
 
-  getFullUser: () =>
-    http.get<IGetFullUserResBody>(path.getFullUser, {cache: "no-cache"}),
+  getFullUser: (params?: IParamsGetUser) =>
+    http.get<IGetFullUserResBody>(path.getFullUser, {
+      cache: "no-cache",
+      params: params as CommonParams<IParamsGetUser>,
+    }),
 
   getUserByUsername: async (username: string) =>
     await http.get<IGetUserResBody>(`${path.getUserByUsername}/${username}`, {
@@ -64,6 +75,9 @@ const ApiUser = {
       `${path.updateUser}/${data.username}`,
       data.body,
     ),
+
+  deleteUser: async (username: string) =>
+    await http.delete<{message: string}>(`${path.deleteUser}/${username}`),
 };
 
 export default ApiUser;

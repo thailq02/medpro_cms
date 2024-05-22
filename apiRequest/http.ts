@@ -1,7 +1,8 @@
-import {handleRefreshToken} from "@/apiRequest/ApiAuth";
+import store from "@/redux/store";
 import displayError from "@/apiRequest/ErrorMessage/errors";
 import Config from "@/config";
-import store, {persistor} from "@/redux/store";
+import {IStatus, ParamsType} from "@/apiRequest/common";
+import {handleRefreshToken} from "@/apiRequest/ApiAuth";
 
 type EntityErrorPayload = {
   message: string;
@@ -13,16 +14,6 @@ type EntityErrorPayload = {
     };
   };
 };
-
-export enum IStatus {
-  SUCCESS = 200,
-  ERROR = 400,
-}
-export interface ICommonAuditable {
-  key?: number | string;
-  created_at?: string;
-  updated_at?: string;
-}
 
 export interface IDataError {
   errorCode: string;
@@ -71,6 +62,7 @@ interface IFetcherOptions extends RequestInit {
   withMetadata?: boolean;
   displayError?: boolean;
   isFormData?: boolean;
+  params?: ParamsType;
 }
 
 function getAuthorization(defaultOptions: IFetcherOptions) {
@@ -108,9 +100,13 @@ const request = async <TResponse>(
       ? process.env.NEXT_PUBLIC_API_ENDPOINT
       : options.baseUrl;
 
-  const fullUrl = url.startsWith("/")
-    ? `${baseUrl}${url}`
-    : `${baseUrl}/${url}`;
+  let fullUrl = url.startsWith("/") ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
+
+  if (options?.params) {
+    const queryString = new URLSearchParams(options.params as any).toString();
+    fullUrl += `?${queryString}`;
+  }
+  // fullUrl = http://localhost:4004/users?limit=5&page=1
 
   // Đối với upload file thì ko thể dùng JSON.stringify nên phải check xem body có FormData hay không
   const body = options?.body

@@ -1,6 +1,6 @@
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiUser from "@/apiRequest/ApiUser";
+import ApiUser, {IParamsGetUser} from "@/apiRequest/ApiUser";
 import ApiAuth from "@/apiRequest/ApiAuth";
 import {notification} from "antd";
 
@@ -11,10 +11,10 @@ const useQueryGetMe = () => {
   });
 };
 
-const useQueryGetFullUser = () => {
+const useQueryGetFullUser = (params?: IParamsGetUser) => {
   return useQuery({
-    queryKey: [QUERY_KEY.GET_FULL_USER],
-    queryFn: async () => await ApiUser.getFullUser(),
+    queryKey: [QUERY_KEY.GET_FULL_USER, params],
+    queryFn: async () => await ApiUser.getFullUser(params),
   });
 };
 
@@ -51,10 +51,22 @@ const useUpdateAccount = () => {
   });
 };
 
+const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: ApiUser.deleteUser,
+    onSuccess: () => {
+      notification.success({
+        message: "Xoá thành công",
+        duration: 3,
+      });
+    },
+  });
+};
 export {
   useQueryGetMe,
   useQueryGetFullUser,
   useCreateAccount,
   useQueryGetUserByUsername,
   useUpdateAccount,
+  useDeleteAccount,
 };
