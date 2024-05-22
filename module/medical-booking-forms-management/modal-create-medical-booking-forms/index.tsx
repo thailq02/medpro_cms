@@ -1,10 +1,21 @@
+"use client";
 import React, {useState} from "react";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Upload, message} from "antd";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Upload, message} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {LoadingOutlined, PlusOutlined} from "@ant-design/icons";
 import type {GetProp, UploadProps} from "antd";
+import {useCreateMedicalBookingForms} from "@/utils/hooks/medical-booking-forms";
+import {InputGlobal} from "@/components/InputGlobal";
+import {
+  ICreateMedicalBookingForms,
+  RequiredMedicalBookingForms,
+  getValidationCreateMedicalBookingFormsSchema,
+} from "@/module/medical-booking-forms-management/modal-create-medical-booking-forms/form-config";
+import slugify from "slugify";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -26,7 +37,13 @@ const beforeUpload = (file: FileType) => {
   return isJpgOrPng && isLt2M;
 };
 
-export default function ContentModalCreateMedicalBookingForms() {
+export default function ContentModalCreateMedicalBookingForms({
+  refetch,
+}: {
+  refetch: () => void;
+}) {
+  const dispatch = useAppDispatch();
+  const {mutate: CreateMedicalBookingForms} = useCreateMedicalBookingForms();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
 
@@ -51,13 +68,37 @@ export default function ContentModalCreateMedicalBookingForms() {
     </button>
   );
 
+  const handleCreateMedicalBookingForms = (
+    values: ICreateMedicalBookingForms,
+    {setSubmitting}: FormikHelpers<RequiredMedicalBookingForms>,
+  ) => {
+    const data = Boolean(values.slug)
+      ? values
+      : {
+          ...values,
+          slug: slugify(values.name, {
+            lower: true,
+            trim: true,
+          }),
+        };
+    CreateMedicalBookingForms(
+      data as ICreateMedicalBookingForms & {slug: string},
+      {
+        onSuccess: () => {
+          dispatch(closeModal());
+          refetch();
+        },
+        onError: () => setSubmitting(false),
+      },
+    );
+  };
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
+      initialValues={{name: "", slug: "", image: "chualamgi"}}
       validateOnChange={false}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
-      onSubmit={() => undefined}
+      validationSchema={getValidationCreateMedicalBookingFormsSchema()}
+      onSubmit={handleCreateMedicalBookingForms}
     >
       {({
         isSubmitting,
@@ -97,8 +138,8 @@ export default function ContentModalCreateMedicalBookingForms() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
-                    name="email"
+                  <InputGlobal
+                    name="name"
                     placeholder="Nhập tên danh mục"
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -110,7 +151,7 @@ export default function ContentModalCreateMedicalBookingForms() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="slug"
                     placeholder="Nhập slug"
                     onChange={handleChange}

@@ -1,11 +1,25 @@
-import React, {useState} from "react";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Upload, message} from "antd";
+"use client";
+import React, {useMemo, useState} from "react";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Upload, message} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {LoadingOutlined, PlusOutlined} from "@ant-design/icons";
 import type {GetProp, UploadProps} from "antd";
 import {IModalProps} from "@/types";
+import {
+  useQueryGetMedicalBookingFormsById,
+  useUpdateMedicalBookingForms,
+} from "@/utils/hooks/medical-booking-forms";
+import {InputGlobal} from "@/components/InputGlobal";
+import {
+  IEditMedicalBookingForms,
+  getValidationEditMedicalBookingFormsSchema,
+} from "@/module/medical-booking-forms-management/modal-edit-medical-booking-forms/form-config";
+import {RequiredMedicalBookingForms} from "@/module/medical-booking-forms-management/modal-create-medical-booking-forms/form-config";
+import slugify from "slugify";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -30,6 +44,20 @@ const beforeUpload = (file: FileType) => {
 export default function ContentModalEditMedicalBookingForms(
   props: IModalProps,
 ) {
+  const dispatch = useAppDispatch();
+  const {data: medicalBookingForms} = useQueryGetMedicalBookingFormsById(
+    props.idSelect,
+  );
+  const {mutate: UpdateMedicalBookingForms} = useUpdateMedicalBookingForms();
+
+  const initialValues = useMemo(() => {
+    return {
+      name: medicalBookingForms?.payload?.data.name || "",
+      slug: medicalBookingForms?.payload?.data.slug || "",
+      image: medicalBookingForms?.payload?.data.image || "chualamgi",
+    };
+  }, [medicalBookingForms]);
+
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
 
@@ -54,19 +82,49 @@ export default function ContentModalEditMedicalBookingForms(
     </button>
   );
 
+  const handleEditMedicalBookingForms = (
+    values: IEditMedicalBookingForms,
+    {setSubmitting}: FormikHelpers<RequiredMedicalBookingForms>,
+  ) => {
+    const data = Boolean(values.slug)
+      ? values
+      : {
+          ...values,
+          slug: slugify(values.name, {
+            lower: true,
+            trim: true,
+          }),
+        };
+    UpdateMedicalBookingForms(
+      {
+        id: props.idSelect as string,
+        body: data as IEditMedicalBookingForms & {slug: string},
+      },
+      {
+        onSuccess: () => {
+          dispatch(closeModal());
+          if (props.refetch) {
+            props.refetch();
+          }
+        },
+        onError: () => setSubmitting(false),
+      },
+    );
+  };
+  if (!medicalBookingForms) return;
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
-      onSubmit={() => undefined}
+      validationSchema={getValidationEditMedicalBookingFormsSchema()}
+      onSubmit={handleEditMedicalBookingForms}
     >
       {({
         isSubmitting,
         handleSubmit,
         handleChange,
         handleBlur,
+        values,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
@@ -100,11 +158,12 @@ export default function ContentModalEditMedicalBookingForms(
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
-                    name="email"
+                  <InputGlobal
+                    name="name"
                     placeholder="Nhập tên danh mục"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.name}
                   />
                 </FormItem>
                 <FormItem
@@ -113,11 +172,12 @@ export default function ContentModalEditMedicalBookingForms(
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="slug"
                     placeholder="Nhập slug"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.slug}
                   />
                 </FormItem>
               </Col>

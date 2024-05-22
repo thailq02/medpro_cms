@@ -75,7 +75,9 @@ export default function CategoryManagement() {
       key: "_id",
       width: 80,
       align: "center",
-      render: (_: any, record: any, index: any) => <div>{index + 1}</div>,
+      render: (_: any, record: any, index: any) => (
+        <div>{index + (params.page - 1) * params.limit + 1}</div>
+      ),
     },
     {
       title: "Tên danh mục",
