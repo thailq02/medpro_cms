@@ -1,9 +1,23 @@
+"use client";
 import React from "react";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Select} from "antd";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import {useCreateService} from "@/utils/hooks/service";
+import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {getValidationCreateServiceSchema} from "@/module/service-management/modal-create-service/form-config";
+import {ICreateServiceForm} from "@/apiRequest/ApiService";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
+interface ICreateServiceProps {
+  listHospital: {
+    value?: string;
+    label?: string;
+  }[];
+  refetch: () => void;
+}
 const listSpecialty = [
   {
     value: 1,
@@ -14,26 +28,41 @@ const listSpecialty = [
     label: "Khoa ung bướu",
   },
 ];
-const listHospital = [
-  {
-    value: 1,
-    label: "Bệnh viện Bạch Mai",
-  },
-  {
-    value: 2,
-    label: "Bệnh viện Quân Đội 108",
-  },
-];
-export default function ContentModalCreateService() {
-  const handleCreateService = () => {
-    //
+
+export default function ContentModalCreateService({
+  listHospital,
+  refetch,
+}: ICreateServiceProps) {
+  const dispatch = useAppDispatch();
+  const {mutate: CreateServiceMutation} = useCreateService();
+  const handleCreateService = (
+    values: ICreateServiceForm,
+    {setSubmitting}: FormikHelpers<any>,
+  ) => {
+    const data = {...values, specialty_id: null};
+    CreateServiceMutation(data as any, {
+      onSuccess: () => {
+        dispatch(closeModal());
+        refetch && refetch();
+      },
+      onError: () => setSubmitting(false),
+    });
   };
+  const initialValues = {
+    hospital_id: "",
+    specialty_id: "",
+    name: "",
+    description: "",
+    note: "",
+    price: 0,
+    session: "",
+  };
+
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      validationSchema={getValidationCreateServiceSchema()}
       onSubmit={handleCreateService}
     >
       {({
@@ -41,6 +70,7 @@ export default function ContentModalCreateService() {
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left" className="relative">
@@ -52,7 +82,7 @@ export default function ContentModalCreateService() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="name"
                     placeholder="Nhập tên dịch vụ"
                     onChange={handleChange}
@@ -65,7 +95,7 @@ export default function ContentModalCreateService() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="description"
                     placeholder="Nhập mô tả"
                     onChange={handleChange}
@@ -78,7 +108,7 @@ export default function ContentModalCreateService() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="note"
                     placeholder="Nhập ghi chú"
                     onChange={handleChange}
@@ -91,7 +121,8 @@ export default function ContentModalCreateService() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <InputGlobal
+                    type="number"
                     name="price"
                     placeholder="Nhập giá tền"
                     onChange={handleChange}
@@ -106,7 +137,7 @@ export default function ContentModalCreateService() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="session"
                     placeholder="Nhập lịch làm việc"
                     onChange={handleChange}
@@ -122,7 +153,8 @@ export default function ContentModalCreateService() {
                   <Select
                     allowClear
                     options={listHospital}
-                    placeholder="Please select"
+                    placeholder="Chọn bệnh viện"
+                    onChange={(value) => setFieldValue("hospital_id", value)}
                   />
                 </FormItem>
                 <FormItem
@@ -134,7 +166,8 @@ export default function ContentModalCreateService() {
                   <Select
                     allowClear
                     options={listSpecialty}
-                    placeholder="Please select"
+                    placeholder="Chọn chuyên khoa"
+                    onChange={(value) => setFieldValue("specialty_id", value)}
                   />
                 </FormItem>
               </Col>

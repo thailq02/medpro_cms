@@ -1,9 +1,25 @@
-import React from "react";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Select} from "antd";
+import React, {useMemo} from "react";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {IModalProps} from "@/types";
+import {useQueryGetServiceById, useUpdateService} from "@/utils/hooks/service";
+import {
+  IEditServiceForm,
+  getValidationEditServiceSchema,
+} from "@/module/service-management/mocal-edit-service/form-config";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
+import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {useRouter} from "next/navigation";
+
+interface IEditServiceProps extends IModalProps {
+  listHospital: {
+    value?: string;
+    label?: string;
+  }[];
+}
 
 const listSpecialty = [
   {
@@ -15,26 +31,51 @@ const listSpecialty = [
     label: "Khoa ung bướu",
   },
 ];
-const listHospital = [
-  {
-    value: 1,
-    label: "Bệnh viện Bạch Mai",
-  },
-  {
-    value: 2,
-    label: "Bệnh viện Quân Đội 108",
-  },
-];
-export default function ContentModalEditService(props: IModalProps) {
-  const handleEditService = () => {
-    //
+
+export default function ContentModalEditService({
+  listHospital,
+  refetch,
+  idSelect,
+}: IEditServiceProps) {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const {data: service} = useQueryGetServiceById(idSelect as string);
+  const {mutate: UpdateServiceMutation} = useUpdateService();
+  const initialValues = useMemo(() => {
+    const data = service?.payload.data;
+    return {
+      hospital_id: data?.hospital?._id || "",
+      specialty_id: data?.specialty?._id || "",
+      name: data?.name || "",
+      description: data?.description || "",
+      note: data?.note || "",
+      price: data?.price || 0,
+      session: data?.session || "",
+    };
+  }, [service]);
+  const handleEditService = (
+    values: IEditServiceForm,
+    {setSubmitting}: FormikHelpers<any>,
+  ) => {
+    const data = {...values, specialty_id: null};
+    UpdateServiceMutation(
+      {id: idSelect as string, body: data as any},
+      {
+        onSuccess: () => {
+          dispatch(closeModal());
+          refetch && refetch();
+          router.refresh();
+        },
+        onError: () => setSubmitting(false),
+      },
+    );
   };
+  if (!service) return;
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      validationSchema={getValidationEditServiceSchema()}
       onSubmit={handleEditService}
     >
       {({
@@ -42,6 +83,8 @@ export default function ContentModalEditService(props: IModalProps) {
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
+        values,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left" className="relative">
@@ -53,11 +96,12 @@ export default function ContentModalEditService(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="name"
                     placeholder="Nhập tên dịch vụ"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.name}
                   />
                 </FormItem>
                 <FormItem
@@ -66,11 +110,12 @@ export default function ContentModalEditService(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="description"
                     placeholder="Nhập mô tả"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.description}
                   />
                 </FormItem>
                 <FormItem
@@ -79,11 +124,12 @@ export default function ContentModalEditService(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="note"
                     placeholder="Nhập ghi chú"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.note}
                   />
                 </FormItem>
                 <FormItem
@@ -92,11 +138,13 @@ export default function ContentModalEditService(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <InputGlobal
+                    type="number"
                     name="price"
                     placeholder="Nhập giá tền"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.price}
                   />
                 </FormItem>
               </Col>
@@ -107,11 +155,12 @@ export default function ContentModalEditService(props: IModalProps) {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="session"
                     placeholder="Nhập lịch làm việc"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.session}
                   />
                 </FormItem>
                 <FormItem
@@ -123,7 +172,9 @@ export default function ContentModalEditService(props: IModalProps) {
                   <Select
                     allowClear
                     options={listHospital}
-                    placeholder="Please select"
+                    placeholder="Chọn bệnh viện"
+                    onChange={(value) => setFieldValue("hospital_id", value)}
+                    value={values.hospital_id}
                   />
                 </FormItem>
                 <FormItem
@@ -135,7 +186,8 @@ export default function ContentModalEditService(props: IModalProps) {
                   <Select
                     allowClear
                     options={listSpecialty}
-                    placeholder="Please select"
+                    placeholder="Chọn chuyên khoa"
+                    onChange={(value) => setFieldValue("specialty_id", value)}
                   />
                 </FormItem>
               </Col>
