@@ -16,10 +16,10 @@ import {
   IEditHospital,
   getValidationEditHospitalSchema,
 } from "@/module/hospital-management/modal-edit-hospital/form-config";
-import slugify from "slugify";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
 import {useRouter} from "next/navigation";
+import {autoSlugify} from "@/utils/constants/checkSlugify";
 
 interface IEditHospitalProps extends IModalProps {
   listMedicalBookingForms: {
@@ -69,10 +69,7 @@ export default function ContentModalEditHospital({
       ? values
       : {
           ...values,
-          slug: slugify(values.name, {
-            lower: true,
-            trim: true,
-          }),
+          slug: autoSlugify(values.name),
         };
     UpdateHospitalMutation(
       {id: idSelect as string, data},
@@ -263,7 +260,6 @@ export default function ContentModalEditHospital({
                         options={listMedicalBookingForms}
                         placeholder="Chọn hình thức đặt khám"
                         onChange={(value) => {
-                          console.log(value);
                           setFieldValue("booking_forms", value);
                         }}
                         value={values?.booking_forms?.map((item) => {

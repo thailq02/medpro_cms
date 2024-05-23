@@ -20,11 +20,14 @@ import useSearchParams, {
 } from "@/utils/hooks/searchParams/useSearchParams";
 import {IServiceBody} from "@/apiRequest/ApiService";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
+import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 
 export default function ServiceManagement() {
   const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
   const {data: services, isFetching, refetch} = useQueryGetListService(params);
   const {data: hospitals} = useQueryGetListHospital({page: 1, limit: 99});
+  const {data: specialties} = useQueryGetListSpecialty({page: 1, limit: 99});
+  console.log("ServiceManagement ~ specialties", specialties);
   const {mutate: DeleteServiceMutation} = useDeleteService();
 
   const listHospital = useMemo(() => {
@@ -34,17 +37,26 @@ export default function ServiceManagement() {
     }));
   }, [hospitals]);
 
+  const listSpecialty = useMemo(() => {
+    return specialties?.payload.data.map((item) => ({
+      value: item._id,
+      label: item.name,
+    }));
+  }, [specialties]);
+
   const handleOpenModalSerive = (id?: string) => {
     addModal({
       content: id ? (
         <ContentModalEditService
           idSelect={id}
           listHospital={listHospital ?? []}
+          listSpecialty={listSpecialty ?? []}
           refetch={refetch}
         />
       ) : (
         <ContentModalCreateService
           listHospital={listHospital ?? []}
+          listSpecialty={listSpecialty ?? []}
           refetch={refetch}
         />
       ),

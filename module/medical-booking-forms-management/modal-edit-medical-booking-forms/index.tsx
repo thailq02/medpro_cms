@@ -17,9 +17,9 @@ import {
   getValidationEditMedicalBookingFormsSchema,
 } from "@/module/medical-booking-forms-management/modal-edit-medical-booking-forms/form-config";
 import {RequiredMedicalBookingForms} from "@/module/medical-booking-forms-management/modal-create-medical-booking-forms/form-config";
-import slugify from "slugify";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
+import {autoSlugify} from "@/utils/constants/checkSlugify";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -90,10 +90,7 @@ export default function ContentModalEditMedicalBookingForms(
       ? values
       : {
           ...values,
-          slug: slugify(values.name, {
-            lower: true,
-            trim: true,
-          }),
+          slug: autoSlugify(values.name),
         };
     UpdateMedicalBookingForms(
       {

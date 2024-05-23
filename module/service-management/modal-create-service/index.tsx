@@ -17,21 +17,16 @@ interface ICreateServiceProps {
     label?: string;
   }[];
   refetch: () => void;
+  listSpecialty: {
+    value?: string;
+    label?: string;
+  }[];
 }
-const listSpecialty = [
-  {
-    value: 1,
-    label: "Khoa ngoại thần kinh",
-  },
-  {
-    value: 2,
-    label: "Khoa ung bướu",
-  },
-];
 
 export default function ContentModalCreateService({
   listHospital,
   refetch,
+  listSpecialty,
 }: ICreateServiceProps) {
   const dispatch = useAppDispatch();
   const {mutate: CreateServiceMutation} = useCreateService();
@@ -39,7 +34,10 @@ export default function ContentModalCreateService({
     values: ICreateServiceForm,
     {setSubmitting}: FormikHelpers<any>,
   ) => {
-    const data = {...values, specialty_id: null};
+    const data = {
+      ...values,
+      specialty_id: values.specialty_id === "" ? null : values.specialty_id,
+    };
     CreateServiceMutation(data as any, {
       onSuccess: () => {
         dispatch(closeModal());
@@ -165,7 +163,10 @@ export default function ContentModalCreateService({
                 >
                   <Select
                     allowClear
-                    options={listSpecialty}
+                    options={[
+                      ...listSpecialty,
+                      {value: "", label: "Không có chuyên khoa"},
+                    ]}
                     placeholder="Chọn chuyên khoa"
                     onChange={(value) => setFieldValue("specialty_id", value)}
                   />

@@ -11,11 +11,10 @@ import {
   RequiredCreateCategoryForm,
   getValidationCreateCategorySchema,
 } from "@/module/category-management/modal-create-category/form-config";
-import slugify from "slugify";
 import {useCreateCategory} from "@/utils/hooks/category";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
-import {useRouter} from "next/navigation";
+import {autoSlugify} from "@/utils/constants/checkSlugify";
 
 export default function ContentModalCreateCategory({
   listCategory,
@@ -45,10 +44,7 @@ export default function ContentModalCreateCategory({
       : {
           ...values,
           parent_id: _parent_id,
-          slug: slugify(values.name, {
-            lower: true,
-            trim: true,
-          }),
+          slug: autoSlugify(values.name),
         };
     CreateCategoryMutation(data, {
       onSuccess: () => {

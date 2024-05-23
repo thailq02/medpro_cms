@@ -1,29 +1,75 @@
-import React from "react";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Select} from "antd";
+"use client";
+import React, {useMemo} from "react";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import {IModalProps} from "@/types";
+import {
+  useQueryGetSpecialtyById,
+  useUpdateSpecialty,
+} from "@/utils/hooks/specialty";
+import {
+  IEditSpecialtyForm,
+  getValidationEditSpecialtySchema,
+} from "@/module/specialty-management/modal-edit-specialty/form-config";
+import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
+import {autoSlugify} from "@/utils/constants/checkSlugify";
 
-const listHospital = [
-  {
-    value: 1,
-    label: "Bệnh viện Bạch Mai",
-  },
-  {
-    value: 2,
-    label: "Bệnh viện Quân Đội 108",
-  },
-];
-export default function ContentModalEditSpecialty() {
-  const handleEditSpecialty = () => {
-    //
+interface IEditSpecialtyProps extends IModalProps {
+  listHospital: {
+    value?: string;
+    label?: string;
+  }[];
+}
+
+export default function ContentModalEditSpecialty({
+  idSelect,
+  refetch,
+  listHospital,
+}: IEditSpecialtyProps) {
+  const dispatch = useAppDispatch();
+  const {data: specialty} = useQueryGetSpecialtyById(idSelect as string);
+  const {mutate: UpdateSpecialtyMutation} = useUpdateSpecialty();
+  const initialValues = useMemo(() => {
+    return {
+      name: specialty?.payload.data.name || "",
+      hospital_id: specialty?.payload.data.hospital?._id || "",
+      description: specialty?.payload.data.description || "",
+      slug: specialty?.payload.data.slug || "",
+    };
+  }, [specialty]);
+
+  const handleEditSpecialty = (
+    values: IEditSpecialtyForm,
+    {setSubmitting}: FormikHelpers<any>,
+  ) => {
+    const data = Boolean(values.slug)
+      ? {...values}
+      : {
+          ...values,
+          slug: autoSlugify(values.name),
+        };
+    UpdateSpecialtyMutation(
+      {id: idSelect as string, body: data},
+      {
+        onSuccess: () => {
+          dispatch(closeModal());
+          refetch && refetch();
+        },
+        onError: () => setSubmitting(false),
+      },
+    );
   };
+
+  if (!specialty) return;
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      validationSchema={getValidationEditSpecialtySchema()}
       onSubmit={handleEditSpecialty}
     >
       {({
@@ -31,6 +77,8 @@ export default function ContentModalEditSpecialty() {
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
+        values,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
@@ -42,11 +90,12 @@ export default function ContentModalEditSpecialty() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="name"
                     placeholder="Nhập tên chuyên khoa"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.name}
                   />
                 </FormItem>
                 <FormItem
@@ -58,7 +107,9 @@ export default function ContentModalEditSpecialty() {
                   <Select
                     allowClear
                     options={listHospital}
-                    placeholder="Please select"
+                    placeholder="Chọn bệnh viện"
+                    onChange={(value) => setFieldValue("hospital_id", value)}
+                    value={values.hospital_id}
                   />
                 </FormItem>
                 <FormItem
@@ -67,11 +118,12 @@ export default function ContentModalEditSpecialty() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="description"
                     placeholder="Nhập mô tả"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.description}
                   />
                 </FormItem>
                 <FormItem
@@ -80,11 +132,12 @@ export default function ContentModalEditSpecialty() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="slug"
                     placeholder="Nhập slug"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.slug}
                   />
                 </FormItem>
               </Col>

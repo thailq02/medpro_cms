@@ -19,23 +19,17 @@ interface IEditServiceProps extends IModalProps {
     value?: string;
     label?: string;
   }[];
+  listSpecialty: {
+    value?: string;
+    label?: string;
+  }[];
 }
-
-const listSpecialty = [
-  {
-    value: 1,
-    label: "Khoa ngoại thần kinh",
-  },
-  {
-    value: 2,
-    label: "Khoa ung bướu",
-  },
-];
 
 export default function ContentModalEditService({
   listHospital,
   refetch,
   idSelect,
+  listSpecialty,
 }: IEditServiceProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -57,7 +51,10 @@ export default function ContentModalEditService({
     values: IEditServiceForm,
     {setSubmitting}: FormikHelpers<any>,
   ) => {
-    const data = {...values, specialty_id: null};
+    const data = {
+      ...values,
+      specialty_id: values.specialty_id === "" ? null : values.specialty_id,
+    };
     UpdateServiceMutation(
       {id: idSelect as string, body: data as any},
       {
@@ -185,9 +182,18 @@ export default function ContentModalEditService({
                 >
                   <Select
                     allowClear
-                    options={listSpecialty}
+                    options={[
+                      ...listSpecialty,
+                      {
+                        value: "",
+                        label: "Không có chuyên khoa",
+                      },
+                    ]}
                     placeholder="Chọn chuyên khoa"
                     onChange={(value) => setFieldValue("specialty_id", value)}
+                    value={
+                      values.specialty_id === null ? "" : values.specialty_id
+                    }
                   />
                 </FormItem>
               </Col>

@@ -10,10 +10,10 @@ import {
   ICreateHospital,
   getValidationCreateHospitalSchema,
 } from "@/module/hospital-management/modal-create-hospital/form-config";
-import slugify from "slugify";
 import {useCreateHospital} from "@/utils/hooks/hospital";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
+import {autoSlugify} from "@/utils/constants/checkSlugify";
 
 interface IHospitalProps {
   refetch?: () => void;
@@ -42,10 +42,7 @@ export default function ContentModalCreateHospital({
       ? values
       : {
           ...values,
-          slug: slugify(values.name, {
-            lower: true,
-            trim: true,
-          }),
+          slug: autoSlugify(values.name),
         };
     CreateHospitalMutation(data, {
       onSuccess: () => {
