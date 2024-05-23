@@ -1,4 +1,10 @@
-import {GenderType, IAccountRole, PositionType, VerifyStatus} from "@/types";
+import {
+  GenderType,
+  HospitalsType,
+  IAccountRole,
+  PositionType,
+  VerifyStatus,
+} from "@/types";
 
 const LIST_GENDER = [
   {
@@ -64,9 +70,40 @@ const LIST_VERIFY_STATUS = [
   },
 ];
 
+const LIST_HOSPITAL_TYPE = [
+  {
+    value: HospitalsType.BENHVIENCONG,
+    label: "Bệnh viện công",
+  },
+  {
+    value: HospitalsType.BENHVIENTU,
+    label: "Bệnh viện tư",
+  },
+  {
+    value: HospitalsType.PHONGKHAM,
+    label: "Phòng khám",
+  },
+  {
+    value: HospitalsType.PHONGMACH,
+    label: "Phòng mạch",
+  },
+  {
+    value: HospitalsType.XETNGHIEM,
+    label: "Xét nghiệm",
+  },
+  {
+    value: HospitalsType.YTETAINHA,
+    label: "Y tế tại nhà",
+  },
+  {
+    value: HospitalsType.TIEMCHUNG,
+    label: "Tiêm chủng",
+  },
+];
 export const OPTIONS = {
   LIST_GENDER,
   LIST_ROLE,
   LIST_VERIFY_STATUS,
   LIST_POSITION,
+  LIST_HOSPITAL_TYPE,
 };

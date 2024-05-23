@@ -1,5 +1,4 @@
 "use client";
-import {NonNullableFields} from "@/apiRequest/common";
 import REGEX_VALIDATION from "@/utils/constants/regexValidation";
 import * as Yup from "yup";
 import {Schema} from "yup";

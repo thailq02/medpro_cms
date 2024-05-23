@@ -1,39 +1,83 @@
-import React from "react";
-import {Formik} from "formik";
-import {Col, Form, Image, Input, Row, Select, Tabs, TimePicker} from "antd";
+"use client";
+import React, {useMemo} from "react";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Image, Row, Select, TimePicker} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {OPTIONS} from "@/utils/constants/selectList";
+import {
+  ICreateHospital,
+  getValidationCreateHospitalSchema,
+} from "@/module/hospital-management/modal-create-hospital/form-config";
+import slugify from "slugify";
+import {useCreateHospital} from "@/utils/hooks/hospital";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
-const listBookingForms = [
-  {
-    value: 1,
-    label: "Đặt khám theo chuyên khoa",
-  },
-  {
-    value: 2,
-    label: "Đặt khám theo bác sĩ",
-  },
-];
-const listTypeHospital = [
-  {
-    value: 1,
-    label: "Bệnh viện công",
-  },
-  {
-    value: 2,
-    label: "Bệnh viện tư",
-  },
-];
-export default function ContentModalCreateHospital() {
-  const handleCreateHospital = () => {
-    //
+interface IHospitalProps {
+  refetch?: () => void;
+  listMedicalBookingForms: {
+    value?: string;
+    label?: string;
+  }[];
+  listCategories: {
+    value?: string;
+    label?: JSX.Element;
+  }[];
+}
+
+export default function ContentModalCreateHospital({
+  refetch,
+  listMedicalBookingForms,
+  listCategories,
+}: IHospitalProps) {
+  const dispatch = useAppDispatch();
+  const {mutate: CreateHospitalMutation} = useCreateHospital();
+  const handleCreateHospital = (
+    values: ICreateHospital,
+    {setSubmitting}: FormikHelpers<any>,
+  ) => {
+    const data = Boolean(values.slug)
+      ? values
+      : {
+          ...values,
+          slug: slugify(values.name, {
+            lower: true,
+            trim: true,
+          }),
+        };
+    CreateHospitalMutation(data, {
+      onSuccess: () => {
+        dispatch(closeModal());
+        refetch && refetch();
+      },
+      onError: () => setSubmitting(false),
+    });
   };
+  const initialValues = useMemo(() => {
+    return {
+      categoryId: "",
+      name: "",
+      slug: "",
+      description: "",
+      session: "",
+      hotline: "",
+      address: "",
+      avatar: "",
+      banner: "",
+      images: [],
+      start_time: "",
+      end_time: "",
+      types: [],
+      booking_forms: [],
+    };
+  }, []);
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      validationSchema={getValidationCreateHospitalSchema()}
       onSubmit={handleCreateHospital}
     >
       {({
@@ -41,6 +85,7 @@ export default function ContentModalCreateHospital() {
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
       }): JSX.Element => (
         <div className="modal-form-custom modal-form-hospital">
           <div className="avatar-container mb-3">
@@ -61,7 +106,7 @@ export default function ContentModalCreateHospital() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="name"
                     placeholder="Nhập tên bệnh viện"
                     onChange={handleChange}
@@ -74,7 +119,7 @@ export default function ContentModalCreateHospital() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="slug"
                     placeholder="Nhập slug"
                     onChange={handleChange}
@@ -87,7 +132,7 @@ export default function ContentModalCreateHospital() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="description"
                     placeholder="Nhập mô tả"
                     onChange={handleChange}
@@ -100,7 +145,7 @@ export default function ContentModalCreateHospital() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="address"
                     placeholder="Nhập địa chỉ"
                     onChange={handleChange}
@@ -110,12 +155,37 @@ export default function ContentModalCreateHospital() {
               </Col>
               <Col span={12}>
                 <FormItem
+                  label="Điện thoại liên hệ"
+                  name="hotline"
+                  required
+                  labelCol={{span: 24}}
+                >
+                  <InputGlobal
+                    name="hotline"
+                    placeholder="Nhập số điện thoại liên hệ"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </FormItem>
+                <FormItem
+                  label="Chọn danh mục"
+                  name="categoryId"
+                  required
+                  labelCol={{span: 24}}
+                >
+                  <Select
+                    options={listCategories}
+                    onChange={(value) => setFieldValue("categoryId", value)}
+                    placeholder="Chọn danh mục"
+                  />
+                </FormItem>
+                <FormItem
                   label="Lịch làm việc"
                   name="session"
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="session"
                     placeholder="Nhập lịch làm việc"
                     onChange={handleChange}
@@ -124,11 +194,21 @@ export default function ContentModalCreateHospital() {
                 </FormItem>
                 <FormItem
                   label="Thời gian làm việc"
-                  name="timeline"
+                  name="start_time"
                   required
                   labelCol={{span: 24}}
                 >
-                  <TimePicker.RangePicker format={"HH:mm"} className="w-full" />
+                  <TimePicker.RangePicker
+                    format={"HH:mm"}
+                    className="w-full"
+                    placeholder={["Thời gian bắt đầu", "Thời gian kết thúc"]}
+                    onChange={(value) => {
+                      if (value?.[0] && value?.[1]) {
+                        setFieldValue("start_time", value[0].format("HH:mm"));
+                        setFieldValue("end_time", value[1].format("HH:mm"));
+                      }
+                    }}
+                  />
                 </FormItem>
                 <FormItem
                   label="Hình thức đặt khám"
@@ -139,21 +219,27 @@ export default function ContentModalCreateHospital() {
                   <Select
                     mode="multiple"
                     allowClear
-                    options={listBookingForms}
-                    placeholder="Please select"
+                    options={listMedicalBookingForms}
+                    placeholder="Chọn hình thức đặt khám"
+                    onChange={(value) => {
+                      setFieldValue("booking_forms", value);
+                    }}
                   />
                 </FormItem>
                 <FormItem
                   label="Loại bệnh viện"
-                  name="booking_forms"
+                  name="types"
                   required
                   labelCol={{span: 24}}
                 >
                   <Select
                     mode="multiple"
                     allowClear
-                    options={listTypeHospital}
-                    placeholder="Please select"
+                    options={OPTIONS.LIST_HOSPITAL_TYPE}
+                    placeholder="Chọn loại bệnh viện"
+                    onChange={(value) => {
+                      setFieldValue("types", value);
+                    }}
                   />
                 </FormItem>
               </Col>

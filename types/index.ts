@@ -9,6 +9,16 @@ export interface IModalProps {
   refetch?: () => void;
 }
 
+export enum HospitalsType {
+  BENHVIENCONG = 0,
+  BENHVIENTU = 1,
+  PHONGKHAM = 2,
+  PHONGMACH = 3,
+  XETNGHIEM = 4,
+  YTETAINHA = 5,
+  TIEMCHUNG = 6,
+}
+
 export enum IAccountRole {
   ADMIN = 0,
   DOCTOR = 1,
