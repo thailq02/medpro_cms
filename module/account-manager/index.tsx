@@ -14,7 +14,7 @@ import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
 import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
 import ContentModalEditAccount from "@/module/account-manager/modal-edit-account";
-import {IAccountRole} from "@/types";
+import {IAccountRole, VerifyStatus} from "@/types";
 import {IUserLogin} from "@/apiRequest/ApiUser";
 import {useDeleteAccount, useQueryGetFullUser} from "@/utils/hooks/auth";
 import useSearchParams, {
@@ -99,6 +99,26 @@ export default function AccountManager() {
       width: 200,
     },
     {
+      title: "Trạng thái",
+      dataIndex: "verify",
+      key: "verify",
+      align: "center",
+      width: 100,
+      render: (_, record) => {
+        return (
+          <div className="flex items-center justify-center">
+            {record.verify === VerifyStatus.VERIFIED ? (
+              <div className=" w-4 h-4 rounded-full bg-green-500"></div>
+            ) : record.verify === VerifyStatus.UNVERIFIED ? (
+              <div className=" w-4 h-4 rounded-full bg-yellow-500"></div>
+            ) : (
+              <div className=" w-4 h-4 rounded-full bg-red-500"></div>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       title: "Hành động",
       dataIndex: "action",
       key: "action",
@@ -150,7 +170,7 @@ export default function AccountManager() {
         ]}
       />
       <TableGlobal
-        scrollX={2000}
+        scrollX={1500}
         dataSource={data?.payload.data}
         columns={columns}
         onChange={handleChangePagination}

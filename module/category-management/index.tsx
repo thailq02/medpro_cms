@@ -3,7 +3,6 @@ import React, {useMemo} from "react";
 import TableGlobal from "@/components/TableGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import {
   ActionButton,
   ButtonAdd,
@@ -24,7 +23,8 @@ import useSearchParams, {
 } from "@/utils/hooks/searchParams/useSearchParams";
 
 export default function CategoryManagement() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const {params, handleChangePagination, setSearchValue} =
+    useSearchParams(paramsDefaultCommon);
   const {
     data: categories,
     isFetching,
@@ -131,14 +131,10 @@ export default function CategoryManagement() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
-          <InputFilterGlobal
-            key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+          <InputSearchGlobal
+            key="search"
+            placeholder="Tìm kiếm danh mục"
+            onSearch={(value) => setSearchValue(value)}
           />,
         ]}
         buttonBox={[
