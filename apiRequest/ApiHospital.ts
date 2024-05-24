@@ -2,7 +2,7 @@ import {ICategoryBody} from "@/apiRequest/ApiCategory";
 import {CommonParams, ICommonAuditable, IMetaData} from "@/apiRequest/common";
 import http from "@/apiRequest/http";
 
-interface IHospitalBody extends ICommonAuditable {
+export interface IHospitalBody extends ICommonAuditable {
   _id?: string;
   name?: string;
   session?: string;

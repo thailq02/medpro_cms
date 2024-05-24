@@ -8,8 +8,6 @@ export interface IUserLogin extends ICommonAuditable {
   email?: string;
   date_of_birth?: string;
   gender?: number;
-  created_at?: string;
-  updated_at?: string;
   verify?: number;
   address?: string;
   username?: string;

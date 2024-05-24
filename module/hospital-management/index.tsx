@@ -22,6 +22,7 @@ import useSearchParams, {
 import Image from "next/image";
 import {useQueryGetListMedicalBookingForms} from "@/utils/hooks/medical-booking-forms";
 import {useQueryGetListCategory} from "@/utils/hooks/category";
+import {IHospitalBody} from "@/apiRequest/ApiHospital";
 
 const QUERY_FULL = {
   limit: 99,
@@ -76,7 +77,7 @@ export default function HospitalManagement() {
     });
   };
   if (!hospitals) return;
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<IHospitalBody> = [
     {
       title: "STT",
       dataIndex: "_id",
@@ -102,7 +103,7 @@ export default function HospitalManagement() {
             width={500}
             height={500}
             className={`${
-              record?.image ? "h-[100px]" : "h-[75px]"
+              record?.avatar ? "h-[100px]" : "h-[75px]"
             } w-full object-cover`}
           />
         );

@@ -1,39 +1,77 @@
-import React from "react";
-import {Formik} from "formik";
-import {Col, Form, Input, Row, Select} from "antd";
+"use client";
+import React, {useState} from "react";
+import {Formik, FormikHelpers} from "formik";
+import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import {IUserLogin} from "@/apiRequest/ApiUser";
+import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
+import {
+  ICreateDoctorForm,
+  getValidationCreateDoctorSchema,
+} from "@/module/doctor-management/modal-create-doctor/form-config";
+import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {useCreateDoctor} from "@/utils/hooks/doctor";
+import {useAppDispatch} from "@/redux/store";
+import {closeModal} from "@/redux/slices/ModalSlice";
 
-const listDoctor = [
-  {
-    value: 1,
-    label: "Bác sĩ Lê Quang Thái",
-  },
-  {
-    value: 2,
-    label: "Bác sĩ Quang Thái",
-  },
-];
-const listSpecialty = [
-  {
-    value: 1,
-    label: "Khoa ngoại thần kinh",
-  },
-  {
-    value: 2,
-    label: "Khoa ung bướu",
-  },
-];
-export default function ContentModalCreateDoctor() {
-  const handleCreateDoctor = () => {
-    //
+interface ICreateDoctorProps {
+  doctors: IUserLogin[];
+  listHospital: {value?: string; label?: string}[];
+  refetch: () => void;
+}
+
+export default function ContentModalCreateDoctor({
+  doctors,
+  refetch,
+  listHospital,
+}: ICreateDoctorProps) {
+  const [selectedHospital, setSelectedHospital] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const {mutate: CreateDoctorMutation} = useCreateDoctor();
+
+  const initialValues: ICreateDoctorForm = {
+    doctor_id: "",
+    hospital_id: "",
+    specialty_id: "",
+    description: "",
+    therapy: "",
+    price: 0,
+    session: "",
+  };
+
+  const {data: specialties} = useQueryGetListSpecialty({page: 1, limit: 99});
+
+  const listDoctor = doctors.map((d) => ({value: d._id, label: d.name}));
+
+  const listSpecialty = specialties?.payload.data
+    .filter((v) => v.hospital?._id === selectedHospital)
+    .map((v) => ({
+      value: v._id,
+      label: v.name,
+    }));
+
+  const handleCreateDoctor = (
+    values: ICreateDoctorForm,
+    {setSubmitting}: FormikHelpers<ICreateDoctorForm>,
+  ) => {
+    CreateDoctorMutation(values, {
+      onSuccess: () => {
+        setSelectedHospital(null);
+        dispatch(closeModal());
+        refetch && refetch();
+      },
+      onError: () => {
+        setSelectedHospital(null);
+        setSubmitting(false);
+      },
+    });
   };
   return (
     <Formik
-      initialValues={{email: "", password: ""}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
-      // validationSchema={getValidationLoginSchema()}
+      validationSchema={getValidationCreateDoctorSchema()}
       onSubmit={handleCreateDoctor}
     >
       {({
@@ -41,6 +79,7 @@ export default function ContentModalCreateDoctor() {
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
@@ -55,19 +94,22 @@ export default function ContentModalCreateDoctor() {
                   <Select
                     allowClear
                     options={listDoctor}
-                    placeholder="Please select"
+                    placeholder="Chọn bác sĩ"
+                    onChange={(value) => setFieldValue("doctor_id", value)}
                   />
                 </FormItem>
                 <FormItem
-                  label="Chuyên khoa"
-                  name="specialty_id"
+                  label="Giá tiền"
+                  name="price"
                   required
                   labelCol={{span: 24}}
                 >
-                  <Select
-                    allowClear
-                    options={listSpecialty}
-                    placeholder="Please select"
+                  <InputGlobal
+                    name="price"
+                    type="number"
+                    placeholder="Nhập giá tiền"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                 </FormItem>
                 <FormItem
@@ -76,7 +118,7 @@ export default function ContentModalCreateDoctor() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="description"
                     placeholder="Nhập mô tả"
                     onChange={handleChange}
@@ -89,7 +131,7 @@ export default function ContentModalCreateDoctor() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input.TextArea
+                  <TextAreaGlobal
                     name="therapy"
                     placeholder="Nhập chuyên trị"
                     onChange={handleChange}
@@ -99,16 +141,33 @@ export default function ContentModalCreateDoctor() {
               </Col>
               <Col span={12}>
                 <FormItem
-                  label="Giá tiền"
-                  name="price"
+                  label="Bệnh viện trực thuộc"
+                  name="hospital_id"
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
-                    name="price"
-                    placeholder="Nhập giá tiền"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                  <Select
+                    allowClear
+                    options={listHospital}
+                    placeholder="Chọn bệnh viện trực thuộc"
+                    onChange={(value) => {
+                      setSelectedHospital(value);
+                      setFieldValue("hospital_id", value);
+                    }}
+                  />
+                </FormItem>
+                <FormItem
+                  label="Chuyên khoa"
+                  name="specialty_id"
+                  required
+                  labelCol={{span: 24}}
+                >
+                  <Select
+                    allowClear
+                    disabled={!selectedHospital}
+                    options={listSpecialty}
+                    placeholder="Chọn chuyên khoa"
+                    onChange={(value) => setFieldValue("specialty_id", value)}
                   />
                 </FormItem>
                 <FormItem
@@ -117,7 +176,7 @@ export default function ContentModalCreateDoctor() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Input
+                  <InputGlobal
                     name="session"
                     placeholder="Nhập lịch làm việc"
                     onChange={handleChange}
