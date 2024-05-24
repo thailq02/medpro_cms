@@ -25,7 +25,8 @@ import useSearchParams, {
 } from "@/utils/hooks/searchParams/useSearchParams";
 
 export default function MedicalBookingForms() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const {params, handleChangePagination, setSearchValue} =
+    useSearchParams(paramsDefaultCommon);
 
   const {
     data: medicalBookingForms,
@@ -124,14 +125,10 @@ export default function MedicalBookingForms() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
-          <InputFilterGlobal
-            key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+          <InputSearchGlobal
+            key="search"
+            placeholder="Tìm kiếm theo tên"
+            onSearch={(value) => setSearchValue(value)}
           />,
         ]}
         buttonBox={[
