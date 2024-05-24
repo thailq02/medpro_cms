@@ -7,6 +7,16 @@ interface IFilterGlobalProps<T> extends SelectProps {
   handleChange: Dispatch<SetStateAction<T>>;
 }
 
+/**
+ handleChange({
+  ...params,
+  filter: JSON.stringify({
+    ...(params.filter ? JSON.parse(params.filter) : undefined),
+    [filterField]: e,
+  }),
+})
+=> khi truyền vào filterField là "role" thì params.filter sẽ được thêm key "role" với giá trị e => {page: 1, limit: 5, search: '', filter: '{"role":1}'}
+ */
 export function InputFilterGlobal(
   props: IFilterGlobalProps<any>,
 ): React.JSX.Element {
@@ -16,10 +26,7 @@ export function InputFilterGlobal(
       onChange={(e) =>
         handleChange({
           ...params,
-          filter: JSON.stringify({
-            ...(params.filter ? JSON.parse(params.filter) : undefined),
-            [filterField]: e,
-          }),
+          [filterField]: e,
         })
       }
       allowClear

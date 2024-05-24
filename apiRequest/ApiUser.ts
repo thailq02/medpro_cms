@@ -19,6 +19,8 @@ export interface IUserLogin extends ICommonAuditable {
 export interface IParamsGetUser {
   limit?: number;
   page?: number;
+  search?: string;
+  role?: number;
 }
 
 export interface IGetMeResBody {

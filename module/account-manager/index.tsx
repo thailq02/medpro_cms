@@ -20,9 +20,12 @@ import {useDeleteAccount, useQueryGetFullUser} from "@/utils/hooks/auth";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
+import {OPTIONS} from "@/utils/constants/selectList";
 
 export default function AccountManager() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const searchPlaceholder = "Tìm kiếm theo name, email, username";
+  const {params, handleChangePagination, setSearchValue, setParams} =
+    useSearchParams(paramsDefaultCommon);
   const {mutate: DeleteAccountMutation} = useDeleteAccount();
   const {data, isFetching, refetch} = useQueryGetFullUser(params);
   const handleOpenModalAccount = (username?: string) => {
@@ -125,14 +128,18 @@ export default function AccountManager() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
+          <InputSearchGlobal
+            key="search"
+            placeholder={searchPlaceholder}
+            onSearch={(value) => setSearchValue(value)}
+          />,
           <InputFilterGlobal
             key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+            params={params}
+            options={OPTIONS.LIST_ROLE}
+            placeholder="Quyền"
+            filterField="role"
+            handleChange={setParams}
           />,
         ]}
         buttonBox={[
