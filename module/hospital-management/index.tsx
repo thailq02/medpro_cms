@@ -3,7 +3,6 @@ import React, {useMemo} from "react";
 import TableGlobal from "@/components/TableGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import {
   ActionButton,
   ButtonAdd,
@@ -29,7 +28,8 @@ const QUERY_FULL = {
   page: 1,
 };
 export default function HospitalManagement() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const {params, handleChangePagination, setSearchValue} =
+    useSearchParams(paramsDefaultCommon);
   const {
     data: hospitals,
     isFetching,
@@ -180,14 +180,10 @@ export default function HospitalManagement() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
-          <InputFilterGlobal
-            key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+          <InputSearchGlobal
+            key="search"
+            placeholder="Tìm kiếm theo tên bệnh viện"
+            onSearch={(value) => setSearchValue(value)}
           />,
         ]}
         buttonBox={[
