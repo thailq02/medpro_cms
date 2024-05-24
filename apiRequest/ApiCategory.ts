@@ -5,6 +5,7 @@ import {ICreateCategoryForm} from "@/module/category-management/modal-create-cat
 export interface IParamsCategories {
   limit?: number;
   page?: number;
+  search?: string;
 }
 export interface ICategoryBody extends ICommonAuditable {
   _id: string;

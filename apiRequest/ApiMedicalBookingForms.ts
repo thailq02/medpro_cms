@@ -10,6 +10,7 @@ export interface IMedicalBookingFormsRes extends ICommonAuditable {
 export interface IParamsMedicalBookingForms {
   limit?: number;
   page?: number;
+  search?: string;
 }
 export interface IGetListMedicalBookingFormsRes {
   message: string;

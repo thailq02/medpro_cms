@@ -27,6 +27,7 @@ export interface IHospitalBody extends ICommonAuditable {
 export interface IParamsHospital {
   limit?: number;
   page?: number;
+  search?: string;
 }
 
 interface IGetListHospitalRes {

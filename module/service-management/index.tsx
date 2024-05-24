@@ -1,5 +1,5 @@
 "use client";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo} from "react";
 import TableGlobal from "@/components/TableGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
@@ -23,11 +23,17 @@ import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 
 export default function ServiceManagement() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const [hospitalSelected, setHospitalSelected] = React.useState<
+    string | undefined
+  >(undefined);
+  const [listSpecialty, setListSpecialty] = React.useState<
+    Array<{value: string; label: string}>
+  >([]);
+  const {params, handleChangePagination, setParams, setSearchValue} =
+    useSearchParams(paramsDefaultCommon);
   const {data: services, isFetching, refetch} = useQueryGetListService(params);
   const {data: hospitals} = useQueryGetListHospital({page: 1, limit: 99});
   const {data: specialties} = useQueryGetListSpecialty({page: 1, limit: 99});
-  console.log("ServiceManagement ~ specialties", specialties);
   const {mutate: DeleteServiceMutation} = useDeleteService();
 
   const listHospital = useMemo(() => {
@@ -37,12 +43,38 @@ export default function ServiceManagement() {
     }));
   }, [hospitals]);
 
-  const listSpecialty = useMemo(() => {
-    return specialties?.payload.data.map((item) => ({
-      value: item._id,
-      label: item.name,
-    }));
-  }, [specialties]);
+  useEffect(() => {
+    if (specialties?.payload.data) {
+      if (hospitalSelected) {
+        const filteredSpecialties = specialties.payload.data.filter(
+          (v) => v.hospital?._id === hospitalSelected,
+        );
+        setListSpecialty(
+          filteredSpecialties.map(
+            (v) =>
+              ({value: v._id, label: v.name}) as {
+                value: string;
+                label: string;
+              },
+          ),
+        );
+      } else {
+        setListSpecialty(
+          specialties?.payload.data.map(
+            (item) =>
+              ({value: item._id, label: item.name}) as {
+                value: string;
+                label: string;
+              },
+          ),
+        );
+      }
+    }
+  }, [specialties, hospitalSelected]);
+
+  useEffect(() => {
+    refetch();
+  }, [params, setParams]);
 
   const handleOpenModalSerive = (id?: string) => {
     addModal({
@@ -50,13 +82,21 @@ export default function ServiceManagement() {
         <ContentModalEditService
           idSelect={id}
           listHospital={listHospital ?? []}
-          listSpecialty={listSpecialty ?? []}
+          listSpecialty={
+            specialties?.payload.data.map(
+              (item) =>
+                ({value: item._id, label: item.name}) as {
+                  value: string;
+                  label: string;
+                },
+            ) ?? []
+          }
           refetch={refetch}
         />
       ) : (
         <ContentModalCreateService
           listHospital={listHospital ?? []}
-          listSpecialty={listSpecialty ?? []}
+          dataSpecialty={specialties?.payload.data ?? []}
           refetch={refetch}
         />
       ),
@@ -149,14 +189,32 @@ export default function ServiceManagement() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
+          <InputSearchGlobal
+            key="search"
+            placeholder="Tìm kiếm dịch vụ"
+            onSearch={(v) => setSearchValue(v)}
+          />,
           <InputFilterGlobal
             key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
+            params={params}
+            filterField={"hospital"}
+            options={listHospital}
+            placeholder="Tìm kiếm theo bệnh viện"
+            handleChange={(v) => {
+              setHospitalSelected(v.hospital);
+              setParams(v);
             }}
+          />,
+          <InputFilterGlobal
+            key="filter"
+            params={params}
+            filterField={"specialty"}
+            options={[
+              {value: "null", label: "Không dịch vụ"},
+              ...(listSpecialty ?? []),
+            ]}
+            placeholder="Tìm kiếm theo chuyên khoa"
+            handleChange={setParams}
           />,
         ]}
         buttonBox={[

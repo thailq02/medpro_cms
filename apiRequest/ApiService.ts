@@ -4,6 +4,9 @@ import http from "@/apiRequest/http";
 export interface IParamsService {
   page: number;
   limit: number;
+  search?: string;
+  hospital?: string;
+  specialty?: string;
 }
 export interface IServiceBody extends ICommonAuditable {
   _id?: string;

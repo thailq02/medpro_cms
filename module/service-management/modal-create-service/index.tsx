@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useEffect} from "react";
 import {Formik, FormikHelpers} from "formik";
 import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
@@ -10,6 +10,7 @@ import {getValidationCreateServiceSchema} from "@/module/service-management/moda
 import {ICreateServiceForm} from "@/apiRequest/ApiService";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
+import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 
 interface ICreateServiceProps {
   listHospital: {
@@ -17,19 +18,53 @@ interface ICreateServiceProps {
     label?: string;
   }[];
   refetch: () => void;
-  listSpecialty: {
-    value?: string;
-    label?: string;
-  }[];
+  dataSpecialty: ISpecialtyBody[];
 }
 
 export default function ContentModalCreateService({
   listHospital,
   refetch,
-  listSpecialty,
+  dataSpecialty,
 }: ICreateServiceProps) {
+  console.log("dataSpecialty", dataSpecialty);
+  const [hospitalSelected, setHospitalSelected] = React.useState<
+    string | undefined
+  >(undefined);
+  const [listSpecialtySelected, setListSpecialtySelected] = React.useState<
+    Array<{value: string; label: string}>
+  >([]);
   const dispatch = useAppDispatch();
   const {mutate: CreateServiceMutation} = useCreateService();
+
+  useEffect(() => {
+    if (!!dataSpecialty) {
+      if (hospitalSelected) {
+        const filteredSpecialties = dataSpecialty.filter((v) => {
+          return v.hospital?._id === hospitalSelected;
+        });
+        setListSpecialtySelected(
+          filteredSpecialties.map(
+            (v) =>
+              ({
+                value: v._id,
+                label: v.name,
+              }) as {value: string; label: string},
+          ),
+        );
+      } else {
+        setListSpecialtySelected(
+          dataSpecialty?.map((v) => ({
+            value: v._id,
+            label: v.name,
+          })) as {
+            value: string;
+            label: string;
+          }[],
+        );
+      }
+    }
+  }, [dataSpecialty, hospitalSelected]);
+
   const handleCreateService = (
     values: ICreateServiceForm,
     {setSubmitting}: FormikHelpers<any>,
@@ -152,7 +187,10 @@ export default function ContentModalCreateService({
                     allowClear
                     options={listHospital}
                     placeholder="Chọn bệnh viện"
-                    onChange={(value) => setFieldValue("hospital_id", value)}
+                    onChange={(value) => {
+                      setHospitalSelected(value);
+                      setFieldValue("hospital_id", value);
+                    }}
                   />
                 </FormItem>
                 <FormItem
@@ -164,7 +202,7 @@ export default function ContentModalCreateService({
                   <Select
                     allowClear
                     options={[
-                      ...listSpecialty,
+                      ...listSpecialtySelected,
                       {value: "", label: "Không có chuyên khoa"},
                     ]}
                     placeholder="Chọn chuyên khoa"

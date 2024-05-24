@@ -4,6 +4,7 @@ import http from "@/apiRequest/http";
 export interface IParamsSpecialty {
   page: number;
   limit: number;
+  search?: string;
 }
 export interface ISpecialtyBody extends ICommonAuditable {
   _id?: string;
