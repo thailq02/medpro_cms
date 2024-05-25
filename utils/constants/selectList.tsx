@@ -3,6 +3,7 @@ import {
   HospitalsType,
   IAccountRole,
   PositionType,
+  TimeScheduleType,
   VerifyStatus,
 } from "@/types";
 
@@ -118,6 +119,37 @@ const LIST_HOSPITAL_TYPE = [
     label: "Tiêm chủng",
   },
 ];
+
+const LIST_SCHEDULE_TYPE = [
+  {
+    value: TimeScheduleType.T1,
+    label: TimeScheduleType.T1,
+  },
+  {
+    value: TimeScheduleType.T2,
+    label: TimeScheduleType.T2,
+  },
+  {
+    value: TimeScheduleType.T3,
+    label: TimeScheduleType.T3,
+  },
+  {
+    value: TimeScheduleType.T4,
+    label: TimeScheduleType.T4,
+  },
+  {
+    value: TimeScheduleType.T5,
+    label: TimeScheduleType.T5,
+  },
+  {
+    value: TimeScheduleType.T6,
+    label: TimeScheduleType.T6,
+  },
+  {
+    value: TimeScheduleType.T7,
+    label: TimeScheduleType.T7,
+  },
+];
 export const OPTIONS = {
   LIST_GENDER,
   LIST_ROLE,
@@ -125,4 +157,5 @@ export const OPTIONS = {
   LIST_POSITION,
   LIST_HOSPITAL_TYPE,
   LIST_POSITION_DOCTOR,
+  LIST_SCHEDULE_TYPE,
 };
