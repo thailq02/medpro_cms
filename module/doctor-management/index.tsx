@@ -24,23 +24,43 @@ import {IDoctorBody} from "@/apiRequest/ApiDoctor";
 import Image from "next/image";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import {IUserLogin} from "@/apiRequest/ApiUser";
+import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
+import {OPTIONS} from "@/utils/constants/selectList";
 
+const QUERY_PARAMS = {page: 1, limit: 99};
+const paramsInit = {
+  ...paramsDefaultCommon,
+  hospital: "",
+  specialty: "",
+  position: undefined,
+};
 export default function DoctorManagement() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
-  const {data: users} = useQueryGetFullUser({page: 1, limit: 99});
-  const {data: hospitals} = useQueryGetListHospital({page: 1, limit: 99});
+  const {params, handleChangePagination, setParams, setSearchValue} =
+    useSearchParams(paramsInit);
+  const {data: users} = useQueryGetFullUser(QUERY_PARAMS);
+  const {data: hospitals} = useQueryGetListHospital(QUERY_PARAMS);
+  const {data: specialties} = useQueryGetListSpecialty(QUERY_PARAMS);
+  const {mutate: DeleteDoctorMutation} = useDeleteDoctor();
+
   const {
     data: doctorSource,
     isFetching,
     refetch,
   } = useQueryGetListDoctor(params);
-  const {mutate: DeleteDoctorMutation} = useDeleteDoctor();
+
   const listHospital = useMemo(() => {
     return hospitals?.payload.data.map((item) => ({
       value: item._id,
       label: item.name,
     }));
   }, [hospitals]);
+
+  const listSpecialty = useMemo(() => {
+    return specialties?.payload.data.map((v) => ({
+      value: v._id,
+      label: v.name,
+    }));
+  }, [specialties]);
 
   const doctors = useMemo(() => {
     return users?.payload?.data
@@ -64,12 +84,14 @@ export default function DoctorManagement() {
           idSelect={doctor_id}
           refetch={refetch}
           listHospital={listHospital ?? []}
+          dataSpecialties={specialties?.payload.data ?? []}
         />
       ) : (
         <ContentModalCreateDoctor
           doctors={doctors ?? []}
           refetch={refetch}
           listHospital={listHospital ?? []}
+          dataSpecialties={specialties?.payload.data ?? []}
         />
       ),
       options: {
@@ -203,14 +225,40 @@ export default function DoctorManagement() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
+          <InputSearchGlobal
+            key="search"
+            onSearch={(v) => setSearchValue(v)}
+            placeholder="Tìm kiếm theo tên bác sĩ"
+          />,
           <InputFilterGlobal
             key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+            allowClear
+            params={params}
+            filterField="hospital"
+            options={listHospital}
+            placeholder="Tìm kiếm bệnh viện"
+            handleChange={setParams}
+            value={params?.hospital}
+          />,
+          <InputFilterGlobal
+            key="filter"
+            allowClear
+            params={params}
+            filterField="specialty"
+            options={listSpecialty}
+            placeholder="Tìm kiếm chuyên khoa"
+            handleChange={setParams}
+            value={params?.specialty}
+          />,
+          <InputFilterGlobal
+            key="filter"
+            allowClear
+            params={params}
+            filterField="position"
+            options={OPTIONS.LIST_POSITION_DOCTOR}
+            placeholder="Chọn trình độ"
+            handleChange={setParams}
+            value={params?.position}
           />,
         ]}
         buttonBox={[

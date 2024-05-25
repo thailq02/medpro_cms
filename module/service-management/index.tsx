@@ -22,6 +22,8 @@ import {IServiceBody} from "@/apiRequest/ApiService";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 
+const QUERY_PARAMS = {page: 1, limit: 99};
+
 export default function ServiceManagement() {
   const [hospitalSelected, setHospitalSelected] = React.useState<
     string | undefined
@@ -29,11 +31,13 @@ export default function ServiceManagement() {
   const [listSpecialty, setListSpecialty] = React.useState<
     Array<{value: string; label: string}>
   >([]);
+
   const {params, handleChangePagination, setParams, setSearchValue} =
     useSearchParams(paramsDefaultCommon);
+
   const {data: services, isFetching, refetch} = useQueryGetListService(params);
-  const {data: hospitals} = useQueryGetListHospital({page: 1, limit: 99});
-  const {data: specialties} = useQueryGetListSpecialty({page: 1, limit: 99});
+  const {data: hospitals} = useQueryGetListHospital(QUERY_PARAMS);
+  const {data: specialties} = useQueryGetListSpecialty(QUERY_PARAMS);
   const {mutate: DeleteServiceMutation} = useDeleteService();
 
   const listHospital = useMemo(() => {

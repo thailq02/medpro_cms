@@ -14,10 +14,12 @@ import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
 import {useCreateDoctor} from "@/utils/hooks/doctor";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
+import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 
 interface ICreateDoctorProps {
   doctors: IUserLogin[];
   listHospital: {value?: string; label?: string}[];
+  dataSpecialties: ISpecialtyBody[];
   refetch: () => void;
 }
 
@@ -25,6 +27,7 @@ export default function ContentModalCreateDoctor({
   doctors,
   refetch,
   listHospital,
+  dataSpecialties,
 }: ICreateDoctorProps) {
   const [selectedHospital, setSelectedHospital] = useState<string | null>(null);
   const dispatch = useAppDispatch();
@@ -40,11 +43,9 @@ export default function ContentModalCreateDoctor({
     session: "",
   };
 
-  const {data: specialties} = useQueryGetListSpecialty({page: 1, limit: 99});
-
   const listDoctor = doctors.map((d) => ({value: d._id, label: d.name}));
 
-  const listSpecialty = specialties?.payload.data
+  const listSpecialty = dataSpecialties
     .filter((v) => v.hospital?._id === selectedHospital)
     .map((v) => ({
       value: v._id,

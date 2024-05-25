@@ -14,15 +14,18 @@ import {
   IEditDoctorForm,
   getValidationEditDoctorSchema,
 } from "@/module/doctor-management/modal-edit-doctor/form-config";
+import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 
 interface IEditDoctorProps extends IModalProps {
   listHospital: {value?: string; label?: string}[];
+  dataSpecialties: ISpecialtyBody[];
 }
 
 export default function ContentModalEditDoctor({
   refetch,
   listHospital,
   idSelect,
+  dataSpecialties,
 }: IEditDoctorProps) {
   const dispatch = useAppDispatch();
   const {data: doctor} = useQueryGetDoctorById(idSelect as string);
@@ -51,11 +54,9 @@ export default function ContentModalEditDoctor({
     };
   }, [doctor]);
 
-  const {data: specialties} = useQueryGetListSpecialty({page: 1, limit: 99});
-
   useEffect(() => {
-    if (specialties?.payload.data && selectedHospital) {
-      const filteredSpecialties = specialties.payload.data.filter(
+    if (dataSpecialties && selectedHospital) {
+      const filteredSpecialties = dataSpecialties.filter(
         (v) => v.hospital?._id === selectedHospital,
       );
       setListSpecialty(
@@ -68,7 +69,7 @@ export default function ContentModalEditDoctor({
         ),
       );
     }
-  }, [specialties, selectedHospital]);
+  }, [dataSpecialties, selectedHospital]);
 
   const handleEditDoctor = (
     values: IEditDoctorForm,

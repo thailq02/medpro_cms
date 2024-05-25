@@ -39,6 +39,24 @@ const LIST_POSITION = [
     label: <span>Giáo sư</span>,
   },
 ];
+const LIST_POSITION_DOCTOR = [
+  {
+    value: PositionType.MASTER,
+    label: <span>Thạc sĩ</span>,
+  },
+  {
+    value: PositionType.DOCTOR,
+    label: <span>Tiến sĩ</span>,
+  },
+  {
+    value: PositionType.ASSOCIATE_PROFESSOR,
+    label: <span>Phó giáo sư</span>,
+  },
+  {
+    value: PositionType.PROFESSOR,
+    label: <span>Giáo sư</span>,
+  },
+];
 
 const LIST_ROLE = [
   {
@@ -106,4 +124,5 @@ export const OPTIONS = {
   LIST_VERIFY_STATUS,
   LIST_POSITION,
   LIST_HOSPITAL_TYPE,
+  LIST_POSITION_DOCTOR,
 };
