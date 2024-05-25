@@ -1,4 +1,5 @@
-import React, {useMemo} from "react";
+"use client";
+import React, {useEffect, useMemo} from "react";
 import {Formik, FormikHelpers} from "formik";
 import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
@@ -13,28 +14,66 @@ import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
 import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
 import {useRouter} from "next/navigation";
+import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 
 interface IEditServiceProps extends IModalProps {
   listHospital: {
     value?: string;
     label?: string;
   }[];
-  listSpecialty: {
-    value?: string;
-    label?: string;
-  }[];
+  dataSpecialty: ISpecialtyBody[];
 }
 
 export default function ContentModalEditService({
   listHospital,
   refetch,
   idSelect,
-  listSpecialty,
+  dataSpecialty,
 }: IEditServiceProps) {
+  const {data: service} = useQueryGetServiceById(idSelect as string);
+  const [hospitalSelected, setHospitalSelected] = React.useState<string>("");
+  const [listSpecialtySelected, setListSpecialtySelected] = React.useState<
+    Array<{value: string; label: string}>
+  >([]);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const {data: service} = useQueryGetServiceById(idSelect as string);
   const {mutate: UpdateServiceMutation} = useUpdateService();
+
+  useEffect(() => {
+    if (service?.payload?.data?.hospital?._id) {
+      setHospitalSelected(service.payload.data.hospital._id);
+    }
+  }, [service]);
+
+  useEffect(() => {
+    if (service?.payload.data) {
+      if (hospitalSelected) {
+        const filteredSpecialties = dataSpecialty.filter((v) => {
+          return v.hospital?._id === hospitalSelected;
+        });
+        setListSpecialtySelected(
+          filteredSpecialties.map(
+            (v) =>
+              ({
+                value: v._id,
+                label: v.name,
+              }) as {value: string; label: string},
+          ),
+        );
+      } else {
+        setListSpecialtySelected(
+          dataSpecialty?.map((v) => ({
+            value: v._id,
+            label: v.name,
+          })) as {
+            value: string;
+            label: string;
+          }[],
+        );
+      }
+    }
+  }, [service, hospitalSelected]);
+
   const initialValues = useMemo(() => {
     const data = service?.payload.data;
     return {
@@ -170,7 +209,10 @@ export default function ContentModalEditService({
                     allowClear
                     options={listHospital}
                     placeholder="Chọn bệnh viện"
-                    onChange={(value) => setFieldValue("hospital_id", value)}
+                    onChange={(value) => {
+                      setHospitalSelected(value);
+                      setFieldValue("hospital_id", value);
+                    }}
                     value={values.hospital_id}
                   />
                 </FormItem>
@@ -183,11 +225,8 @@ export default function ContentModalEditService({
                   <Select
                     allowClear
                     options={[
-                      ...listSpecialty,
-                      {
-                        value: "",
-                        label: "Không có chuyên khoa",
-                      },
+                      {value: "", label: "Không có chuyên khoa"},
+                      ...listSpecialtySelected,
                     ]}
                     placeholder="Chọn chuyên khoa"
                     onChange={(value) => setFieldValue("specialty_id", value)}

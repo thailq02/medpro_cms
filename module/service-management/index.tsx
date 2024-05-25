@@ -82,15 +82,7 @@ export default function ServiceManagement() {
         <ContentModalEditService
           idSelect={id}
           listHospital={listHospital ?? []}
-          listSpecialty={
-            specialties?.payload.data.map(
-              (item) =>
-                ({value: item._id, label: item.name}) as {
-                  value: string;
-                  label: string;
-                },
-            ) ?? []
-          }
+          dataSpecialty={specialties?.payload.data ?? []}
           refetch={refetch}
         />
       ) : (

@@ -26,7 +26,6 @@ export default function ContentModalCreateService({
   refetch,
   dataSpecialty,
 }: ICreateServiceProps) {
-  console.log("dataSpecialty", dataSpecialty);
   const [hospitalSelected, setHospitalSelected] = React.useState<
     string | undefined
   >(undefined);
