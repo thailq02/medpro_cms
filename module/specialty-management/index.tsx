@@ -25,14 +25,17 @@ import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 
 export default function SpecialtyManagement() {
-  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const {params, handleChangePagination, setSearchValue, setParams} =
+    useSearchParams(paramsDefaultCommon);
   const {
     data: specialties,
     isFetching,
     refetch,
   } = useQueryGetListSpecialty(params);
   const {data: hospitals} = useQueryGetListHospital({page: 1, limit: 99});
+
   const {mutate: DeleteSpecialtyMutation} = useDeleteSpecialty();
+
   const listHospital = useMemo(() => {
     return hospitals?.payload.data.map((item) => ({
       value: item._id,
@@ -125,14 +128,17 @@ export default function SpecialtyManagement() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
+          <InputSearchGlobal
+            key="search"
+            onSearch={setSearchValue}
+            placeholder="Tìm kiếm chuyên khoa"
+          />,
           <InputFilterGlobal
             key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+            options={listHospital}
+            params={params}
+            filterField="hospital"
+            handleChange={setParams}
           />,
         ]}
         buttonBox={[
