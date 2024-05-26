@@ -5,7 +5,11 @@ import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {useCreateService} from "@/utils/hooks/service";
-import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {
+  InputGlobal,
+  InputNumberGlobal,
+  TextAreaGlobal,
+} from "@/components/InputGlobal";
 import {getValidationCreateServiceSchema} from "@/module/service-management/modal-create-service/form-config";
 import {ICreateServiceForm} from "@/apiRequest/ApiService";
 import {useAppDispatch} from "@/redux/store";
@@ -153,12 +157,15 @@ export default function ContentModalCreateService({
                   required
                   labelCol={{span: 24}}
                 >
-                  <InputGlobal
-                    type="number"
+                  <InputNumberGlobal
                     name="price"
                     placeholder="Nhập giá tền"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    formatter={(value): string =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value): string =>
+                      value!.replace(/\$\s?|(,*)/g, "")
+                    }
                   />
                 </FormItem>
               </Col>

@@ -12,7 +12,11 @@ import {
 } from "@/module/service-management/mocal-edit-service/form-config";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
-import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {
+  InputGlobal,
+  InputNumberGlobal,
+  TextAreaGlobal,
+} from "@/components/InputGlobal";
 import {useRouter} from "next/navigation";
 import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 
@@ -174,13 +178,16 @@ export default function ContentModalEditService({
                   required
                   labelCol={{span: 24}}
                 >
-                  <InputGlobal
-                    type="number"
+                  <InputNumberGlobal
                     name="price"
                     placeholder="Nhập giá tền"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
                     value={values.price}
+                    formatter={(value): string =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value): string =>
+                      value!.replace(/\$\s?|(,*)/g, "")
+                    }
                   />
                 </FormItem>
               </Col>

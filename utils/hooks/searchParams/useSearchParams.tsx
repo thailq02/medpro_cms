@@ -8,7 +8,7 @@ interface IParamsDefaultCommon {
 }
 export const paramsDefaultCommon: IParamsDefaultCommon = {
   page: 1,
-  limit: 5,
+  limit: 10,
   search: "",
 };
 type StateHook<T extends Record<any, any>> = {

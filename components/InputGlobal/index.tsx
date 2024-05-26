@@ -16,7 +16,7 @@ export function InputNumberGlobal(props: InputNumberProps): JSX.Element {
       key={props.name}
       className="w-full"
       min={0}
-      type="number"
+      step={1000}
       autoFocus
       {...props}
     />

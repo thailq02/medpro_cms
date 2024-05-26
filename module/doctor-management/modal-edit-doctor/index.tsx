@@ -5,10 +5,13 @@ import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {IModalProps} from "@/types";
-import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {
+  InputGlobal,
+  InputNumberGlobal,
+  TextAreaGlobal,
+} from "@/components/InputGlobal";
 import {useAppDispatch} from "@/redux/store";
 import {useQueryGetDoctorById, useUpdateDoctor} from "@/utils/hooks/doctor";
-import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 import {closeModal} from "@/redux/slices/ModalSlice";
 import {
   IEditDoctorForm,
@@ -125,13 +128,16 @@ export default function ContentModalEditDoctor({
                   required
                   labelCol={{span: 24}}
                 >
-                  <InputGlobal
+                  <InputNumberGlobal
                     name="price"
-                    type="number"
                     placeholder="Nhập giá tiền"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
                     value={values.price}
+                    formatter={(value): string =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value): string =>
+                      value!.replace(/\$\s?|(,*)/g, "")
+                    }
                   />
                 </FormItem>
                 <FormItem

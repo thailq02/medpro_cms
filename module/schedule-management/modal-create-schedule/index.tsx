@@ -4,7 +4,7 @@ import {Formik, FormikHelpers} from "formik";
 import {Col, DatePicker, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {InputGlobal} from "@/components/InputGlobal";
+import {InputGlobal, InputNumberGlobal} from "@/components/InputGlobal";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
 import {
@@ -157,12 +157,15 @@ export default function ContentModalCreateSchedule({
                   required
                   labelCol={{span: 24}}
                 >
-                  <InputGlobal
-                    type="number"
+                  <InputNumberGlobal
                     name="current_number"
                     placeholder="Nhập số bệnh nhân hiện tại"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    formatter={(value): string =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value): string =>
+                      value!.replace(/\$\s?|(,*)/g, "")
+                    }
                   />
                 </FormItem>
                 <FormItem
@@ -171,13 +174,16 @@ export default function ContentModalCreateSchedule({
                   required
                   labelCol={{span: 24}}
                 >
-                  <InputGlobal
-                    type="number"
+                  <InputNumberGlobal
                     defaultValue={100}
                     name="max_number"
                     placeholder="Nhập số bệnh nhân tối đa nhận"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    formatter={(value): string =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value): string =>
+                      value!.replace(/\$\s?|(,*)/g, "")
+                    }
                   />
                 </FormItem>
               </Col>

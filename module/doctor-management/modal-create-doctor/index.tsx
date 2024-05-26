@@ -5,12 +5,15 @@ import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {IUserLogin} from "@/apiRequest/ApiUser";
-import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 import {
   ICreateDoctorForm,
   getValidationCreateDoctorSchema,
 } from "@/module/doctor-management/modal-create-doctor/form-config";
-import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
+import {
+  InputGlobal,
+  InputNumberGlobal,
+  TextAreaGlobal,
+} from "@/components/InputGlobal";
 import {useCreateDoctor} from "@/utils/hooks/doctor";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
@@ -105,12 +108,16 @@ export default function ContentModalCreateDoctor({
                   required
                   labelCol={{span: 24}}
                 >
-                  <InputGlobal
+                  <InputNumberGlobal
                     name="price"
-                    type="number"
+                    step={1000}
+                    formatter={(value): string =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
                     placeholder="Nhập giá tiền"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    parser={(value): string =>
+                      value!.replace(/\$\s?|(,*)/g, "")
+                    }
                   />
                 </FormItem>
                 <FormItem
