@@ -1,4 +1,4 @@
-import {ICommonAuditable, IMetaData} from "@/apiRequest/common";
+import {CommonParams, ICommonAuditable, IMetaData} from "@/apiRequest/common";
 import http from "@/apiRequest/http";
 
 export interface IScheduleBody extends ICommonAuditable {
@@ -10,6 +10,12 @@ export interface IScheduleBody extends ICommonAuditable {
   time_type?: string[];
 }
 
+export interface IParamsSchedule {
+  limit: number;
+  page: number;
+  doctor_id?: string;
+  date?: string;
+}
 const path = {
   root: "/schedules",
   create: "/schedules/create",
@@ -20,10 +26,10 @@ const path = {
 interface IGetListScheduleResponse {
   data: IScheduleBody[];
   message: string;
-  meta?: IMetaData;
+  meta: IMetaData;
 }
 
-interface IGetScheduleByIdResponse {
+interface IGetScheduleResponse {
   data: IScheduleBody;
   message: string;
 }
@@ -39,12 +45,14 @@ interface IUpdateScheduleBody {
   id: string;
   body: ICreateScheduleBody;
 }
-const getListSchedule = () => {
-  return http.get<IGetListScheduleResponse>(path.root);
+const getListSchedule = (params: IParamsSchedule) => {
+  return http.get<IGetListScheduleResponse>(path.root, {
+    params: params as CommonParams<IParamsSchedule>,
+  });
 };
 
 const getScheduleById = (id: string) => {
-  return http.get<IGetScheduleByIdResponse>(`${path.root}/${id}`);
+  return http.get<IGetScheduleResponse>(`${path.root}/${id}`);
 };
 
 const createSchedule = (data: ICreateScheduleBody) => {
@@ -52,11 +60,14 @@ const createSchedule = (data: ICreateScheduleBody) => {
 };
 
 const updateSchedule = (data: IUpdateScheduleBody) => {
-  return http.patch<any>(`${path.update}/${data.id}`, data.body);
+  return http.patch<IGetScheduleResponse>(
+    `${path.update}/${data.id}`,
+    data.body,
+  );
 };
 
 const deleteSchedule = (id: string) => {
-  return http.delete<any>(`${path.delete}/${id}`);
+  return http.delete<IGetScheduleResponse>(`${path.delete}/${id}`);
 };
 export default {
   getListSchedule,

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useMemo} from "react";
 import TableGlobal from "@/components/TableGlobal";
 import {ColumnsType} from "antd/es/table";
 import {
@@ -8,11 +8,9 @@ import {
   EButtonAction,
 } from "@/components/ButtonGlobal";
 import {Row, Space} from "antd";
-import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
-import ContentModalEditAccount from "@/module/account-manager/modal-edit-account";
 import {
   useDeleteSchedule,
   useQueryGetListSchedule,
@@ -20,10 +18,16 @@ import {
 import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
 import {IScheduleBody} from "@/apiRequest/ApiSchedule";
 import ContentModalCreateSchedule from "@/module/schedule-management/modal-create-schedule";
+import ContentModalEditSchedule from "@/module/schedule-management/modal-edit-schedule";
+import useSearchParams, {
+  paramsDefaultCommon,
+} from "@/utils/hooks/searchParams/useSearchParams";
 
-const QUERY_PARAMS = {
-  page: 1,
-  limit: 99,
+const QUERY_PARAMS = {page: 1, limit: 99};
+const paramsInit = {
+  ...paramsDefaultCommon,
+  doctor: "",
+  date: "",
 };
 
 function renderTimeType(timeType: string[]): JSX.Element {
@@ -44,14 +48,42 @@ function renderTimeType(timeType: string[]): JSX.Element {
 }
 
 export default function ScheduleManagement() {
-  const {data: dataSchedule, isFetching, refetch} = useQueryGetListSchedule();
+  const {params, handleChangePagination, setParams} =
+    useSearchParams(paramsInit);
+  const {
+    data: dataSchedule,
+    isFetching,
+    refetch,
+  } = useQueryGetListSchedule(params);
   const {data: dataDoctor} = useQueryGetListDoctor(QUERY_PARAMS);
   const {mutate: DeleteScheduleMutation} = useDeleteSchedule();
 
-  const handleOpenModalAccount = (id?: string) => {
+  const listDoctorFilter = useMemo(() => {
+    const filteredDoctors = dataDoctor?.payload?.data.filter((v) => {
+      return dataSchedule?.payload?.data.some(
+        (d) => d.doctor_id === v.doctor_id,
+      );
+    });
+    return filteredDoctors?.map((v) => ({
+      value: v.doctor_id,
+      label: v.name,
+    }));
+  }, [dataSchedule, dataDoctor]);
+
+  const listDateFilter = useMemo(() => {
+    const uniqueDates = new Set();
+    dataSchedule?.payload?.data.forEach((v) => {
+      uniqueDates.add(v.date);
+    });
+    return Array.from(uniqueDates).map(
+      (date) => ({value: date, label: date}) as {value: string; label: string},
+    );
+  }, [dataSchedule]);
+
+  const handleOpenModalSchedule = (id?: string) => {
     addModal({
       content: id ? (
-        <ContentModalEditAccount />
+        <ContentModalEditSchedule idSelect={id} refetch={refetch} />
       ) : (
         <ContentModalCreateSchedule refetch={refetch} />
       ),
@@ -73,7 +105,9 @@ export default function ScheduleManagement() {
       key: "_id",
       width: 80,
       align: "center",
-      render: (_: any, record: any, index: any) => <div>{index + 1}</div>,
+      render: (_: any, record: any, index: any) => (
+        <div>{index + (params.page - 1) * params.limit + 1}</div>
+      ),
     },
     {
       title: "Tên bác sĩ",
@@ -108,7 +142,7 @@ export default function ScheduleManagement() {
       align: "center",
       render: (_, record) => {
         const doctor = dataDoctor?.payload.data.find(
-          (doctor) => doctor._id === record.doctor_id,
+          (doctor) => doctor.doctor_id === record.doctor_id,
         );
         return doctor?.specialty?.name;
       },
@@ -156,7 +190,7 @@ export default function ScheduleManagement() {
             <Space direction="horizontal" size={"middle"}>
               <ActionButton
                 type={EButtonAction.EDIT}
-                onClick={() => handleOpenModalAccount(record._id)}
+                onClick={() => handleOpenModalSchedule(record._id)}
               />
               <ActionButton
                 type={EButtonAction.DELETE}
@@ -174,20 +208,31 @@ export default function ScheduleManagement() {
     <>
       <HeaderToolTable
         searchFilterBox={[
-          <InputSearchGlobal key="search" />,
           <InputFilterGlobal
             key="filter"
-            params={undefined}
-            filterField={""}
-            handleChange={function (value: any): void {
-              throw new Error("Function not implemented.");
-            }}
+            allowClear
+            options={listDoctorFilter}
+            placeholder="Tìm kiếm theo tên bác sĩ"
+            params={params}
+            filterField={"doctor"}
+            handleChange={setParams}
+            value={params?.doctor}
+          />,
+          <InputFilterGlobal
+            key="filter"
+            allowClear
+            options={listDateFilter}
+            placeholder="Tìm kiếm theo ngày"
+            params={params}
+            filterField={"date"}
+            handleChange={setParams}
+            value={params?.date}
           />,
         ]}
         buttonBox={[
           <ButtonAdd
-            title="Tạo tài khoản"
-            onClick={() => handleOpenModalAccount()}
+            title="Tạo lịch trình"
+            onClick={() => handleOpenModalSchedule()}
           />,
         ]}
       />
@@ -195,6 +240,12 @@ export default function ScheduleManagement() {
         scrollX={2000}
         dataSource={dataSchedule?.payload.data}
         columns={columns}
+        onChange={handleChangePagination}
+        pagination={{
+          total: dataSchedule?.payload.meta.total_items,
+          current: dataSchedule?.payload.meta.current_page,
+          pageSize: dataSchedule?.payload.meta.limit,
+        }}
         loading={isFetching}
       />
     </>

@@ -1,12 +1,12 @@
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiSchedule from "@/apiRequest/ApiSchedule";
+import ApiSchedule, {IParamsSchedule} from "@/apiRequest/ApiSchedule";
 import {notification} from "antd";
 
-const useQueryGetListSchedule = () => {
+const useQueryGetListSchedule = (params: IParamsSchedule) => {
   return useQuery({
-    queryKey: [QUERY_KEY.GET_LIST_SCHEDULE],
-    queryFn: async () => await ApiSchedule.getListSchedule(),
+    queryKey: [QUERY_KEY.GET_LIST_SCHEDULE, params],
+    queryFn: async () => await ApiSchedule.getListSchedule(params),
   });
 };
 
