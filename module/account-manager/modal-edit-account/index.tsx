@@ -134,12 +134,6 @@ export default function ContentModalEditAccount(props: IModalProps) {
                       setLoading(false);
                       setImageUrl(url);
                     });
-                    const avatarFile = latestFile.originFileObj as RcFile;
-                    const {uid, ...fileWithoutUid} = avatarFile;
-                    const cleanFile = new File([avatarFile], avatarFile.name, {
-                      type: avatarFile.type,
-                      lastModified: avatarFile.lastModified,
-                    });
                     setFieldValue("avatar", latestFile.originFileObj as File);
                   }
                 }}

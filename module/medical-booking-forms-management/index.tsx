@@ -3,13 +3,12 @@ import React from "react";
 import TableGlobal from "@/components/TableGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space} from "antd";
+import {Row, Space, Image} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {addModal} from "@/components/ModalGlobal";
 import ContentModalCreateMedicalBookingForms from "@/module/medical-booking-forms-management/modal-create-medical-booking-forms";
@@ -19,7 +18,6 @@ import {
   useQueryGetListMedicalBookingForms,
 } from "@/utils/hooks/medical-booking-forms";
 import {IMedicalBookingFormsRes} from "@/apiRequest/ApiMedicalBookingForms";
-import Image from "next/image";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
@@ -68,18 +66,16 @@ export default function MedicalBookingForms() {
       dataIndex: "image",
       key: "image",
       align: "center",
-      width: 150,
+      width: 100,
       render: (_, record) => {
         return (
-          <Image
-            src={"/img/image.png"}
-            alt={record?.name || ""}
-            width={500}
-            height={500}
-            className={`${
-              record?.image ? "h-[100px]" : "h-[75px]"
-            } w-full object-cover`}
-          />
+          <div>
+            <Image
+              style={{objectFit: "cover"}}
+              src={record.image || "img/image.png"}
+              fallback="img/image.png"
+            />
+          </div>
         );
       },
     },

@@ -1,11 +1,9 @@
 "use client";
 import React, {useState} from "react";
 import {Formik, FormikHelpers} from "formik";
-import {Col, Form, Row, Upload, message} from "antd";
+import {Col, Form, Row} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {LoadingOutlined, PlusOutlined} from "@ant-design/icons";
-import type {GetProp, UploadProps} from "antd";
 import {useCreateMedicalBookingForms} from "@/utils/hooks/medical-booking-forms";
 import {InputGlobal} from "@/components/InputGlobal";
 import {
@@ -16,26 +14,8 @@ import {
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
 import {autoSlugify} from "@/utils/constants/checkSlugify";
-
-type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
-
-const beforeUpload = (file: FileType) => {
-  const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-  if (!isJpgOrPng) {
-    message.error("You can only upload JPG/PNG file!");
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error("Image must smaller than 2MB!");
-  }
-  return isJpgOrPng && isLt2M;
-};
+import UploadImageGlobal from "@/components/UploadGlobal";
+import ApiUploadImage from "@/apiRequest/ApiUploadImage";
 
 export default function ContentModalCreateMedicalBookingForms({
   refetch,
@@ -44,42 +24,35 @@ export default function ContentModalCreateMedicalBookingForms({
 }) {
   const dispatch = useAppDispatch();
   const {mutate: CreateMedicalBookingForms} = useCreateMedicalBookingForms();
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
 
-  const handleChange: UploadProps["onChange"] = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
-    }
+  const initialValues = {
+    name: "",
+    slug: "",
+    image: "",
   };
 
-  const uploadButton = (
-    <button style={{border: 0, background: "none"}} type="button">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{marginTop: 8}}>Upload</div>
-    </button>
-  );
-
-  const handleCreateMedicalBookingForms = (
-    values: ICreateMedicalBookingForms,
+  const handleCreateMedicalBookingForms = async (
+    _values: ICreateMedicalBookingForms,
     {setSubmitting}: FormikHelpers<RequiredMedicalBookingForms>,
   ) => {
+    const formData = new FormData();
+    let values = _values;
     const data = Boolean(values.slug)
       ? values
       : {
           ...values,
           slug: autoSlugify(values.name),
         };
+    if (values?.image && typeof values.image !== "string") {
+      formData.append("image", values.image);
+      const imageUrl = await ApiUploadImage.uploadImage(formData);
+      values = {
+        ...data,
+        image: imageUrl.payload.data[0].url,
+      };
+    }
     CreateMedicalBookingForms(
-      data as ICreateMedicalBookingForms & {slug: string},
+      values as ICreateMedicalBookingForms & {slug: string},
       {
         onSuccess: () => {
           dispatch(closeModal());
@@ -91,8 +64,7 @@ export default function ContentModalCreateMedicalBookingForms({
   };
   return (
     <Formik
-      initialValues={{name: "", slug: "", image: "chualamgi"}}
-      validateOnChange={false}
+      initialValues={initialValues}
       validateOnBlur
       validationSchema={getValidationCreateMedicalBookingFormsSchema()}
       onSubmit={handleCreateMedicalBookingForms}
@@ -102,33 +74,18 @@ export default function ContentModalCreateMedicalBookingForms({
         handleSubmit,
         handleChange,
         handleBlur,
+        setFieldValue,
       }): JSX.Element => (
         <div className="modal-form-custom">
           <Form onFinish={handleSubmit} labelAlign="left">
             <Row gutter={24}>
               <Col span={24}>
                 <div className="mb-5">
-                  <Upload
-                    name="avatar"
-                    listType="picture-card"
-                    className="avatar-uploader"
-                    showUploadList={false}
-                    action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                    beforeUpload={beforeUpload}
-                    onChange={handleChange}
-                  >
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt="avatar"
-                        style={{width: "100%"}}
-                      />
-                    ) : (
-                      uploadButton
-                    )}
-                  </Upload>
+                  <UploadImageGlobal
+                    url={initialValues.image}
+                    onChange={(file) => setFieldValue("image", file)}
+                  />
                 </div>
-
                 <FormItem
                   label="Tên danh mục"
                   name="name"
