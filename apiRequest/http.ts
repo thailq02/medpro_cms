@@ -111,18 +111,23 @@ const request = async <TResponse>(
 
   // Đối với upload file thì ko thể dùng JSON.stringify nên phải check xem body có FormData hay không
   const body = options?.body
-    ? options?.body instanceof FormData
+    ? options?.body instanceof FormData || options?.isFormData
       ? options?.body
       : JSON.stringify(options.body)
     : undefined;
-
+  const baseHeaders =
+    options?.isFormData || options?.body instanceof FormData
+      ? {
+          Authorization: getAuthorization(defaultOptions),
+        }
+      : {
+          "Content-Type": "application/json",
+          "Authorization": getAuthorization(defaultOptions),
+        };
   const res = await fetch(fullUrl, {
     ...options,
     headers: {
-      "Content-Type": options?.isFormData
-        ? "multipart/form-data"
-        : "application/json",
-      "Authorization": getAuthorization(defaultOptions),
+      ...baseHeaders,
       ...options?.headers,
     } as any,
     method,

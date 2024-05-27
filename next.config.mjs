@@ -11,6 +11,15 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "4004",
+      },
+    ],
+  },
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
     prependData: `@import "./global";`,

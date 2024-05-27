@@ -7,7 +7,7 @@ import {
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space} from "antd";
+import {Image, Row, Space} from "antd";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
@@ -36,7 +36,7 @@ export default function AccountManager() {
         <ContentModalCreateAccount />
       ),
       options: username
-        ? {title: "Sửa tài khoản", widthModal: 800}
+        ? {title: "Sửa tài khoản", widthModal: 1000}
         : {title: "Tạo tài khoản"},
     });
   };
@@ -55,6 +55,24 @@ export default function AccountManager() {
       render: (_: any, record: any, index: any) => (
         <div>{index + (params.page - 1) * params.limit + 1}</div>
       ),
+    },
+    {
+      title: "Ảnh",
+      key: "avatar",
+      align: "center",
+      width: 80,
+      fixed: "left",
+      render: (_, record): JSX.Element => {
+        return (
+          <div>
+            <Image
+              style={{objectFit: "cover"}}
+              src={record.avatar || "img/avatar/avatar.jpg"}
+              fallback="img/avatar/avatar.jpg"
+            />
+          </div>
+        );
+      },
     },
     {
       title: "Tên người dùng",
@@ -103,6 +121,7 @@ export default function AccountManager() {
       dataIndex: "verify",
       key: "verify",
       align: "center",
+      fixed: "right",
       width: 100,
       render: (_, record) => {
         return (
@@ -180,6 +199,11 @@ export default function AccountManager() {
           pageSize: data?.payload.meta.limit,
         }}
         loading={isFetching}
+        onRow={(record): {onDoubleClick: () => void} => {
+          return {
+            onDoubleClick: () => handleOpenModalAccount(record.username),
+          };
+        }}
       />
     </>
   );

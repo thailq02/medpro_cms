@@ -4,13 +4,22 @@
   &::-webkit-scrollbar {
     display: none;
   }
+  .ant-modal-content {
+    padding: 0;
+  }
   .ant-modal-header {
-    margin-bottom: 20px;
+    padding: 8px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 2px 2px 0 0;
+    background-color: #0092ff;
     .ant-modal-title {
-      font-size: 18px;
-      font-weight: 500;
-      color: black;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
     }
+  }
+  .ant-modal-body {
+    padding: 24px;
   }
   .ant-modal-footer {
     border-top: none;

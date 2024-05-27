@@ -1,5 +1,7 @@
 import * as Yup from "yup";
 
+export const IMAGE_FORMATS_ACCEPTED = ["image/jpg", "image/jpeg", "image/png"];
+
 // String dùng cho name, address
 const REGEX_STRING =
   /^[a-zA-ZàáảạãÀÁẢẠÃâầấẩậẫÂẦẤẨẬẪăằắẳặẵĂẰẮẲẶẴđĐèéẻẹẽÈÉẺẸẼêềếểệễÊỀẾỂỆỄìíỉịĩÌÍỈỊĨòóỏọõÒÓỎỌÕôồốổộỗÔỒỐỔỘỖơờớởợỡƠỜỚỞỢỠùúủụũÙÚỦỤŨưừứửựữƯỪỨỬỰỮỳýỷỵỹỲÝỶỴỸ ]+$/;
