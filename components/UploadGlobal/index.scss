@@ -1,13 +1,13 @@
 .image-thumbnail {
-  display: flex !important;
-  justify-content: center;
-  .ant-upload.ant-upload-select {
-    width: 200px !important;
-    height: 200px !important;
-  }
+   display: flex !important;
+   justify-content: center;
+   .ant-upload.ant-upload-select {
+      width: 400px !important;
+      height: 200px !important;
+   }
 }
 
 .ant-upload-wrapper .ant-upload-list {
-  max-height: 300px;
-  overflow-y: auto;
+   max-height: 300px;
+   overflow-y: auto;
 }

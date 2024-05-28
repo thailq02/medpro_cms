@@ -203,6 +203,11 @@ export default function HospitalManagement() {
                current: hospitals?.payload.meta.current_page,
                pageSize: hospitals?.payload.meta.limit,
             }}
+            onRow={(record) => {
+               return {
+                  onClick: () => handleOpenModalHospital(record._id),
+               };
+            }}
             loading={isFetching}
          />
       </>

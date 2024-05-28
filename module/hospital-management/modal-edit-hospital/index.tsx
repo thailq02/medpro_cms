@@ -4,7 +4,7 @@ import {Formik, FormikHelpers} from "formik";
 import {Col, Form, Image, Row, Select, Tabs, TimePicker, Upload} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {IModalProps} from "@/types";
+import {IModalProps, PositionType} from "@/types";
 import {
    useQueryGetHospitalById,
    useUpdateHospital,
@@ -21,10 +21,12 @@ import {closeModal} from "@/redux/slices/ModalSlice";
 import {useRouter} from "next/navigation";
 import {autoSlugify} from "@/utils/constants/checkSlugify";
 import {IMAGE_FORMATS_ACCEPTED} from "@/utils/constants/regexValidation";
-import {getBase64} from "@/components/UploadGlobal";
+import UploadImageGlobal, {getBase64} from "@/components/UploadGlobal";
 import {RcFile} from "antd/es/upload";
 import {CameraFilled, LoadingOutlined} from "@ant-design/icons";
 import ApiUploadImage from "@/apiRequest/ApiUploadImage";
+import "../modal-create-hospital/index.scss";
+import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
 
 interface IEditHospitalProps extends IModalProps {
    listMedicalBookingForms: {
@@ -36,6 +38,8 @@ interface IEditHospitalProps extends IModalProps {
       label?: JSX.Element;
    }[];
 }
+
+const QUERY_PARAMS = {limit: 99, page: 1};
 
 export default function ContentModalEditHospital({
    idSelect,
@@ -50,6 +54,7 @@ export default function ContentModalEditHospital({
    const router = useRouter();
 
    const {data: hospitals} = useQueryGetHospitalById(idSelect as string);
+   const {data: doctors} = useQueryGetListDoctor(QUERY_PARAMS);
    const {mutate: UpdateHospitalMutation} = useUpdateHospital();
 
    const initialValues = useMemo(() => {
@@ -72,6 +77,14 @@ export default function ContentModalEditHospital({
       };
    }, [hospitals]);
 
+   const listOurDoctors = useMemo(() => {
+      if (doctors?.payload?.data) {
+         return doctors.payload.data.filter(
+            (item) => item.hospital_id === idSelect,
+         );
+      }
+   }, [doctors?.payload?.data]);
+
    useEffect(() => {
       if (hospitals) {
          setImageUrl(hospitals.payload.data.avatar);
@@ -87,6 +100,9 @@ export default function ContentModalEditHospital({
       if (initialValues.avatar === values.avatar) {
          formData.delete("avatar");
       }
+      if (initialValues.banner === values.banner) {
+         formData.delete("cover_photo");
+      }
       const data = Boolean(values.slug)
          ? values
          : {
@@ -101,6 +117,32 @@ export default function ContentModalEditHospital({
             avatar: imageUrl?.payload?.data[0].url,
          };
       }
+      if (values.images && values.images.length > 0) {
+         const images = values.images.filter((i) => {
+            return typeof i !== "string";
+         });
+         if (images.length > 0) {
+            images.forEach((image) => {
+               formData.append("images", image);
+            });
+            const imageUrls = await ApiUploadImage.uploadImage(formData);
+            const newImages = imageUrls?.payload?.data.map(
+               (i) => i.url,
+            ) as string[];
+            values = {
+               ...data,
+               images: [...values.images, ...newImages],
+            };
+         }
+      }
+      if (values.banner && typeof values.banner !== "string") {
+         formData.append("cover_photo", values.banner);
+         const bannerUrl = await ApiUploadImage.uploadImage(formData);
+         values = {
+            ...data,
+            banner: bannerUrl?.payload?.data[0].url,
+         };
+      }
       UpdateHospitalMutation(
          {id: idSelect as string, data: values},
          {
@@ -113,8 +155,7 @@ export default function ContentModalEditHospital({
          },
       );
    };
-
-   if (!hospitals) return;
+   if (!hospitals || !doctors) return;
    return (
       <Formik
          initialValues={initialValues}
@@ -373,11 +414,106 @@ export default function ContentModalEditHospital({
                            </Col>
                         </Row>
                      </Tabs.TabPane>
+
                      <Tabs.TabPane tab="Cập nhật ảnh" key="2">
-                        Chưa làm đến nhé!!
+                        <div className="mb-5">
+                           <UploadImageGlobal
+                              type="thumbnail"
+                              label="Ảnh banner"
+                              url={values.banner}
+                              onChange={(value) =>
+                                 setFieldValue("banner", value as RcFile)
+                              }
+                           />
+                        </div>
+                        <div className="pb-5">
+                           <UploadImageGlobal
+                              type="multiple"
+                              label="Ảnh liên quan đến bệnh viện"
+                              onChange={(value) =>
+                                 setFieldValue("images", value as RcFile[])
+                              }
+                           />
+                        </div>
                      </Tabs.TabPane>
+
                      <Tabs.TabPane tab="Thông tin bác sĩ của bệnh viện" key="3">
-                        Chưa làm đến nhé!!
+                        <div className="w-full h-full grid grid-cols-2 gap-5">
+                           {listOurDoctors?.length! > 0 ? (
+                              listOurDoctors?.map((doctor) => {
+                                 let position = "";
+                                 switch (doctor.position) {
+                                    case PositionType.DOCTOR:
+                                       position = "Tiến sĩ";
+                                       break;
+                                    case PositionType.MASTER:
+                                       position = "Thạc sĩ";
+                                       break;
+                                    case PositionType.PROFESSOR:
+                                       position = "Giáo sư";
+                                       break;
+                                    case PositionType.ASSOCIATE_PROFESSOR:
+                                       position = "Phó giáo sư";
+                                       break;
+                                    default:
+                                       return "Không có chức vụ";
+                                 }
+                                 return (
+                                    <div
+                                       className="border border-gray-300 flex w-[450px]"
+                                       key={doctor._id}
+                                    >
+                                       <img
+                                          src={
+                                             doctor.avatar ||
+                                             "/img/avatar/avatar.jpg"
+                                          }
+                                          alt="Avatar"
+                                          className="w-[150px] object-cover"
+                                       />
+                                       <div className="flex flex-col p-3 justify-center gap-1">
+                                          <strong>Họ tên: {doctor.name}</strong>
+                                          <strong>Trình độ: {position}</strong>
+                                          <strong>
+                                             Chuyên khoa:{" "}
+                                             {doctor.specialty?.name}
+                                          </strong>
+                                          <strong>Email: {doctor.email}</strong>
+                                       </div>
+                                    </div>
+                                 );
+                              })
+                           ) : (
+                              <span className="font-bold text-lg">
+                                 Chưa có bác sĩ
+                              </span>
+                           )}
+                        </div>
+                     </Tabs.TabPane>
+
+                     <Tabs.TabPane tab="Ảnh bệnh viện" key="4">
+                        <div className="w-full h-full flex flex-wrap gap-5">
+                           {values.images.length > 0 ? (
+                              values.images?.map((image, index) => (
+                                 <Image
+                                    key={index}
+                                    src={image}
+                                    width={300}
+                                    height={200}
+                                    alt="Image"
+                                    style={{
+                                       objectFit: "cover",
+                                       width: "100%",
+                                       height: "100%",
+                                    }}
+                                 />
+                              ))
+                           ) : (
+                              <span className="font-bold text-lg">
+                                 Chưa có ảnh
+                              </span>
+                           )}
+                        </div>
                      </Tabs.TabPane>
                   </Tabs>
                   <FooterModalButton

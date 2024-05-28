@@ -13,6 +13,7 @@ interface IUploadImageGlobalProps {
    url?: string;
    label?: string;
    onChange?: (a: RcFile | RcFile[]) => void;
+   classNames?: string;
 }
 
 export const getBase64 = (img: RcFile, callback: (url: string) => void) => {
@@ -28,6 +29,7 @@ export default function UploadImageGlobal({
    label,
    url,
    onChange,
+   classNames = "",
 }: IUploadImageGlobalProps) {
    const [loading, setLoading] = useState(false);
    const [imageUrl, setImageUrl] = useState<string>();
@@ -80,7 +82,9 @@ export default function UploadImageGlobal({
 
    return (
       <>
-         <div className={`font-medium ${type === "thumbnail" ? "mb-5" : ""}`}>
+         <div
+            className={`font-medium ${type === "thumbnail" ? "mb-5" : "mb-2"}`}
+         >
             {label}
          </div>
          <Upload
@@ -88,9 +92,7 @@ export default function UploadImageGlobal({
             style={{width: "200px"}}
             name="avatar"
             listType="picture-card"
-            className={
-               type === "thumbnail" ? "image-thumbnail" : "avatar-uploader"
-            }
+            className={`${type === "thumbnail" ? "image-thumbnail" : "avatar-uploader"} ${classNames}`}
             accept={IMAGE_FORMATS_ACCEPTED.join(",")}
             showUploadList={isMultipleUpload}
             beforeUpload={() => false}
