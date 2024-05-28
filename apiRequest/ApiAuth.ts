@@ -37,6 +37,7 @@ export const path = {
    login: "/auth/login",
    refresh_token: "/auth/refresh-token",
    create: "/auth/register",
+   logout: "/auth/logout",
 };
 
 export async function handleRefreshToken() {
@@ -85,6 +86,20 @@ const ApiAuth = {
    }) => {
       return http.post<IRefreshToken>(
          path.refresh_token,
+         {refresh_token: refreshToken},
+         {headers: {Authorization: `Bearer ${accessToken}`}},
+      );
+   },
+
+   logoutFromNextServerToNextServer: ({
+      accessToken,
+      refreshToken,
+   }: {
+      accessToken: string;
+      refreshToken: string;
+   }) => {
+      return http.post<{message: string}>(
+         path.logout,
          {refresh_token: refreshToken},
          {headers: {Authorization: `Bearer ${accessToken}`}},
       );

@@ -4,6 +4,7 @@ import Config from "@/config";
 import {IStatus, ParamsType} from "@/apiRequest/common";
 import {handleRefreshToken} from "@/apiRequest/ApiAuth";
 import {notification} from "antd";
+import {logoutUser} from "@/redux/slices/UserSlice";
 
 type EntityErrorPayload = {
    message: string;
@@ -80,6 +81,8 @@ function getAuthorization(defaultOptions: IFetcherOptions) {
    return undefined;
 }
 
+let clientLogoutRequest: null | Promise<any> = null;
+
 const request = async <TResponse>(
    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
    url: string,
@@ -141,7 +144,7 @@ const request = async <TResponse>(
       payload,
    };
 
-   // Interseptor
+   // Interceptor
    if (!res.ok) {
       if (res.status === ENTITY_ERROR_STATUS) {
          const dataError: IDataError = {
@@ -156,8 +159,22 @@ const request = async <TResponse>(
             },
          );
       } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
-         await handleRefreshToken();
-         await request<TResponse>(method, url, options);
+         if (typeof window !== undefined) {
+            console.log("Goi vao day");
+            if (!clientLogoutRequest) {
+               clientLogoutRequest = fetch("/api/auth/logout", {
+                  method: "POST",
+                  headers: {
+                     ...baseHeaders,
+                  } as any,
+                  body: JSON.stringify({force: true}),
+               });
+               await clientLogoutRequest;
+               clientLogoutRequest = null;
+               store.dispatch(logoutUser());
+               location.href = "/login";
+            }
+         }
       } else if (res.status === BAD_REQUEST_ERROR_STATUS) {
          notification.error({
             message: (data.payload as any).message || "Xóa danh mục thất bại",
