@@ -105,6 +105,19 @@ const ApiAuth = {
       );
    },
 
+   logoutFromNextClientToNextServer: (
+      force?: boolean | undefined,
+      signal?: AbortSignal | undefined,
+   ) =>
+      http.post(
+         "api/auth/logout",
+         {force},
+         {
+            baseUrl: "",
+            signal,
+         },
+      ),
+
    createAccount: async (body: IAccountBody) =>
       await http.post<any>(path.create, body),
 
