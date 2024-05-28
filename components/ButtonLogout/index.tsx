@@ -4,6 +4,7 @@ import ApiAuth from "@/apiRequest/ApiAuth";
 import {usePathname, useRouter} from "next/navigation";
 import {persistor, useAppDispatch} from "@/redux/store";
 import {logoutUser} from "@/redux/slices/UserSlice";
+import {isValidElement} from "react";
 
 interface IButtonLogoutProps {
    isOpen?: boolean;
@@ -55,7 +56,7 @@ export default function ButtonLogout({
          role="presentation"
          onClick={handleLogout}
       >
-         {!!icon && icon}
+         {isValidElement(icon) && icon}
          {isOpen && <span>Đăng xuất</span>}
       </div>
    );

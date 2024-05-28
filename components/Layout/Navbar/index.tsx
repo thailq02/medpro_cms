@@ -10,6 +10,8 @@ import {toggleMenu} from "@/redux/slices/MenuSlice";
 import {MenuOutlined} from "@ant-design/icons";
 import {Dropdown, Image, Menu} from "antd";
 import "./index.scss";
+import {addModal} from "@/components/ModalGlobal";
+import ContentModalChangePassword from "@/components/Layout/Navbar/ModalChangePassword";
 
 function RenderNamePage() {
    const dataRoutes = routes;
@@ -35,7 +37,10 @@ export default function Navbar(): JSX.Element {
    const dispatch = useDispatch();
 
    const handleOpenModalChangePassword = (): void => {
-      console.log("handleOpenModalChangePassword");
+      addModal({
+         content: <ContentModalChangePassword />,
+         options: {title: "Đổi mật khẩu", widthModal: 500},
+      });
    };
 
    const renderDropdown = (): JSX.Element => (
