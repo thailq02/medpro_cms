@@ -11,7 +11,7 @@ type EntityErrorPayload = {
    message: string;
    errors: {
       [key: string]: {
-         msg: string;
+         msg: string | {message: string; status: number};
          path: string;
          [key: string]: any;
       };

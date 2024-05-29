@@ -22,13 +22,15 @@ import ContentModalEditSchedule from "@/module/schedule-management/modal-edit-sc
 import useSearchParams, {
    paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
+import sortTimes from "@/utils/helper/SortTimesHelper";
 
 const QUERY_PARAMS = {page: 1, limit: 99};
 
 function renderTimeType(timeType: string[]): JSX.Element {
+   const timeAfterSort = sortTimes(timeType);
    return (
       <div className="flex flex-wrap items-center justify-center gap-2">
-         {timeType.map((time, index) => {
+         {timeAfterSort.map((time, index) => {
             return (
                <div
                   key={index}
@@ -164,20 +166,6 @@ export default function ScheduleManagement() {
          fixed: "right",
          render: (_, record): JSX.Element =>
             renderTimeType(record.time_type as string[]),
-      },
-      {
-         title: "Số bệnh nhân hiện tại",
-         dataIndex: "current_number",
-         key: "current_number",
-         align: "center",
-         width: 100,
-      },
-      {
-         title: "Số bệnh nhân tối đa",
-         dataIndex: "max_number",
-         key: "max_number",
-         align: "center",
-         width: 100,
       },
       {
          title: "Hành động",
