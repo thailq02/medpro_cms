@@ -18,6 +18,8 @@ import {
    getValidationEditDoctorSchema,
 } from "@/module/doctor-management/modal-edit-doctor/form-config";
 import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
+import {useQueryClient} from "@tanstack/react-query";
+import QUERY_KEY from "@/config/QUERY_KEY";
 
 interface IEditDoctorProps extends IModalProps {
    listHospital: {value?: string; label?: JSX.Element}[];
@@ -33,11 +35,13 @@ export default function ContentModalEditDoctor({
    const dispatch = useAppDispatch();
    const {data: doctor} = useQueryGetDoctorById(idSelect as string);
 
-   const {mutate: UpdateDoctorMutation} = useUpdateDoctor();
    const [selectedHospital, setSelectedHospital] = useState<string>("");
    const [listSpecialty, setListSpecialty] = useState<
       Array<{value: string; label: string}>
    >([]);
+
+   const {mutate: UpdateDoctorMutation} = useUpdateDoctor();
+   const queryClient = useQueryClient();
 
    useEffect(() => {
       if (doctor?.payload?.data?.hospital_id) {
@@ -82,6 +86,9 @@ export default function ContentModalEditDoctor({
          {id: idSelect as string, body: values},
          {
             onSuccess: () => {
+               queryClient.refetchQueries({
+                  queryKey: [QUERY_KEY.GET_DOCTOR_BY_ID, idSelect],
+               });
                dispatch(closeModal());
                refetch && refetch();
             },

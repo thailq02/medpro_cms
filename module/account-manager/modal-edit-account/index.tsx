@@ -22,14 +22,17 @@ import {RcFile} from "antd/es/upload";
 import {IMAGE_FORMATS_ACCEPTED} from "@/utils/constants/regexValidation";
 import ApiUploadImage from "@/apiRequest/ApiUploadImage";
 import {getBase64} from "@/components/UploadGlobal";
+import {useQueryClient} from "@tanstack/react-query";
+import QUERY_KEY from "@/config/QUERY_KEY";
 
 export default function ContentModalEditAccount(props: IModalProps) {
+   const usernameSelect = props.idSelect;
    const [imageUrl, setImageUrl] = useState<string | undefined>("");
    const [loading, setLoading] = useState<boolean>(false);
    const router = useRouter();
-   const usernameSelect = props.idSelect;
-   const {data} = useQueryGetUserByUsername(usernameSelect);
    const dispatch = useAppDispatch();
+   const queryClient = useQueryClient();
+   const {data} = useQueryGetUserByUsername(usernameSelect);
    const {mutate: UpdateAccount} = useUpdateAccount();
    const user = data?.payload?.data;
    const initialValues = React.useMemo(() => {
@@ -71,6 +74,9 @@ export default function ContentModalEditAccount(props: IModalProps) {
          {username: usernameSelect as string, body: values},
          {
             onSuccess: () => {
+               queryClient.refetchQueries({
+                  queryKey: [QUERY_KEY.GET_USER_BY_USERNAME, usernameSelect],
+               });
                if (props.refetch) {
                   props.refetch();
                }

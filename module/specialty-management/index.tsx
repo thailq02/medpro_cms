@@ -3,7 +3,7 @@ import React, {useMemo} from "react";
 import TableGlobal from "@/components/TableGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/FormItem/InputFilterGlobal";
+import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import {
    ActionButton,
    ButtonAdd,

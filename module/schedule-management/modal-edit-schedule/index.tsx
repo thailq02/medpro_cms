@@ -19,6 +19,8 @@ import {
    IEditScheduleForm,
    getValidationEditScheduleSchema,
 } from "@/module/schedule-management/modal-edit-schedule/form-config";
+import {useQueryClient} from "@tanstack/react-query";
+import QUERY_KEY from "@/config/QUERY_KEY";
 
 const QUERY_PARAMS = {page: 1, limit: 99};
 
@@ -35,19 +37,10 @@ export default function ContentModalEditSchedule({
    const {data: dataHospital} = useQueryGetListHospital(QUERY_PARAMS);
    const {data: dataDoctor} = useQueryGetListDoctor(QUERY_PARAMS);
    const {data: doctorByID} = useQueryGetScheduleById(idSelect as string);
-
+   const queryClient = useQueryClient();
    const {mutate: EditScheduleMutation} = useUpdateSchedule();
 
-   const initialValues: IEditScheduleForm = useMemo(() => {
-      const data = doctorByID?.payload?.data;
-      return {
-         hospital_id: hospitalSelected ?? "",
-         doctor_id: data?.doctor_id ?? "",
-         date: data?.date ?? "",
-         time_type: data?.time_type ?? [],
-      };
-   }, [doctorByID]);
-
+   console.log("hospitalSelected", hospitalSelected);
    useEffect(() => {
       if (doctorByID?.payload?.data?.doctor_id) {
          dataDoctor?.payload?.data?.find((item) => {
@@ -81,17 +74,34 @@ export default function ContentModalEditSchedule({
       }));
    }, [dataHospital]);
 
+   const initialValues: IEditScheduleForm = useMemo(() => {
+      const data = doctorByID?.payload?.data;
+      return {
+         hospital_id: hospitalSelected,
+         doctor_id: data?.doctor_id ?? "",
+         date: data?.date ?? "",
+         time_type: data?.time_type ?? [],
+      };
+   }, [doctorByID]);
+
    const handleEditSchedule = (
       values: IEditScheduleForm,
       {setSubmitting}: FormikHelpers<IEditScheduleForm>,
    ) => {
+      const data = {
+         ...values,
+         hospital_id: hospitalSelected,
+      };
       EditScheduleMutation(
          {
             id: idSelect as string,
-            body: values,
+            body: data,
          },
          {
             onSuccess: () => {
+               queryClient.refetchQueries({
+                  queryKey: [QUERY_KEY.GET_SCHEDULE_BY_ID, idSelect],
+               });
                dispatch(closeModal());
                refetch && refetch();
             },
@@ -127,6 +137,7 @@ export default function ContentModalEditSchedule({
                            labelCol={{span: 24}}
                         >
                            <Select
+                              disabled={true}
                               options={listHospital}
                               placeholder="Chọn bệnh viện"
                               onChange={(e) => {
@@ -143,7 +154,7 @@ export default function ContentModalEditSchedule({
                            labelCol={{span: 24}}
                         >
                            <Select
-                              disabled={!hospitalSelected}
+                              disabled={true}
                               options={listDoctor}
                               placeholder="Chọn bác sĩ"
                               onChange={(e) => setFieldValue("doctor_id", e)}
@@ -169,6 +180,10 @@ export default function ContentModalEditSchedule({
                                  values.date
                                     ? dayjs(values.date, "DD/MM/YYYY")
                                     : null
+                              }
+                              disabledDate={(current) =>
+                                 current &&
+                                 current.isBefore(dayjs().startOf("day"))
                               }
                            />
                         </FormItem>

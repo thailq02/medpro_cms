@@ -21,6 +21,8 @@ import {autoSlugify} from "@/utils/constants/checkSlugify";
 import UploadImageGlobal from "@/components/UploadGlobal";
 import ApiUploadImage from "@/apiRequest/ApiUploadImage";
 import {useRouter} from "next/navigation";
+import {useQueryClient} from "@tanstack/react-query";
+import QUERY_KEY from "@/config/QUERY_KEY";
 
 export default function ContentModalEditMedicalBookingForms(
    props: IModalProps,
@@ -30,7 +32,7 @@ export default function ContentModalEditMedicalBookingForms(
       props.idSelect,
    );
    const {mutate: UpdateMedicalBookingForms} = useUpdateMedicalBookingForms();
-
+   const queryClient = useQueryClient();
    const initialValues = useMemo(() => {
       return {
          name: medicalBookingForms?.payload?.data.name || "",
@@ -72,10 +74,14 @@ export default function ContentModalEditMedicalBookingForms(
          },
          {
             onSuccess: () => {
+               queryClient.refetchQueries({
+                  queryKey: [
+                     QUERY_KEY.GET_MEDICAL_BOOKING_FORMS_BY_ID,
+                     props.idSelect,
+                  ],
+               });
                dispatch(closeModal());
-               if (props.refetch) {
-                  props.refetch();
-               }
+               props.refetch && props.refetch();
                router.refresh();
             },
             onError: () => setSubmitting(false),

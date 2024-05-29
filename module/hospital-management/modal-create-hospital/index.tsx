@@ -61,6 +61,8 @@ export default function ContentModalCreateHospital({
             ...data,
             avatar: imageUrl.payload?.data[0].url,
          };
+      } else {
+         values = data;
       }
       CreateHospitalMutation(values, {
          onSuccess: () => {

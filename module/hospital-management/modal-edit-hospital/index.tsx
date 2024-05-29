@@ -27,6 +27,8 @@ import {CameraFilled, LoadingOutlined} from "@ant-design/icons";
 import ApiUploadImage from "@/apiRequest/ApiUploadImage";
 import "../modal-create-hospital/index.scss";
 import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
+import {useQueryClient} from "@tanstack/react-query";
+import QUERY_KEY from "@/config/QUERY_KEY";
 
 interface IEditHospitalProps extends IModalProps {
    listMedicalBookingForms: {
@@ -56,6 +58,8 @@ export default function ContentModalEditHospital({
    const {data: hospitals} = useQueryGetHospitalById(idSelect as string);
    const {data: doctors} = useQueryGetListDoctor(QUERY_PARAMS);
    const {mutate: UpdateHospitalMutation} = useUpdateHospital();
+
+   const queryClient = useQueryClient();
 
    const initialValues = useMemo(() => {
       const data = hospitals?.payload?.data;
@@ -147,6 +151,9 @@ export default function ContentModalEditHospital({
          {id: idSelect as string, data: values},
          {
             onSuccess: () => {
+               queryClient.refetchQueries({
+                  queryKey: [QUERY_KEY.GET_HOSPITAL_BY_ID, idSelect],
+               });
                dispatch(closeModal());
                refetch && refetch();
                router.refresh();

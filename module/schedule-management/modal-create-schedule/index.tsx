@@ -138,6 +138,10 @@ export default function ContentModalCreateSchedule({
                                  );
                                  setFieldValue("date", date);
                               }}
+                              disabledDate={(current) =>
+                                 current &&
+                                 current.isBefore(dayjs().startOf("day"))
+                              }
                            />
                         </FormItem>
                         <FormItem

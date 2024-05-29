@@ -9,7 +9,7 @@ import {
 } from "@/components/ButtonGlobal";
 import {Image, Row, Space} from "antd";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/FormItem/InputFilterGlobal";
+import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
 import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
