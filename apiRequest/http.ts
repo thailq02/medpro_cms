@@ -5,6 +5,7 @@ import {IStatus, ParamsType} from "@/apiRequest/common";
 import {handleRefreshToken} from "@/apiRequest/ApiAuth";
 import {notification} from "antd";
 import {logoutUser} from "@/redux/slices/UserSlice";
+import {redirect} from "next/navigation";
 
 type EntityErrorPayload = {
    message: string;
@@ -160,24 +161,25 @@ const request = async <TResponse>(
          );
       } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
          if (typeof window !== undefined) {
-            console.log("Goi vao day");
             if (!clientLogoutRequest) {
                clientLogoutRequest = fetch("/api/auth/logout", {
                   method: "POST",
+                  body: JSON.stringify({force: true}),
                   headers: {
                      ...baseHeaders,
                   } as any,
-                  body: JSON.stringify({force: true}),
                });
                await clientLogoutRequest;
                clientLogoutRequest = null;
                store.dispatch(logoutUser());
                location.href = "/login";
+            } else {
+               redirect(`/login`);
             }
          }
       } else if (res.status === BAD_REQUEST_ERROR_STATUS) {
          notification.error({
-            message: (data.payload as any).message || "Xóa danh mục thất bại",
+            message: (data.payload as any).message || "Xóa thất bại",
             duration: 3,
          });
          throw data;

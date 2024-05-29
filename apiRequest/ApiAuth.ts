@@ -32,12 +32,18 @@ interface IAccountBody {
    date_of_birth: string;
    gender: number;
 }
+interface IChangePasswordBody {
+   old_password: string;
+   new_password: string;
+   confirm_new_password: string;
+}
 
 export const path = {
    login: "/auth/login",
    refresh_token: "/auth/refresh-token",
    create: "/auth/register",
    logout: "/auth/logout",
+   change_password: "/auth/change-password",
 };
 
 export async function handleRefreshToken() {
@@ -117,6 +123,10 @@ const ApiAuth = {
             signal,
          },
       ),
+
+   changePassword: (body: IChangePasswordBody) => {
+      return http.put<{message: string}>(path.change_password, body);
+   },
 
    createAccount: async (body: IAccountBody) =>
       await http.post<any>(path.create, body),

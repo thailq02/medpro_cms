@@ -10,6 +10,7 @@ import {Formik, FormikHelpers} from "formik";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {Col, Form, Input, Row} from "antd";
 import {closeModal} from "@/redux/slices/ModalSlice";
+import {useChangePassword} from "@/utils/hooks/auth";
 
 interface IChangePasswordForm {
    old_password: string;
@@ -29,8 +30,8 @@ function getValidationChangePasswordSchema(): Schema<IChangePasswordForm> {
 }
 
 export default function ContentModalChangePassword() {
-   const router = useRouter();
-   const dispath = useAppDispatch();
+   const dispatch = useAppDispatch();
+   const {mutate: ChangePasswordMutation} = useChangePassword();
    const initialValues = useMemo(() => {
       return {
          old_password: "",
@@ -39,16 +40,25 @@ export default function ContentModalChangePassword() {
       };
    }, []);
 
-   const handleCreateAccount = (
+   const handleChangePassword = (
       values: IChangePasswordForm,
       {setSubmitting}: FormikHelpers<IChangePasswordForm>,
-   ) => {};
+   ) => {
+      ChangePasswordMutation(values, {
+         onSuccess: () => {
+            setSubmitting(false);
+            dispatch(closeModal());
+         },
+         onError: () => setSubmitting(false),
+      });
+   };
+
    return (
       <Formik
          initialValues={initialValues}
          validateOnBlur
          validationSchema={getValidationChangePasswordSchema()}
-         onSubmit={handleCreateAccount}
+         onSubmit={handleChangePassword}
       >
          {({
             isSubmitting,

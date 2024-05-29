@@ -10,15 +10,8 @@ export async function POST(request: Request) {
    // Nếu mà body truyền force lên thì sẽ tự động đăng xuất mà ko cần hỏi
    if (force) {
       cookies().delete(RT_COOKIE_NAME);
-      return Response.json(
-         {message: "Bạn buộc phải đăng xuất"},
-         {
-            status: 200,
-            headers: {
-               "Set-Cookie": `accessToken= ; Path=/; HttpOnly; Max-Age=0`,
-            },
-         },
-      );
+      cookies().delete(AT_COOKIE_NAME);
+      return Response.json({message: "Bạn buộc phải đăng xuất"}, {status: 200});
    }
    const accessToken = cookieStore.get(AT_COOKIE_NAME);
    const refreshToken = cookieStore.get(RT_COOKIE_NAME);
@@ -34,11 +27,12 @@ export async function POST(request: Request) {
          refreshToken: refreshToken.value,
       });
       cookies().delete(RT_COOKIE_NAME);
+      cookies().delete(AT_COOKIE_NAME);
       return Response.json(res.payload, {
          status: 200,
-         headers: {
-            "Set-Cookie": `accessToken= ; Path=/; HttpOnly; Max-Age=0`,
-         },
+         // headers: {
+         //    "Set-Cookie": `accessToken= ; Path=/; HttpOnly; Max-Age=0`,
+         // },
       });
    } catch (error) {
       if (error instanceof HttpError) {
