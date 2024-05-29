@@ -27,15 +27,10 @@ import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 import {OPTIONS} from "@/utils/constants/selectList";
 
 const QUERY_PARAMS = {page: 1, limit: 99};
-const paramsInit = {
-   ...paramsDefaultCommon,
-   hospital: "",
-   specialty: "",
-   position: undefined,
-};
+
 export default function DoctorManagement() {
    const {params, handleChangePagination, setParams, setSearchValue} =
-      useSearchParams(paramsInit);
+      useSearchParams(paramsDefaultCommon);
    const {data: users} = useQueryGetFullUser(QUERY_PARAMS);
    const {data: hospitals} = useQueryGetListHospital(QUERY_PARAMS);
    const {data: specialties} = useQueryGetListSpecialty(QUERY_PARAMS);
@@ -50,14 +45,14 @@ export default function DoctorManagement() {
    const listHospital = useMemo(() => {
       return hospitals?.payload.data.map((item) => ({
          value: item._id,
-         label: item.name,
+         label: <span>{item.name}</span>,
       }));
    }, [hospitals]);
 
    const listSpecialty = useMemo(() => {
       return specialties?.payload.data.map((v) => ({
          value: v._id,
-         label: v.name,
+         label: <span>{v.name}</span>,
       }));
    }, [specialties]);
 
@@ -148,6 +143,7 @@ export default function DoctorManagement() {
          dataIndex: "position",
          key: "position",
          align: "center",
+         width: 200,
          render: (_, record) => {
             if (record.position === PositionType.ASSOCIATE_PROFESSOR)
                return "Phó giáo sư";
@@ -185,6 +181,10 @@ export default function DoctorManagement() {
          dataIndex: "price",
          key: "price",
          align: "center",
+         width: 200,
+         render: (_, record) => {
+            return <span>{record.price?.toLocaleString("en-US")} VNĐ</span>;
+         },
       },
       {
          title: "Lịch làm việc",
@@ -220,7 +220,6 @@ export default function DoctorManagement() {
       },
    ];
 
-   if (!doctorSource || !users || !hospitals) return;
    return (
       <>
          <HeaderToolTable
@@ -232,33 +231,27 @@ export default function DoctorManagement() {
                />,
                <InputFilterGlobal
                   key="filter"
-                  allowClear
                   params={params}
                   filterField="hospital"
                   options={listHospital}
                   placeholder="Tìm kiếm bệnh viện"
                   handleChange={setParams}
-                  value={params?.hospital}
                />,
                <InputFilterGlobal
                   key="filter"
-                  allowClear
                   params={params}
                   filterField="specialty"
                   options={listSpecialty}
                   placeholder="Tìm kiếm chuyên khoa"
                   handleChange={setParams}
-                  value={params?.specialty}
                />,
                <InputFilterGlobal
                   key="filter"
-                  allowClear
                   params={params}
                   filterField="position"
                   options={OPTIONS.LIST_POSITION_DOCTOR}
                   placeholder="Chọn trình độ"
                   handleChange={setParams}
-                  value={params?.position}
                />,
             ]}
             buttonBox={[
@@ -270,7 +263,7 @@ export default function DoctorManagement() {
          />
          <TableGlobal
             scrollX={2000}
-            dataSource={doctorSource.payload.data}
+            dataSource={doctorSource?.payload.data}
             columns={columns}
             onChange={handleChangePagination}
             pagination={{

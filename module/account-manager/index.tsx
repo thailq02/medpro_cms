@@ -9,7 +9,7 @@ import {
 } from "@/components/ButtonGlobal";
 import {Image, Row, Space} from "antd";
 import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
+import {InputFilterGlobal} from "@/components/FormItem/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
 import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
@@ -21,7 +21,6 @@ import useSearchParams, {
    paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
 import {OPTIONS} from "@/utils/constants/selectList";
-import store from "@/redux/store";
 
 export default function AccountManager() {
    const searchPlaceholder = "Tìm kiếm theo name, email, username";
@@ -103,9 +102,11 @@ export default function AccountManager() {
          render: (_, record) => {
             if (record.role === IAccountRole.ADMIN) {
                return "Admin";
-            } else if (record.role === IAccountRole.DOCTOR) {
+            }
+            if (record.role === IAccountRole.DOCTOR) {
                return "Bác sĩ";
-            } else if (record.role === IAccountRole.USER) {
+            }
+            if (record.role === IAccountRole.USER) {
                return "Người dùng";
             }
          },
