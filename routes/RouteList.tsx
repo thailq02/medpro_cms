@@ -5,6 +5,7 @@ import {
   CalendarOutlined,
   MedicineBoxOutlined,
   MenuUnfoldOutlined,
+  ScheduleOutlined,
   SettingOutlined,
   TeamOutlined,
   UserOutlined,
@@ -88,6 +89,14 @@ const routes: IRoute[] = [
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.ADMIN, IAccountRole.DOCTOR],
+  },
+  {
+    path: "/schedule/doctor",
+    name: "Quản lý lịch trình cá nhân",
+    icon: <ScheduleOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.DOCTOR],
   },
 ];
 

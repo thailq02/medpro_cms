@@ -7,7 +7,7 @@ import {
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space} from "antd";
+import {DatePicker, Row, Space} from "antd";
 import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
@@ -25,6 +25,7 @@ import useSearchParams, {
 import sortTimes from "@/utils/helper/SortTimesHelper";
 import store from "@/redux/store";
 import {IAccountRole} from "@/types";
+import dayjs from "dayjs";
 
 const QUERY_PARAMS = {page: 1, limit: 99};
 
@@ -70,20 +71,6 @@ export default function ScheduleManagement() {
       label: v.name,
     }));
   }, [dataSchedule, dataDoctor]);
-
-  const listDateFilter = useMemo(() => {
-    const uniqueDates = new Set();
-    dataSchedule?.payload?.data.forEach((v) => {
-      uniqueDates.add(v.date);
-    });
-    return Array.from(uniqueDates).map(
-      (date) =>
-        ({value: date, label: date}) as {
-          value: string;
-          label: string;
-        },
-    );
-  }, [dataSchedule]);
 
   const handleOpenModalSchedule = (id?: string) => {
     addModal({
@@ -279,14 +266,6 @@ export default function ScheduleManagement() {
             filterField={"doctor"}
             handleChange={setParams}
           />,
-          <InputFilterGlobal
-            key="filter"
-            options={listDateFilter}
-            placeholder="Tìm kiếm theo ngày"
-            params={params}
-            filterField={"date"}
-            handleChange={setParams}
-          />,
         ]}
         buttonBox={
           user?.role === IAccountRole.ADMIN
@@ -299,6 +278,28 @@ export default function ScheduleManagement() {
               ]
             : []
         }
+        dateFilterBox={[
+          <DatePicker
+            format={"DD/MM/YYYY"}
+            placeholder="Tìm kiếm ngày làm việc"
+            className="cursor-pointer w-[200px]"
+            inputReadOnly={true}
+            onChange={(e) => {
+              if (e) {
+                const date = dayjs(e.toString()).format("DD/MM/YYYY");
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  date,
+                }));
+              } else {
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  date: "",
+                }));
+              }
+            }}
+          />,
+        ]}
       />
       <TableGlobal
         scrollX={2000}
