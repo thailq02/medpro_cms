@@ -4,35 +4,37 @@ import {Formik, FormikHelpers} from "formik";
 import {Col, Form, Row, Select} from "antd";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {ICategoryBody} from "@/apiRequest/ApiCategory";
 import {InputGlobal} from "@/components/InputGlobal";
 import {
   ICreateCategoryForm,
   RequiredCreateCategoryForm,
   getValidationCreateCategorySchema,
 } from "@/module/category-management/modal-create-category/form-config";
-import {useCreateCategory} from "@/utils/hooks/category";
+import {
+  useCreateCategory,
+  useQueryGetListCategory,
+} from "@/utils/hooks/category";
 import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
 import {autoSlugify} from "@/utils/constants/checkSlugify";
 
 export default function ContentModalCreateCategory({
-  listCategory,
   refetch,
 }: {
-  listCategory: ICategoryBody[];
   refetch: () => void;
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const {mutate: CreateCategoryMutation} = useCreateCategory();
+  const {data: categories} = useQueryGetListCategory({page: 1, limit: 99});
+
   const listCategories = useMemo(() => {
-    return listCategory.map((cate) => {
+    return categories?.payload?.data.map((cate) => {
       return {
         value: cate._id,
         label: <span key={cate._id}>{cate.name}</span>,
       };
     });
-  }, [listCategory]);
+  }, [categories?.payload?.data]);
 
   const handleCreateCategory = (
     values: ICreateCategoryForm,
@@ -55,6 +57,7 @@ export default function ContentModalCreateCategory({
     });
   };
 
+  if (!categories) return <></>;
   return (
     <Formik
       initialValues={{name: "", slug: "", parent_id: ""}}
@@ -106,7 +109,7 @@ export default function ContentModalCreateCategory({
                       label: "Không có danh mục cha",
                     }}
                     options={[
-                      ...listCategories,
+                      ...(listCategories || []),
                       {value: "", label: "Không có danh mục cha"},
                     ]}
                     onChange={(value) => setFieldValue("parent_id", value)}

@@ -31,30 +31,26 @@ export default function CategoryManagement() {
     refetch,
   } = useQueryGetListCategory(params);
 
+  const {data: listCate} = useQueryGetListCategory({page: 1, limit: 99});
+
   const {mutate: DeleteCategoryMutation} = useDeleteCategory();
 
   const handleOpenModalCategory = (id?: string) => {
     addModal({
       content: id ? (
-        <ContentModalEditCategory
-          props={{idSelect: id, refetch: refetch}}
-          listCategory={categories?.payload?.data ?? []}
-        />
+        <ContentModalEditCategory props={{idSelect: id, refetch: refetch}} />
       ) : (
-        <ContentModalCreateCategory
-          listCategory={categories?.payload?.data ?? []}
-          refetch={refetch}
-        />
+        <ContentModalCreateCategory refetch={refetch} />
       ),
       options: {title: id ? "Sửa danh mục" : "Tạo danh mục"},
     });
   };
 
-  const mappedCategories = useMemo(() => {
-    return categories?.payload?.data
+  const getParentCategories = useMemo(() => {
+    return listCate?.payload?.data
       .map((category) => {
         if (category.parent_id) {
-          return categories!.payload.data.find(
+          return listCate!.payload.data.find(
             (parent) => parent._id === category.parent_id,
           );
         }
@@ -97,7 +93,7 @@ export default function CategoryManagement() {
       key: "parent_id",
       align: "center",
       render: (_, record) => {
-        const parent = mappedCategories?.find(
+        const parent = getParentCategories?.find(
           (category) => category!._id === record.parent_id,
         );
         return parent?.name;
@@ -127,6 +123,7 @@ export default function CategoryManagement() {
       },
     },
   ];
+  if (!listCate) return;
   return (
     <>
       <HeaderToolTable

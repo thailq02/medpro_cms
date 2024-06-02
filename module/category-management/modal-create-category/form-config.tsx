@@ -16,7 +16,7 @@ export type RequiredCreateCategoryForm = Required<
 
 export function getValidationCreateCategorySchema(): Schema<ICreateCategoryForm> {
   return Yup.object().shape({
-    name: REGEX_VALIDATION.REGEX_STRING,
+    name: REGEX_VALIDATION.REGEX_STRING_NO_SPACE,
     slug: Yup.string().trim(),
     parent_id: Yup.string(),
   });

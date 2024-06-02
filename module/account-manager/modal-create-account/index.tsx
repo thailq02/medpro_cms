@@ -109,9 +109,12 @@ export default function ContentModalCreateAccount() {
                   <DatePicker
                     format={"DD/MM/YYYY"}
                     className="w-full"
+                    placeholder="Chọn ngày sinh"
                     onChange={(e) => {
-                      const date = new Date(e.toDate()).toISOString();
-                      setFieldValue("date_of_birth", date);
+                      if (e) {
+                        const date = new Date(e.toDate()).toISOString();
+                        setFieldValue("date_of_birth", date);
+                      }
                     }}
                     disabledDate={(e) => e > dayjs()}
                   />
@@ -122,7 +125,10 @@ export default function ContentModalCreateAccount() {
                   required
                   labelCol={{span: 24}}
                 >
-                  <Select options={OPTIONS.LIST_GENDER} />
+                  <Select
+                    options={OPTIONS.LIST_GENDER}
+                    placeholder="Chọn giới tính"
+                  />
                 </FormItem>
               </Col>
             </Row>

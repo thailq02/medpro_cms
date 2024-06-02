@@ -16,7 +16,7 @@ export type RequiredMedicalBookingForms = Required<
 
 export function getValidationEditMedicalBookingFormsSchema(): Schema<IEditMedicalBookingForms> {
   return Yup.object().shape({
-    name: REGEX_VALIDATION.REGEX_STRING,
+    name: REGEX_VALIDATION.REGEX_STRING_NO_SPACE,
     slug: Yup.string().trim(),
     image: Yup.string(),
   });

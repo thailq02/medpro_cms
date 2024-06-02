@@ -11,7 +11,7 @@ const REGEX_CCCD = /^(?:\d*)$/;
 const REGEX_SYMBOL = /[!@#$%^&*(),.?":{}|<>]/;
 const REGEX_DATE_IOS8601 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const REGEX_USERNAME = /^[A-Za-z0-9_]+$/;
-const REGEX_NO_SPACE = /\S/;
+export const REGEX_NO_SPACE = /\S/;
 const REGEX_SLUG = /^\S+$/;
 
 const REGEX_VALIDATION = {

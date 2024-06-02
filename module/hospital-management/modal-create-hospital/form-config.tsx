@@ -1,5 +1,7 @@
 "use client";
-import REGEX_VALIDATION from "@/utils/constants/regexValidation";
+import REGEX_VALIDATION, {
+  REGEX_NO_SPACE,
+} from "@/utils/constants/regexValidation";
 import * as Yup from "yup";
 import {Schema} from "yup";
 
@@ -26,7 +28,11 @@ export function getValidationCreateHospitalSchema(): Schema<ICreateHospital> {
   return Yup.object().shape({
     categoryId: Yup.string().required("Vui lòng chọn danh mục"),
     name: REGEX_VALIDATION.REGEX_STRING_NO_SPACE,
-    description: REGEX_VALIDATION.REGEX_STRING_NO_SPACE,
+    description: Yup.string()
+      .trim()
+      .matches(REGEX_NO_SPACE, "Không được chỉ chứa khoảng trắng")
+      .required("Không được để trống")
+      .max(500, "Không vượt quá 500 kí tự"),
     hotline: REGEX_VALIDATION.REGEX_NUMBER_PHONE_VN.required(
       "Vui lòng nhập số điện thoại",
     ),

@@ -129,7 +129,7 @@ export default function MedicalBookingFormsManagement() {
         ]}
         buttonBox={[
           <ButtonAdd
-            title="Tạo danh mục"
+            title="Tạo hình thức đặt khám"
             onClick={() => handleOpenModalMedicalBookingForms()}
           />,
         ]}
