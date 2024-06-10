@@ -1,20 +1,21 @@
 "use client";
-import React, {useEffect} from "react";
-import {Formik, FormikHelpers} from "formik";
-import {Col, Form, Row, Select} from "antd";
+import {ICreateServiceForm} from "@/apiRequest/ApiService";
+import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 import FormItem from "@/components/FormItem";
-import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {useCreateService} from "@/utils/hooks/service";
 import {
   InputGlobal,
   InputNumberGlobal,
   TextAreaGlobal,
 } from "@/components/InputGlobal";
+import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
 import {getValidationCreateServiceSchema} from "@/module/service-management/modal-create-service/form-config";
-import {ICreateServiceForm} from "@/apiRequest/ApiService";
-import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
-import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
+import {useAppDispatch} from "@/redux/store";
+import {OPTIONS} from "@/utils/constants/selectList";
+import {useCreateService} from "@/utils/hooks/service";
+import {Col, Form, Row, Select} from "antd";
+import {Formik, FormikHelpers} from "formik";
+import React, {useEffect} from "react";
 
 interface ICreateServiceProps {
   listHospital: {
@@ -92,6 +93,7 @@ export default function ContentModalCreateService({
     note: "",
     price: 0,
     session: "",
+    type: "",
   };
 
   return (
@@ -138,12 +140,7 @@ export default function ContentModalCreateService({
                     onBlur={handleBlur}
                   />
                 </FormItem>
-                <FormItem
-                  label="Ghi chú"
-                  name="note"
-                  required
-                  labelCol={{span: 24}}
-                >
+                <FormItem label="Ghi chú" name="note" labelCol={{span: 24}}>
                   <TextAreaGlobal
                     name="note"
                     placeholder="Nhập ghi chú"
@@ -213,6 +210,19 @@ export default function ContentModalCreateService({
                     ]}
                     placeholder="Chọn chuyên khoa"
                     onChange={(value) => setFieldValue("specialty_id", value)}
+                  />
+                </FormItem>
+                <FormItem
+                  label="Chọn loại dịch vụ"
+                  name="type"
+                  required
+                  labelCol={{span: 24}}
+                >
+                  <Select
+                    allowClear
+                    options={OPTIONS.LIST_TYPE_SERVICE}
+                    placeholder="Chọn loại dịch vụ"
+                    onChange={(value) => setFieldValue("type", value)}
                   />
                 </FormItem>
               </Col>

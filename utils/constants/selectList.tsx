@@ -150,6 +150,13 @@ const LIST_SCHEDULE_TYPE = [
     label: TimeScheduleType.T7,
   },
 ];
+
+const LIST_TYPE_SERVICE = [
+  {value: "service", label: "Dịch vụ"},
+  {value: "package", label: "Gói khám sức khoẻ"},
+  {value: "vaccine", label: "Tiêm chủng"},
+];
+
 export const OPTIONS = {
   LIST_GENDER,
   LIST_ROLE,
@@ -158,4 +165,5 @@ export const OPTIONS = {
   LIST_HOSPITAL_TYPE,
   LIST_POSITION_DOCTOR,
   LIST_SCHEDULE_TYPE,
+  LIST_TYPE_SERVICE,
 };

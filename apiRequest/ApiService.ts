@@ -15,6 +15,7 @@ export interface IServiceBody extends ICommonAuditable {
   note?: string;
   price?: number;
   session?: string;
+  type?: string;
   specialty?: {
     _id?: string;
     description?: string;
@@ -61,6 +62,7 @@ export interface ICreateServiceForm {
   note?: string;
   price?: number;
   session?: string;
+  type?: string;
 }
 interface IUpdateServiceBody {
   id: string;

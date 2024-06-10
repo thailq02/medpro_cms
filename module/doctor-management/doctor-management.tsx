@@ -1,37 +1,34 @@
 "use client";
-import React, {useMemo} from "react";
-import TableGlobal from "@/components/TableGlobal";
-import HeaderToolTable from "@/components/HeaderToolTable";
-import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
+import {IDoctorBody} from "@/apiRequest/ApiDoctor";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space, Image} from "antd";
-import {ColumnsType} from "antd/es/table";
+import HeaderToolTable from "@/components/HeaderToolTable";
+import {InputFilterGlobal} from "@/components/InputFilterGlobal";
+import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {addModal} from "@/components/ModalGlobal";
+import TableGlobal from "@/components/TableGlobal";
 import ContentModalCreateDoctor from "@/module/doctor-management/modal-create-doctor";
 import ContentModalEditDoctor from "@/module/doctor-management/modal-edit-doctor";
-import {useQueryGetFullUser} from "@/utils/hooks/auth";
-import {IAccountRole, PositionType} from "@/types";
+import {PositionType} from "@/types";
+import {OPTIONS} from "@/utils/constants/selectList";
 import {useDeleteDoctor, useQueryGetListDoctor} from "@/utils/hooks/doctor";
+import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
-import {IDoctorBody} from "@/apiRequest/ApiDoctor";
-import {useQueryGetListHospital} from "@/utils/hooks/hospital";
-import {IUserLogin} from "@/apiRequest/ApiUser";
 import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
-import {OPTIONS} from "@/utils/constants/selectList";
+import {Image, Row, Space} from "antd";
+import {ColumnsType} from "antd/es/table";
+import {useMemo} from "react";
 
 const QUERY_PARAMS = {page: 1, limit: 99};
 
 export default function DoctorManagement() {
   const {params, handleChangePagination, setParams, setSearchValue} =
     useSearchParams(paramsDefaultCommon);
-  const {data: users} = useQueryGetFullUser(QUERY_PARAMS);
   const {data: hospitals} = useQueryGetListHospital(QUERY_PARAMS);
   const {data: specialties} = useQueryGetListSpecialty(QUERY_PARAMS);
   const {mutate: DeleteDoctorMutation} = useDeleteDoctor();
@@ -56,21 +53,6 @@ export default function DoctorManagement() {
     }));
   }, [specialties]);
 
-  const doctors = useMemo(() => {
-    return users?.payload?.data
-      .filter((u) => u.role === IAccountRole.DOCTOR)
-      .reduce((acc: IUserLogin[], curr) => {
-        const isDifferent = !doctorSource?.payload?.data.some(
-          (otherObj) =>
-            curr._id === otherObj.doctor_id && curr.name === otherObj.name,
-        );
-        if (isDifferent) {
-          acc.push(curr);
-        }
-        return acc;
-      }, []);
-  }, [users, doctorSource]);
-
   const handleOpenModalDoctor = (doctor_id?: string) => {
     addModal({
       content: doctor_id ? (
@@ -82,7 +64,6 @@ export default function DoctorManagement() {
         />
       ) : (
         <ContentModalCreateDoctor
-          doctors={doctors ?? []}
           refetch={refetch}
           listHospital={listHospital ?? []}
           dataSpecialties={specialties?.payload.data ?? []}

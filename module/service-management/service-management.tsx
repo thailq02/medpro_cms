@@ -1,26 +1,26 @@
 "use client";
-import React, {useEffect, useMemo} from "react";
-import TableGlobal from "@/components/TableGlobal";
-import HeaderToolTable from "@/components/HeaderToolTable";
-import {InputSearchGlobal} from "@/components/InputSearchGlobal";
+import {IServiceBody} from "@/apiRequest/ApiService";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space} from "antd";
-import {ColumnsType} from "antd/es/table";
+import HeaderToolTable from "@/components/HeaderToolTable";
+import {InputFilterGlobal} from "@/components/InputFilterGlobal";
+import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {addModal} from "@/components/ModalGlobal";
-import ContentModalCreateService from "@/module/service-management/modal-create-service";
+import TableGlobal from "@/components/TableGlobal";
 import ContentModalEditService from "@/module/service-management/mocal-edit-service";
-import {useDeleteService, useQueryGetListService} from "@/utils/hooks/service";
+import ContentModalCreateService from "@/module/service-management/modal-create-service";
+import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
-import {IServiceBody} from "@/apiRequest/ApiService";
-import {useQueryGetListHospital} from "@/utils/hooks/hospital";
+import {useDeleteService, useQueryGetListService} from "@/utils/hooks/service";
 import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
+import {Row, Space} from "antd";
+import {ColumnsType} from "antd/es/table";
+import React, {useEffect, useMemo} from "react";
 
 const QUERY_PARAMS = {page: 1, limit: 99};
 
@@ -141,6 +141,25 @@ export default function ServiceManagement() {
       dataIndex: ["specialty", "name"],
       key: "own_specialty",
       align: "center",
+    },
+    {
+      title: "Loại dịch vụ",
+      dataIndex: "type",
+      key: "type",
+      align: "center",
+      render: (_, record) => {
+        console.log("record", record.type);
+        if (record.type === "service") {
+          return "Dịch vụ";
+        }
+        if (record.type === "package") {
+          return "Gói khám sức khoẻ";
+        }
+        if (record.type === "vaccine") {
+          return "Tiêm chủng";
+        }
+        return "";
+      },
     },
     {
       title: "Giá tiền",
