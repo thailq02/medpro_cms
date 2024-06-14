@@ -4,20 +4,29 @@ import {QUERY_PARAMS} from "@/apiRequest/common";
 import {ActionButton, EButtonAction} from "@/components/ButtonGlobal";
 import TableGlobal from "@/components/TableGlobal";
 import {GenderType} from "@/types";
-import {useQueryGetListAppointment} from "@/utils/hooks/appointment";
+import {
+  useDeleteAppointment,
+  useQueryGetListAppointment,
+} from "@/utils/hooks/appointment";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import {Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
 
 export default function PatientManagement() {
-  const {data, isFetching} = useQueryGetListAppointment();
+  const {data, isFetching, refetch} = useQueryGetListAppointment();
   const {data: hospital} = useQueryGetListHospital(QUERY_PARAMS);
-  console.log(data);
+  const {mutate: deleteAppointment} = useDeleteAppointment();
 
   const renderNameHospital = (hospital_id: string) => {
     return hospital?.payload?.data.find((item) => item._id === hospital_id)
       ?.name;
+  };
+
+  const handleDeleteAppointment = (id: string) => {
+    deleteAppointment(id, {
+      onSuccess: () => refetch(),
+    });
   };
 
   const columns: ColumnsType<IAppointmentBody> = [
@@ -105,7 +114,10 @@ export default function PatientManagement() {
         return (
           <Row justify="center">
             <Space direction="horizontal" size={"middle"}>
-              <ActionButton type={EButtonAction.DELETE} onClick={() => null} />
+              <ActionButton
+                type={EButtonAction.DELETE}
+                onClick={() => handleDeleteAppointment(record._id ?? "")}
+              />
             </Space>
           </Row>
         );

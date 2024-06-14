@@ -1,6 +1,7 @@
 import apiAppointment from "@/apiRequest/ApiAppointment";
 import QUERY_KEY from "@/config/QUERY_KEY";
-import {useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {notification} from "antd";
 
 const useQueryGetListAppointment = () => {
   return useQuery({
@@ -9,4 +10,15 @@ const useQueryGetListAppointment = () => {
   });
 };
 
-export {useQueryGetListAppointment};
+const useDeleteAppointment = () => {
+  return useMutation({
+    mutationFn: apiAppointment.deleteAppointment,
+    onSuccess: () => {
+      notification.success({
+        message: "Xóa lịch khám thành công",
+        duration: 3,
+      });
+    },
+  });
+};
+export {useDeleteAppointment, useQueryGetListAppointment};

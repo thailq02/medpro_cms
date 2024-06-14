@@ -60,10 +60,12 @@ export interface IGetFullAppointmentsRes {
 }
 const path = {
   root: "appointments",
+  delete: "appointments/delete",
 };
 
 const apiAppointment = {
   getFullAppointments: () => http.get<IGetFullAppointmentsRes>(path.root),
+  deleteAppointment: (id: string) => http.delete(`${path.delete}/${id}`),
 };
 
 export default apiAppointment;
