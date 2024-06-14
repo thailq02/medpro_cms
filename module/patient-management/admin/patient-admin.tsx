@@ -9,12 +9,16 @@ import {
   useQueryGetListAppointment,
 } from "@/utils/hooks/appointment";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
+import useSearchParams, {
+  paramsDefaultCommon,
+} from "@/utils/hooks/searchParams/useSearchParams";
 import {Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
 
 export default function PatientAdmin() {
-  const {data, isFetching, refetch} = useQueryGetListAppointment();
+  const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
+  const {data, isFetching, refetch} = useQueryGetListAppointment(params);
   const {data: hospital} = useQueryGetListHospital(QUERY_PARAMS);
   const {mutate: deleteAppointment} = useDeleteAppointment();
 
@@ -36,7 +40,9 @@ export default function PatientAdmin() {
       key: "_id",
       width: 70,
       align: "center",
-      render: (_: any, record: any, index: any) => <div>{index + 1}</div>,
+      render: (_: any, record: any, index: any) => (
+        <div>{index + (params.page - 1) * params.limit + 1}</div>
+      ),
     },
     {
       title: "Thông tin bệnh nhân",
@@ -130,6 +136,12 @@ export default function PatientAdmin() {
         scrollX={2000}
         dataSource={data?.payload?.data}
         columns={columns}
+        onChange={handleChangePagination}
+        pagination={{
+          total: data?.payload.meta.total_items,
+          current: data?.payload.meta.current_page,
+          pageSize: data?.payload.meta.limit,
+        }}
         loading={isFetching}
       />
     </>

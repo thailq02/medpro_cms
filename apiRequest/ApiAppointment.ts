@@ -53,7 +53,10 @@ export interface IAppointmentBody extends ICommonAuditable {
   time?: string;
   address?: string;
 }
-
+export interface IParamsAppointment {
+  limit?: number;
+  page?: number;
+}
 export interface IParamsAppointmentByDoctorID {
   limit?: number;
   page?: number;
@@ -61,15 +64,12 @@ export interface IParamsAppointmentByDoctorID {
   date?: string;
 }
 
-export interface IGetFullAppointmentsRes {
-  message: string;
-  data: IAppointmentBody[];
-}
-export interface IGetFullAppointmentsByDoctorIdRes {
+interface IGetFullAppointmentsRes {
   message: string;
   data: IAppointmentBody[];
   meta: IMetaData;
 }
+
 const path = {
   root: "appointments",
   delete: "appointments/delete",
@@ -77,7 +77,10 @@ const path = {
 };
 
 const apiAppointment = {
-  getFullAppointments: () => http.get<IGetFullAppointmentsRes>(path.root),
+  getFullAppointments: (params: IParamsAppointment) =>
+    http.get<IGetFullAppointmentsRes>(path.root, {
+      params: params as CommonParams<IParamsAppointment>,
+    }),
 
   getAppointmentByDoctorId: ({
     doctor_id,
@@ -86,10 +89,9 @@ const apiAppointment = {
     doctor_id: string;
     params: IParamsAppointmentByDoctorID;
   }) =>
-    http.get<IGetFullAppointmentsByDoctorIdRes>(
-      `${path.getByDoctorId}/${doctor_id}`,
-      {params: params as CommonParams<IParamsAppointmentByDoctorID>},
-    ),
+    http.get<IGetFullAppointmentsRes>(`${path.getByDoctorId}/${doctor_id}`, {
+      params: params as CommonParams<IParamsAppointmentByDoctorID>,
+    }),
 
   deleteAppointment: (id: string) => http.delete(`${path.delete}/${id}`),
 };

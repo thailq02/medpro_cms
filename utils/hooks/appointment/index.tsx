@@ -1,14 +1,15 @@
 import apiAppointment, {
+  IParamsAppointment,
   IParamsAppointmentByDoctorID,
 } from "@/apiRequest/ApiAppointment";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {notification} from "antd";
 
-const useQueryGetListAppointment = () => {
+const useQueryGetListAppointment = (params: IParamsAppointment) => {
   return useQuery({
-    queryKey: [QUERY_KEY.GET_LIST_APPOINTMENT],
-    queryFn: async () => await apiAppointment.getFullAppointments(),
+    queryKey: [QUERY_KEY.GET_LIST_APPOINTMENT, params],
+    queryFn: async () => await apiAppointment.getFullAppointments(params),
   });
 };
 
