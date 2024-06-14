@@ -1,5 +1,6 @@
 "use client";
 import {IDoctorBody} from "@/apiRequest/ApiDoctor";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import {
   ActionButton,
   ButtonAdd,
@@ -23,8 +24,6 @@ import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 import {Image, Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {useMemo} from "react";
-
-const QUERY_PARAMS = {page: 1, limit: 99};
 
 export default function DoctorManagement() {
   const {params, handleChangePagination, setParams, setSearchValue} =

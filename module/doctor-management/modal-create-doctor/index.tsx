@@ -1,6 +1,7 @@
 "use client";
 import {ISpecialtyBody} from "@/apiRequest/ApiSpecialty";
 import {IUserLogin} from "@/apiRequest/ApiUser";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import FormItem from "@/components/FormItem";
 import {
   InputGlobal,
@@ -26,8 +27,6 @@ interface ICreateDoctorProps {
   dataSpecialties: ISpecialtyBody[];
   refetch: () => void;
 }
-
-const QUERY_PARAMS = {page: 1, limit: 99};
 
 export default function ContentModalCreateDoctor({
   refetch,

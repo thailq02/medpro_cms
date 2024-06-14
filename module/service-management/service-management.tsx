@@ -1,5 +1,6 @@
 "use client";
 import {IServiceBody} from "@/apiRequest/ApiService";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import {
   ActionButton,
   ButtonAdd,
@@ -21,8 +22,6 @@ import {useQueryGetListSpecialty} from "@/utils/hooks/specialty";
 import {Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import React, {useEffect, useMemo} from "react";
-
-const QUERY_PARAMS = {page: 1, limit: 99};
 
 export default function ServiceManagement() {
   const [hospitalSelected, setHospitalSelected] = React.useState<

@@ -1,28 +1,27 @@
 "use client";
-import React, {useEffect, useMemo, useState} from "react";
-import {Formik, FormikHelpers} from "formik";
-import {Col, DatePicker, Form, Row, Select} from "antd";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import FormItem from "@/components/FormItem";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {useQueryGetListHospital} from "@/utils/hooks/hospital";
-import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
-import {OPTIONS} from "@/utils/constants/selectList";
-import dayjs from "dayjs";
-import {
-  useQueryGetScheduleById,
-  useUpdateSchedule,
-} from "@/utils/hooks/schedule";
-import {useAppDispatch} from "@/redux/store";
-import {closeModal} from "@/redux/slices/ModalSlice";
-import {IModalProps} from "@/types";
+import QUERY_KEY from "@/config/QUERY_KEY";
 import {
   IEditScheduleForm,
   getValidationEditScheduleSchema,
 } from "@/module/schedule-management/modal-edit-schedule/form-config";
+import {closeModal} from "@/redux/slices/ModalSlice";
+import {useAppDispatch} from "@/redux/store";
+import {IModalProps} from "@/types";
+import {OPTIONS} from "@/utils/constants/selectList";
+import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
+import {useQueryGetListHospital} from "@/utils/hooks/hospital";
+import {
+  useQueryGetScheduleById,
+  useUpdateSchedule,
+} from "@/utils/hooks/schedule";
 import {useQueryClient} from "@tanstack/react-query";
-import QUERY_KEY from "@/config/QUERY_KEY";
-
-const QUERY_PARAMS = {page: 1, limit: 99};
+import {Col, DatePicker, Form, Row, Select} from "antd";
+import dayjs from "dayjs";
+import {Formik, FormikHelpers} from "formik";
+import {useEffect, useMemo, useState} from "react";
 
 export default function ContentModalEditSchedule({
   refetch,

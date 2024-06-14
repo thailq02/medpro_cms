@@ -9,6 +9,7 @@ import {
   SettingOutlined,
   TeamOutlined,
   UserOutlined,
+  WhatsAppOutlined,
 } from "@ant-design/icons";
 
 export interface IRoute {
@@ -97,6 +98,14 @@ const routes: IRoute[] = [
     isSSR: true,
     isSidebar: true,
     role: [IAccountRole.DOCTOR],
+  },
+  {
+    path: "/manage-patient",
+    name: "Quản lý lịch đặt khám",
+    icon: <WhatsAppOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.ADMIN, IAccountRole.DOCTOR],
   },
 ];
 

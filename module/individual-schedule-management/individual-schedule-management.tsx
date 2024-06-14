@@ -1,31 +1,29 @@
 "use client";
-import React from "react";
-import TableGlobal from "@/components/TableGlobal";
-import {ColumnsType} from "antd/es/table";
+import {IScheduleBody} from "@/apiRequest/ApiSchedule";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space, DatePicker} from "antd";
 import HeaderToolTable from "@/components/HeaderToolTable";
 import {addModal} from "@/components/ModalGlobal";
+import TableGlobal from "@/components/TableGlobal";
+import ContentModalCreateIndividualSchedule from "@/module/individual-schedule-management/modal-create-individual-schedule";
+import ContentModalEditIndividualSchedule from "@/module/individual-schedule-management/modal-edit-individual-schedule";
+import store from "@/redux/store";
+import sortTimes from "@/utils/helper/SortTimesHelper";
+import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
 import {
   useDeleteSchedule,
   useQueryGetListScheduleByDoctorId,
 } from "@/utils/hooks/schedule";
-import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
-import {IScheduleBody} from "@/apiRequest/ApiSchedule";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
-import sortTimes from "@/utils/helper/SortTimesHelper";
-import store from "@/redux/store";
-import ContentModalCreateIndividualSchedule from "@/module/individual-schedule-management/modal-create-individual-schedule";
-import ContentModalEditIndividualSchedule from "@/module/individual-schedule-management/modal-edit-individual-schedule";
+import {DatePicker, Row, Space} from "antd";
+import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
-
-const QUERY_PARAMS = {page: 1, limit: 99};
 
 function renderTimeType(timeType: string[]): JSX.Element {
   const timeAfterSort = sortTimes(timeType);

@@ -1,33 +1,32 @@
 "use client";
-import React, {useMemo} from "react";
-import TableGlobal from "@/components/TableGlobal";
-import {ColumnsType} from "antd/es/table";
+import {IScheduleBody} from "@/apiRequest/ApiSchedule";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {DatePicker, Row, Space} from "antd";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
+import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import {addModal} from "@/components/ModalGlobal";
+import TableGlobal from "@/components/TableGlobal";
+import ContentModalCreateSchedule from "@/module/schedule-management/modal-create-schedule";
+import ContentModalEditSchedule from "@/module/schedule-management/modal-edit-schedule";
+import store from "@/redux/store";
+import {IAccountRole} from "@/types";
+import sortTimes from "@/utils/helper/SortTimesHelper";
+import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
 import {
   useDeleteSchedule,
   useQueryGetListSchedule,
 } from "@/utils/hooks/schedule";
-import {useQueryGetListDoctor} from "@/utils/hooks/doctor";
-import {IScheduleBody} from "@/apiRequest/ApiSchedule";
-import ContentModalCreateSchedule from "@/module/schedule-management/modal-create-schedule";
-import ContentModalEditSchedule from "@/module/schedule-management/modal-edit-schedule";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
-import sortTimes from "@/utils/helper/SortTimesHelper";
-import store from "@/redux/store";
-import {IAccountRole} from "@/types";
+import {DatePicker, Row, Space} from "antd";
+import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
-
-const QUERY_PARAMS = {page: 1, limit: 99};
+import {useMemo} from "react";
 
 function renderTimeType(timeType: string[]): JSX.Element {
   const timeAfterSort = sortTimes(timeType);
