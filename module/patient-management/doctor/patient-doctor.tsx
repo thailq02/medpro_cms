@@ -1,27 +1,33 @@
 "use client";
 import {IAppointmentBody} from "@/apiRequest/ApiAppointment";
-import {QUERY_PARAMS} from "@/apiRequest/common";
 import {ActionButton, EButtonAction} from "@/components/ButtonGlobal";
+import HeaderToolTable from "@/components/HeaderToolTable";
+import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import TableGlobal from "@/components/TableGlobal";
+import store from "@/redux/store";
 import {GenderType} from "@/types";
 import {
   useDeleteAppointment,
-  useQueryGetListAppointment,
+  useQueryGetAppointmentByDoctorId,
 } from "@/utils/hooks/appointment";
-import {useQueryGetListHospital} from "@/utils/hooks/hospital";
-import {Row, Space} from "antd";
+import useSearchParams, {
+  paramsDefaultCommon,
+} from "@/utils/hooks/searchParams/useSearchParams";
+import {DatePicker, Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
 
-export default function PatientManagement() {
-  const {data, isFetching, refetch} = useQueryGetListAppointment();
-  const {data: hospital} = useQueryGetListHospital(QUERY_PARAMS);
-  const {mutate: deleteAppointment} = useDeleteAppointment();
+export default function PatientDoctor() {
+  const {user} = store.getState().user;
+  const {params, handleChangePagination, setParams, setSearchValue} =
+    useSearchParams(paramsDefaultCommon);
 
-  const renderNameHospital = (hospital_id: string) => {
-    return hospital?.payload?.data.find((item) => item._id === hospital_id)
-      ?.name;
-  };
+  const {data, isFetching, refetch} = useQueryGetAppointmentByDoctorId(
+    user?._id ?? "",
+    params,
+  );
+
+  const {mutate: deleteAppointment} = useDeleteAppointment();
 
   const handleDeleteAppointment = (id: string) => {
     deleteAppointment(id, {
@@ -36,7 +42,9 @@ export default function PatientManagement() {
       key: "_id",
       width: 70,
       align: "center",
-      render: (_: any, record: any, index: any) => <div>{index + 1}</div>,
+      render: (_: any, record: any, index: any) => (
+        <div>{index + (params.page - 1) * params.limit + 1}</div>
+      ),
     },
     {
       title: "Thông tin bệnh nhân",
@@ -75,25 +83,12 @@ export default function PatientManagement() {
       dataIndex: "schedule",
       key: "schedule",
       align: "center",
+      fixed: "right",
       render: (_, record) => {
         return (
           <>
             <div>Thời gian: {record.time}</div>
             <div>Ngày: {record.date}</div>
-          </>
-        );
-      },
-    },
-    {
-      title: "Bác sĩ khám bệnh",
-      dataIndex: ["doctor", "name"],
-      key: "doctor",
-      align: "center",
-      render: (_, record) => {
-        return (
-          <>
-            <div>{renderNameHospital(record.doctor?.hospital_id ?? "")}</div>
-            <div>Bác sĩ: {record.doctor?.name}</div>
           </>
         );
       },
@@ -110,6 +105,7 @@ export default function PatientManagement() {
       key: "action",
       width: 150,
       align: "center",
+      fixed: "right",
       render: (_, record) => {
         return (
           <Row justify="center">
@@ -126,10 +122,47 @@ export default function PatientManagement() {
   ];
   return (
     <>
+      <HeaderToolTable
+        searchFilterBox={[
+          <InputSearchGlobal
+            key="search"
+            placeholder="Tìm kiếm bệnh nhân"
+            onSearch={(value) => setSearchValue(value)}
+          />,
+        ]}
+        dateFilterBox={[
+          <DatePicker
+            format={"DD/MM/YYYY"}
+            placeholder="Tìm kiếm ngày làm việc"
+            className="cursor-pointer w-[200px]"
+            inputReadOnly={true}
+            onChange={(e) => {
+              if (e) {
+                const date = dayjs(e.toString()).format("DD/MM/YYYY");
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  date,
+                }));
+              } else {
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  date: "",
+                }));
+              }
+            }}
+          />,
+        ]}
+      />
       <TableGlobal
         scrollX={2000}
         dataSource={data?.payload?.data}
         columns={columns}
+        onChange={handleChangePagination}
+        pagination={{
+          total: data?.payload.meta.total_items,
+          current: data?.payload.meta.current_page,
+          pageSize: data?.payload.meta.limit,
+        }}
         loading={isFetching}
       />
     </>

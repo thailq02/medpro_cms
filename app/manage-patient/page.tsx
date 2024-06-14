@@ -1,5 +1,5 @@
-import PatientManagement from "@/module/patient-management";
+import PatientAdminManagement from "@/module/patient-management/admin";
 
 export default function page() {
-  return <PatientManagement />;
+  return <PatientAdminManagement />;
 }

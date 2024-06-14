@@ -105,7 +105,15 @@ const routes: IRoute[] = [
     icon: <WhatsAppOutlined />,
     isSSR: true,
     isSidebar: true,
-    role: [IAccountRole.ADMIN, IAccountRole.DOCTOR],
+    role: [IAccountRole.ADMIN],
+  },
+  {
+    path: "/manage-patient/doctor",
+    name: "Quản lý lịch đặt khám",
+    icon: <WhatsAppOutlined />,
+    isSSR: true,
+    isSidebar: true,
+    role: [IAccountRole.DOCTOR],
   },
 ];
 
