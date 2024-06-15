@@ -36,8 +36,21 @@ const useDeleteAppointment = () => {
     },
   });
 };
+
+const useUpdateStatusAppointment = () => {
+  return useMutation({
+    mutationFn: apiAppointment.updateStatusAppointment,
+    onSuccess: () => {
+      notification.success({
+        message: "Cập nhật trạng thái thành công",
+        duration: 3,
+      });
+    },
+  });
+};
 export {
   useDeleteAppointment,
   useQueryGetAppointmentByDoctorId,
   useQueryGetListAppointment,
+  useUpdateStatusAppointment,
 };

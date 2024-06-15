@@ -9,10 +9,12 @@ import {GenderType} from "@/types";
 import {
   useDeleteAppointment,
   useQueryGetAppointmentByDoctorId,
+  useUpdateStatusAppointment,
 } from "@/utils/hooks/appointment";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
+import {CheckCircleOutlined, CloseCircleOutlined} from "@ant-design/icons";
 import {DatePicker, Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
@@ -28,6 +30,7 @@ export default function PatientDoctor() {
   );
 
   const {mutate: deleteAppointment} = useDeleteAppointment();
+  const {mutate: updateStatusAppointment} = useUpdateStatusAppointment();
 
   const handleDeleteAppointment = (id: string) => {
     deleteAppointment(id, {
@@ -35,6 +38,11 @@ export default function PatientDoctor() {
     });
   };
 
+  const handleUpdateStatusAppointment = (id: string) => {
+    updateStatusAppointment(id, {
+      onSuccess: () => refetch(),
+    });
+  };
   const columns: ColumnsType<IAppointmentBody> = [
     {
       title: "STT",
@@ -100,16 +108,39 @@ export default function PatientDoctor() {
       align: "center",
     },
     {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      fixed: "right",
+      width: 100,
+      render: (_, record) => {
+        return (
+          <div className="w-full h-full">
+            {record.status === false ? (
+              <CloseCircleOutlined className="text-3xl text-red-600" />
+            ) : (
+              <CheckCircleOutlined className="text-3xl text-[#6BC839]" />
+            )}
+          </div>
+        );
+      },
+    },
+    {
       title: "Hành động",
       dataIndex: "action",
       key: "action",
-      width: 150,
+      width: 100,
       align: "center",
       fixed: "right",
       render: (_, record) => {
         return (
           <Row justify="center">
             <Space direction="horizontal" size={"middle"}>
+              <ActionButton
+                type={EButtonAction.CONFIRM}
+                onClick={() => handleUpdateStatusAppointment(record._id ?? "")}
+              />
               <ActionButton
                 type={EButtonAction.DELETE}
                 onClick={() => handleDeleteAppointment(record._id ?? "")}

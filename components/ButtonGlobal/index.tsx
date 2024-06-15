@@ -1,12 +1,12 @@
-import {Button, Modal, Tooltip} from "antd";
-import React from "react";
 import {
+  CheckOutlined,
   CopyOutlined,
   DeleteOutlined,
   EditOutlined,
   LockOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
+import {Button, Modal, Tooltip} from "antd";
 
 interface IPropsButton {
   title: string;
@@ -20,6 +20,7 @@ export enum EButtonAction {
   EDIT = "edit",
   DELETE = "delete",
   PASSWORD = "password",
+  CONFIRM = "confirm",
 }
 
 interface IActionButton {
@@ -76,6 +77,23 @@ export function ActionButton({
             });
           }}
           className={"text-red-600" + iconSize}
+        />
+      );
+      break;
+    case EButtonAction.CONFIRM:
+      renderButton = (
+        <CheckOutlined
+          onClick={() => {
+            Modal.confirm({
+              title: "Xác nhận",
+              content: "Xác nhận lịch đặt khám này",
+              onOk: onClick,
+              okButtonProps: {danger: true},
+              okText: "Xác nhận",
+              cancelText: "Đóng",
+            });
+          }}
+          className={"text-green-600" + iconSize}
         />
       );
       break;

@@ -74,6 +74,7 @@ const path = {
   root: "appointments",
   delete: "appointments/delete",
   getByDoctorId: "appointments/doctor",
+  updateStatus: "appointments/update/status",
 };
 
 const apiAppointment = {
@@ -94,6 +95,9 @@ const apiAppointment = {
     }),
 
   deleteAppointment: (id: string) => http.delete(`${path.delete}/${id}`),
+
+  updateStatusAppointment: (id: string) =>
+    http.patch<{message: string}>(`${path.updateStatus}/${id}`, {}),
 };
 
 export default apiAppointment;
