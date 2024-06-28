@@ -52,6 +52,7 @@ export interface IAppointmentBody extends ICommonAuditable {
   date?: string;
   time?: string;
   address?: string;
+  order_id?: string | null;
 }
 export interface IParamsAppointment {
   limit?: number;
