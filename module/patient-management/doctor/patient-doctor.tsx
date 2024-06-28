@@ -28,7 +28,6 @@ export default function PatientDoctor() {
     user?._id ?? "",
     params,
   );
-
   const {mutate: deleteAppointment} = useDeleteAppointment();
   const {mutate: updateStatusAppointment} = useUpdateStatusAppointment();
 

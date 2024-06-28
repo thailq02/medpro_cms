@@ -7,11 +7,13 @@ import {GenderType} from "@/types";
 import {
   useDeleteAppointment,
   useQueryGetListAppointment,
+  useUpdateStatusAppointment,
 } from "@/utils/hooks/appointment";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
+import {CheckCircleOutlined, CloseCircleOutlined} from "@ant-design/icons";
 import {Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import dayjs from "dayjs";
@@ -20,7 +22,9 @@ export default function PatientAdmin() {
   const {params, handleChangePagination} = useSearchParams(paramsDefaultCommon);
   const {data, isFetching, refetch} = useQueryGetListAppointment(params);
   const {data: hospital} = useQueryGetListHospital(QUERY_PARAMS);
+
   const {mutate: deleteAppointment} = useDeleteAppointment();
+  const {mutate: updateStatusAppointment} = useUpdateStatusAppointment();
 
   const renderNameHospital = (hospital_id: string) => {
     return hospital?.payload?.data.find((item) => item._id === hospital_id)
@@ -29,6 +33,12 @@ export default function PatientAdmin() {
 
   const handleDeleteAppointment = (id: string) => {
     deleteAppointment(id, {
+      onSuccess: () => refetch(),
+    });
+  };
+
+  const handleUpdateStatusAppointment = (id: string) => {
+    updateStatusAppointment(id, {
       onSuccess: () => refetch(),
     });
   };
@@ -98,8 +108,8 @@ export default function PatientAdmin() {
       render: (_, record) => {
         return (
           <>
-            <div>{renderNameHospital(record.doctor?.hospital_id ?? "")}</div>
-            <div>Bác sĩ: {record.doctor?.name}</div>
+            <div>{renderNameHospital(record.service?.hospital_id ?? "")}</div>
+            <div>{`${record.doctor?.name ? `Bác sĩ: ${record.doctor?.name}` : "Bác sĩ trực thuộc bệnh viện"}`}</div>
           </>
         );
       },
@@ -111,6 +121,25 @@ export default function PatientAdmin() {
       align: "center",
     },
     {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      fixed: "right",
+      width: 100,
+      render: (_, record) => {
+        return (
+          <div className="w-full h-full">
+            {record.status === false ? (
+              <CloseCircleOutlined className="text-3xl text-red-600" />
+            ) : (
+              <CheckCircleOutlined className="text-3xl text-[#6BC839]" />
+            )}
+          </div>
+        );
+      },
+    },
+    {
       title: "Hành động",
       dataIndex: "action",
       key: "action",
@@ -120,6 +149,10 @@ export default function PatientAdmin() {
         return (
           <Row justify="center">
             <Space direction="horizontal" size={"middle"}>
+              <ActionButton
+                type={EButtonAction.CONFIRM}
+                onClick={() => handleUpdateStatusAppointment(record._id ?? "")}
+              />
               <ActionButton
                 type={EButtonAction.DELETE}
                 onClick={() => handleDeleteAppointment(record._id ?? "")}
