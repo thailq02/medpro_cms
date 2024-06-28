@@ -204,7 +204,7 @@ export default function IndividualScheduleManagement() {
       />
       <TableGlobal
         scrollX={1500}
-        dataSource={dataSchedule?.payload.data}
+        dataSource={dataSchedule?.payload.data.reverse()}
         columns={columns}
         onChange={handleChangePagination}
         pagination={{
