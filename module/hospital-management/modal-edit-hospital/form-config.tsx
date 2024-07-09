@@ -20,6 +20,7 @@ export interface IEditHospital {
   end_time: string;
   types: number[];
   booking_forms: string[];
+  description_detail?: string | null;
 }
 
 export type RequiredEditHospitalForm = Required<IEditHospital>;
@@ -45,6 +46,7 @@ export function getValidationEditHospitalSchema(): Schema<IEditHospital> {
     address: REGEX_VALIDATION.REGEX_STRING_NO_SPACE,
     avatar: Yup.string().trim(),
     banner: Yup.string().trim(),
+    description_detail: Yup.string().trim().nullable(),
     types: Yup.array()
       .of(Yup.number().required("Vui lòng chọn loại bệnh viện"))
       .required("Vui lòng chọn loại bệnh viện"),

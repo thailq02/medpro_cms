@@ -22,6 +22,7 @@ export interface IHospitalBody extends ICommonAuditable {
     name?: string;
     image?: string;
   }[];
+  description_detail?: string | null;
 }
 
 export interface IParamsHospital {
@@ -54,6 +55,7 @@ export interface ICreateHospitalForm {
   images?: string[];
   types: number[];
   booking_forms: string[];
+  description_detail?: string | null;
 }
 interface IUpdateHospitalBody {
   id: string;

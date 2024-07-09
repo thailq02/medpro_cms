@@ -20,6 +20,7 @@ export interface ICreateHospital {
   end_time: string;
   types: number[];
   booking_forms: string[];
+  description_detail?: string | null;
 }
 
 export type RequiredCreateHospitalForm = Required<ICreateHospital>;
@@ -51,5 +52,6 @@ export function getValidationCreateHospitalSchema(): Schema<ICreateHospital> {
     booking_forms: Yup.array()
       .of(Yup.string().trim().required("Vui lòng chọn hình thức đặt lịch"))
       .required("Vui lòng chọn hình thức đặt lịch"),
+    description_detail: Yup.string().trim().nullable(),
   });
 }

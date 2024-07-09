@@ -1,26 +1,26 @@
 "use client";
-import React, {useMemo} from "react";
-import TableGlobal from "@/components/TableGlobal";
-import HeaderToolTable from "@/components/HeaderToolTable";
-import {InputSearchGlobal} from "@/components/InputSearchGlobal";
+import {IHospitalBody} from "@/apiRequest/ApiHospital";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Row, Space, Image} from "antd";
-import {ColumnsType} from "antd/es/table";
+import HeaderToolTable from "@/components/HeaderToolTable";
+import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {addModal} from "@/components/ModalGlobal";
+import TableGlobal from "@/components/TableGlobal";
 import ContentModalCreateHospital from "@/module/hospital-management/modal-create-hospital";
 import ContentModalEditHospital from "@/module/hospital-management/modal-edit-hospital";
-import "./index.scss";
+import {useQueryGetListCategory} from "@/utils/hooks/category";
 import {useQueryGetListHospital} from "@/utils/hooks/hospital";
+import {useQueryGetListMedicalBookingForms} from "@/utils/hooks/medical-booking-forms";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
-import {useQueryGetListMedicalBookingForms} from "@/utils/hooks/medical-booking-forms";
-import {useQueryGetListCategory} from "@/utils/hooks/category";
-import {IHospitalBody} from "@/apiRequest/ApiHospital";
+import {Image, Row, Space} from "antd";
+import {ColumnsType} from "antd/es/table";
+import {useMemo} from "react";
+import "./index.scss";
 
 const QUERY_FULL = {limit: 99, page: 1};
 
@@ -203,11 +203,11 @@ export default function HospitalManagement() {
           current: hospitals?.payload.meta.current_page,
           pageSize: hospitals?.payload.meta.limit,
         }}
-        onRow={(record) => {
-          return {
-            onClick: () => handleOpenModalHospital(record._id),
-          };
-        }}
+        // onRow={(record) => {
+        //   return {
+        //     onClick: () => handleOpenModalHospital(record._id),
+        //   };
+        // }}
         loading={isFetching}
       />
     </>

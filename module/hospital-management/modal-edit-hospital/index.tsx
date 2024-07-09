@@ -4,6 +4,7 @@ import {QUERY_PARAMS} from "@/apiRequest/common";
 import FormItem from "@/components/FormItem";
 import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
 import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import TextEditorGlobal from "@/components/TextEditorGlobal";
 import UploadImageGlobal, {getBase64} from "@/components/UploadGlobal";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {
@@ -77,6 +78,7 @@ export default function ContentModalEditHospital({
       end_time: data?.end_time || "",
       types: data?.types || [],
       booking_forms: data?.booking_forms?.map((i) => i.id as string) || [],
+      description_detail: data?.description_detail || "",
     };
   }, [hospitals]);
 
@@ -106,11 +108,18 @@ export default function ContentModalEditHospital({
     if (initialValues.banner === values.banner) {
       formData.delete("cover_photo");
     }
+    const descDetail = Boolean(values.description_detail)
+      ? values.description_detail
+      : null;
     const data = Boolean(values.slug)
-      ? values
+      ? {
+          ...values,
+          description_detail: descDetail,
+        }
       : {
           ...values,
           slug: autoSlugify(values.name),
+          description_detail: descDetail,
         };
     if (values.avatar && typeof values.avatar !== "string") {
       formData.append("image", values.avatar);
@@ -392,6 +401,21 @@ export default function ContentModalEditHospital({
                           setFieldValue("types", value);
                         }}
                         value={values.types}
+                      />
+                    </FormItem>
+                  </Col>
+                  <Col span={24}>
+                    <FormItem
+                      label="Mô tả chi tiết"
+                      name="description_detail"
+                      required
+                      labelCol={{span: 24}}
+                    >
+                      <TextEditorGlobal
+                        onChange={(value) => {
+                          setFieldValue("description_detail", value);
+                        }}
+                        value={values.description_detail}
                       />
                     </FormItem>
                   </Col>
