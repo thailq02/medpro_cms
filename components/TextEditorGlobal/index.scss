@@ -1,0 +1,15 @@
+.ql-editor {
+  min-height: 200px;
+}
+
+.ql-tooltip {
+  left: 10px !important;
+}
+
+.ql-snow .ql-tooltip[data-mode="video"]::before {
+  content: "Nhập URL video" !important;
+}
+
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+  content: "Xác nhận" !important;
+}
