@@ -34,14 +34,16 @@ export default function ReactQuillCustom({
   ...props
 }: QuillProps) {
   return (
-    <ReactQuill
-      theme="snow"
-      value={value}
-      onChange={onChange}
-      formats={formats}
-      modules={modules}
-      placeholder="Nhập nội dung..."
-      {...props}
-    />
+    <div className="w-full entry-content">
+      <ReactQuill
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        formats={formats}
+        modules={modules}
+        placeholder="Nhập nội dung..."
+        {...props}
+      />
+    </div>
   );
 }

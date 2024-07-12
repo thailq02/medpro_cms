@@ -516,7 +516,7 @@ export default function ContentModalEditHospital({
               </Tabs.TabPane>
             </Tabs>
             <FooterModalButton
-              textOk="Sửa bệnh viện"
+              textOk="Cập nhật bệnh viện"
               onOk={handleSubmit}
               isLoading={isSubmitting}
             />
