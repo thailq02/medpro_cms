@@ -9,12 +9,12 @@ COPY package.json package-lock.json next.config.mjs ./
 
 # Stage 1
 FROM base AS deps
-RUN  --mount=type=cache,id=npm,target=/root/.npm npm install --production
+RUN  --mount=type=cache,id=npm,target=/root/.npm npm install --production --force
 
 
 # Stage 2
 FROM base AS builder
-RUN --mount=type=cache,id=npm,target=/root/.npm npm install
+RUN --mount=type=cache,id=npm,target=/root/.npm npm install --force
 COPY . .
 RUN npm run build
 
