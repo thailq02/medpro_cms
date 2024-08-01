@@ -18,11 +18,11 @@ export interface IParamsSchedule {
 export type IParamsScheduleByDoctorID = Omit<IParamsSchedule, "doctor_id">;
 
 const path = {
-  root: "/schedules",
-  create: "/schedules/create",
-  update: "/schedules/update",
-  delete: "/schedules/delete",
-  get_schedule_by_doctor_id: "/schedules/doctor",
+  root: "/api/schedules",
+  create: "/api/schedules/create",
+  update: "/api/schedules/update",
+  delete: "/api/schedules/delete",
+  get_schedule_by_doctor_id: "/api/schedules/doctor",
 };
 
 interface IGetListScheduleResponse {

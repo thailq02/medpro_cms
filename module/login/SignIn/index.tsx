@@ -1,22 +1,22 @@
 "use client";
-import "./index.scss";
-import React from "react";
-import {Formik} from "formik";
-import {Form, Image, Input, Row} from "antd";
-import {ButtonSubmit} from "@/components/ButtonSubmit";
-import {useDispatch} from "react-redux";
-import {loginUser} from "@/redux/slices/UserSlice";
 import ApiAuth from "@/apiRequest/ApiAuth";
-import {useMutation} from "@tanstack/react-query";
+import ApiUser from "@/apiRequest/ApiUser";
+import {ButtonSubmit} from "@/components/ButtonSubmit";
+import FormItem from "@/components/FormItem";
+import Config from "@/config";
 import {
   IDataLoginRes,
   ILoginForm,
   getValidationLoginSchema,
 } from "@/module/login/SignIn/form-config";
-import {useRouter} from "next/navigation";
-import FormItem from "@/components/FormItem";
-import Config from "@/config";
+import {loginUser} from "@/redux/slices/UserSlice";
+import {useMutation} from "@tanstack/react-query";
+import {Form, Image, Input, Row} from "antd";
+import {Formik} from "formik";
 import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
+import {useDispatch} from "react-redux";
+import "./index.scss";
 
 interface SignInProps {
   changeTab: (tab: string) => void;
@@ -41,15 +41,19 @@ export default function SignIn({changeTab}: SignInProps): JSX.Element {
           const {access_token, refresh_token} = data.payload.data;
           const decoded = jwtDecode(access_token);
           const expiredAt = decoded.exp;
-          await ApiAuth.auth({
-            access_token,
-            refresh_token,
-            expiresAt: expiredAt as number,
-          });
+          const [_, user] = await Promise.all([
+            ApiAuth.auth({
+              access_token,
+              refresh_token,
+              expiresAt: expiredAt as number,
+            }),
+            ApiUser.getMe(access_token),
+          ]);
           dispatch(
             loginUser({
               ...data.payload.data,
               expiresAt: expiredAt as number,
+              user: user.payload.data,
             }),
           );
           setSubmitting(false);

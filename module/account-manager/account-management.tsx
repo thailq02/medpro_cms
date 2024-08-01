@@ -1,26 +1,25 @@
 "use client";
-import React from "react";
-import TableGlobal from "@/components/TableGlobal";
-import {ColumnsType} from "antd/es/table";
+import {IUserLogin} from "@/apiRequest/ApiUser";
 import {
   ActionButton,
   ButtonAdd,
   EButtonAction,
 } from "@/components/ButtonGlobal";
-import {Image, Row, Space} from "antd";
-import {InputSearchGlobal} from "@/components/InputSearchGlobal";
-import {InputFilterGlobal} from "@/components/InputFilterGlobal";
 import HeaderToolTable from "@/components/HeaderToolTable";
+import {InputFilterGlobal} from "@/components/InputFilterGlobal";
+import {InputSearchGlobal} from "@/components/InputSearchGlobal";
 import {addModal} from "@/components/ModalGlobal";
+import TableGlobal from "@/components/TableGlobal";
 import ContentModalCreateAccount from "@/module/account-manager/modal-create-account";
 import ContentModalEditAccount from "@/module/account-manager/modal-edit-account";
 import {IAccountRole, VerifyStatus} from "@/types";
-import {IUserLogin} from "@/apiRequest/ApiUser";
+import {OPTIONS} from "@/utils/constants/selectList";
 import {useDeleteAccount, useQueryGetFullUser} from "@/utils/hooks/auth";
 import useSearchParams, {
   paramsDefaultCommon,
 } from "@/utils/hooks/searchParams/useSearchParams";
-import {OPTIONS} from "@/utils/constants/selectList";
+import {Image, Row, Space} from "antd";
+import {ColumnsType} from "antd/es/table";
 
 export default function AccountManager() {
   const searchPlaceholder = "Tìm kiếm theo name, email, username";

@@ -1,6 +1,6 @@
-import store from "@/redux/store";
 import http from "@/apiRequest/http";
 import {loginUser} from "@/redux/slices/UserSlice";
+import store from "@/redux/store";
 import {IAccountRole} from "@/types";
 
 export interface ICommonResponse {
@@ -39,11 +39,11 @@ interface IChangePasswordBody {
 }
 
 export const path = {
-  login: "/auth/login",
-  refresh_token: "/auth/refresh-token",
-  create: "/auth/register",
-  logout: "/auth/logout",
-  change_password: "/auth/change-password",
+  login: "/api/auth/login",
+  refresh_token: "/api/auth/refresh-token",
+  create: "/api/auth/register",
+  logout: "/api/auth/logout",
+  change_password: "/api/auth/change-password",
 };
 
 export async function handleRefreshToken() {

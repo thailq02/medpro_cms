@@ -1,29 +1,29 @@
 "use client";
-import React, {useEffect, useState} from "react";
-import {GenderType, IModalProps} from "@/types";
-import {Formik, FormikHelpers} from "formik";
-import {Col, DatePicker, Form, Image, Row, Select, Upload} from "antd";
+import ApiUploadImage from "@/apiRequest/ApiUploadImage";
 import FormItem from "@/components/FormItem";
-import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
-import {useQueryGetUserByUsername, useUpdateAccount} from "@/utils/hooks/auth";
 import {InputGlobal, TextAreaGlobal} from "@/components/InputGlobal";
-import dayjs from "dayjs";
-import {OPTIONS} from "@/utils/constants/selectList";
+import {FooterModalButton} from "@/components/ModalGlobal/FooterModalButton";
+import {getBase64} from "@/components/UploadGlobal";
+import QUERY_KEY from "@/config/QUERY_KEY";
 import {
   IUpdateAccountForm,
   getValidationEditAccountSchema,
 } from "@/module/account-manager/modal-edit-account/form-config";
-import {useAppDispatch} from "@/redux/store";
 import {closeModal} from "@/redux/slices/ModalSlice";
-import {useRouter} from "next/navigation";
-import "./index.scss";
-import {CameraFilled, LoadingOutlined} from "@ant-design/icons";
-import {RcFile} from "antd/es/upload";
+import {useAppDispatch} from "@/redux/store";
+import {GenderType, IModalProps} from "@/types";
 import {IMAGE_FORMATS_ACCEPTED} from "@/utils/constants/regexValidation";
-import ApiUploadImage from "@/apiRequest/ApiUploadImage";
-import {getBase64} from "@/components/UploadGlobal";
+import {OPTIONS} from "@/utils/constants/selectList";
+import {useQueryGetUserByUsername, useUpdateAccount} from "@/utils/hooks/auth";
+import {CameraFilled, LoadingOutlined} from "@ant-design/icons";
 import {useQueryClient} from "@tanstack/react-query";
-import QUERY_KEY from "@/config/QUERY_KEY";
+import {Col, DatePicker, Form, Image, Row, Select, Upload} from "antd";
+import {RcFile} from "antd/es/upload";
+import dayjs from "dayjs";
+import {Formik, FormikHelpers} from "formik";
+import {useRouter} from "next/navigation";
+import React, {useEffect, useState} from "react";
+import "./index.scss";
 
 export default function ContentModalEditAccount(props: IModalProps) {
   const usernameSelect = props.idSelect;

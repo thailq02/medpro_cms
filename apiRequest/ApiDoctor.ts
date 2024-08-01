@@ -77,10 +77,10 @@ interface IUpdateDoctorBody {
   body: ICreateDoctorBody;
 }
 const path = {
-  root: "/doctors",
-  create: "/doctors/create",
-  update: "/doctors/update",
-  delete: "/doctors/delete",
+  root: "/api/doctors",
+  create: "/api/doctors/create",
+  update: "/api/doctors/update",
+  delete: "/api/doctors/delete",
 };
 
 const getListDoctor = (params: IParamsDoctor) => {

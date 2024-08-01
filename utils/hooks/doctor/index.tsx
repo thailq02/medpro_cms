@@ -1,7 +1,6 @@
-import {IParamsDoctor} from "@/apiRequest/ApiDoctor";
+import ApiDoctor, {IParamsDoctor} from "@/apiRequest/ApiDoctor";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiDoctor from "@/apiRequest/ApiDoctor";
 import {notification} from "antd";
 
 const useQueryGetListDoctor = (params: IParamsDoctor) => {
@@ -55,9 +54,9 @@ const useDeleteDoctor = () => {
   });
 };
 export {
-  useQueryGetListDoctor,
-  useQueryGetDoctorById,
   useCreateDoctor,
-  useUpdateDoctor,
   useDeleteDoctor,
+  useQueryGetDoctorById,
+  useQueryGetListDoctor,
+  useUpdateDoctor,
 };

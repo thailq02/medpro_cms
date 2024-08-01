@@ -1,6 +1,5 @@
-import React from "react";
-import "./index.scss";
 import {Modal} from "antd";
+import "./index.scss";
 
 interface IModalConfirmCustomProps {
   title: string;

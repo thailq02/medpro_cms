@@ -31,10 +31,10 @@ interface IDeleteRes {
   data: ICategoryBody | null;
 }
 const path = {
-  root: "/categories",
-  create: "/categories/create",
-  update: "/categories/update",
-  delete: "/categories/delete",
+  root: "/api/categories",
+  create: "/api/categories/create",
+  update: "/api/categories/update",
+  delete: "/api/categories/delete",
 };
 
 const getListCategory = (params?: IParamsCategories) => {

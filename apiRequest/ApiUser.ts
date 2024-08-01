@@ -1,6 +1,6 @@
+import {CommonParams, ICommonAuditable, IMetaData} from "@/apiRequest/common";
 import http from "@/apiRequest/http";
 import {IUpdateAccountForm} from "@/module/account-manager/modal-edit-account/form-config";
-import {CommonParams, ICommonAuditable, IMetaData} from "@/apiRequest/common";
 
 export interface IUserLogin extends ICommonAuditable {
   _id?: string;
@@ -42,15 +42,19 @@ interface IUpdateUser {
 }
 
 const path = {
-  getFullUser: "/users",
-  getUserByUsername: "/users",
-  getMe: "/users/me",
-  updateUser: "/users",
-  deleteUser: "/users",
+  getFullUser: "/api/users",
+  getUserByUsername: "/api/users",
+  getMe: "/api/users/me",
+  updateUser: "/api/users",
+  deleteUser: "/api/users",
 };
 
 const ApiUser = {
-  getMe: () => http.get<IGetMeResBody>(path.getMe),
+  getMe: (access_token: string) =>
+    http.get<IGetMeResBody>(path.getMe, {
+      headers: {Authorization: `Bearer ${access_token}`},
+      cache: "no-store",
+    }),
 
   getMeServer: (access_token: string) =>
     http.get<IGetMeResBody>(path.getMe, {
@@ -61,13 +65,13 @@ const ApiUser = {
 
   getFullUser: (params?: IParamsGetUser) =>
     http.get<IGetFullUserResBody>(path.getFullUser, {
-      cache: "no-cache",
+      cache: "no-store",
       params: params as CommonParams<IParamsGetUser>,
     }),
 
   getUserByUsername: async (username: string) =>
     await http.get<IGetUserResBody>(`${path.getUserByUsername}/${username}`, {
-      cache: "no-cache",
+      cache: "no-store",
     }),
 
   updateUser: async (data: IUpdateUser) =>

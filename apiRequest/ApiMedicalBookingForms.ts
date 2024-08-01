@@ -31,10 +31,10 @@ interface IUpdateMedicalBookingForms {
   body: ICreateMedicalBookingFormsReq;
 }
 const path = {
-  root: "/medical-booking-forms",
-  create: "/medical-booking-forms/create",
-  update: "/medical-booking-forms/update",
-  delete: "/medical-booking-forms/delete",
+  root: "/api/medical-booking-forms",
+  create: "/api/medical-booking-forms/create",
+  update: "/api/medical-booking-forms/update",
+  delete: "/api/medical-booking-forms/delete",
 };
 
 const getListMedicalBookingForms = (params?: IParamsMedicalBookingForms) => {

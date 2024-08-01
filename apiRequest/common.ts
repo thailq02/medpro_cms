@@ -29,6 +29,9 @@ export interface IMetaData {
 export enum IStatus {
   SUCCESS = 200,
   ERROR = 400,
+  UNAUTHORIZED = 401,
+  UNPROCESSABLE_ENTITY = 422,
+  INTERNAL_SERVER_ERROR = 500,
 }
 
 export const QUERY_PARAMS = {page: 1, limit: 99};

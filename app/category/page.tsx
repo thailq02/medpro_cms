@@ -1,4 +1,3 @@
-import React from "react";
 import CategoryManagement from "@/module/category-management";
 
 export default async function index() {

@@ -1,8 +1,8 @@
-import QUERY_KEY from "@/config/QUERY_KEY";
-import {useMutation, useQuery} from "@tanstack/react-query";
 import ApiMedicalBookingForms, {
   IParamsMedicalBookingForms,
 } from "@/apiRequest/ApiMedicalBookingForms";
+import QUERY_KEY from "@/config/QUERY_KEY";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {notification} from "antd";
 
 const useQueryGetListMedicalBookingForms = (
@@ -60,9 +60,9 @@ const useDeleteMedicalBookingForms = () => {
   });
 };
 export {
-  useQueryGetListMedicalBookingForms,
   useCreateMedicalBookingForms,
-  useUpdateMedicalBookingForms,
-  useQueryGetMedicalBookingFormsById,
   useDeleteMedicalBookingForms,
+  useQueryGetListMedicalBookingForms,
+  useQueryGetMedicalBookingFormsById,
+  useUpdateMedicalBookingForms,
 };

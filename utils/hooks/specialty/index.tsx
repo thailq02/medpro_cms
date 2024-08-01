@@ -1,7 +1,6 @@
-import {IParamsSpecialty} from "@/apiRequest/ApiSpecialty";
+import ApiSpecialty, {IParamsSpecialty} from "@/apiRequest/ApiSpecialty";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiSpecialty from "@/apiRequest/ApiSpecialty";
 import {notification} from "antd";
 
 const useQueryGetListSpecialty = (params: IParamsSpecialty) => {
@@ -56,9 +55,9 @@ const useDeleteSpecialty = () => {
 };
 
 export {
-  useQueryGetListSpecialty,
   useCreateSpecialty,
+  useDeleteSpecialty,
+  useQueryGetListSpecialty,
   useQueryGetSpecialtyById,
   useUpdateSpecialty,
-  useDeleteSpecialty,
 };

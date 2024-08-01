@@ -1,15 +1,13 @@
 "use client";
-import "./index.scss";
 import SignIn from "@/module/login/SignIn";
 import React, {useState} from "react";
+import "./index.scss";
 
 export function Login(): JSX.Element {
   const [tab, setTab] = useState("signIn");
 
   const tabList = {
-    signIn: {
-      component: SignIn,
-    },
+    signIn: {component: SignIn},
   };
 
   return (

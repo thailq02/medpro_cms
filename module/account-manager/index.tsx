@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import Custom404 from "@/components/Layout/NotFound";
 import AccountManager from "@/module/account-manager/account-management";
 import {IAccountRole} from "@/types";

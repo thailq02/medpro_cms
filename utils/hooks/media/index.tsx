@@ -1,5 +1,5 @@
-import {useMutation} from "@tanstack/react-query";
 import ApiUploadImage from "@/apiRequest/ApiUploadImage";
+import {useMutation} from "@tanstack/react-query";
 
 const useUploadImage = () => {
   return useMutation({

@@ -69,10 +69,10 @@ interface IUpdateServiceBody {
   body: ICreateServiceForm;
 }
 const path = {
-  root: "/services",
-  create: "/services/create",
-  update: "/services/update",
-  delete: "/services/delete",
+  root: "/api/services",
+  create: "/api/services/create",
+  update: "/api/services/update",
+  delete: "/api/services/delete",
 };
 
 const getListService = (params: IParamsService) => {

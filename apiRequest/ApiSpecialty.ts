@@ -55,10 +55,10 @@ interface IUpdateSpecialtyBody {
   body: ICreateSpecialtyBody;
 }
 const path = {
-  root: "/specialties",
-  create: "/specialties/create",
-  update: "/specialties/update",
-  delete: "/specialties/delete",
+  root: "/api/specialties",
+  create: "/api/specialties/create",
+  update: "/api/specialties/update",
+  delete: "/api/specialties/delete",
 };
 
 const getListSpecialty = (params: IParamsSpecialty) => {

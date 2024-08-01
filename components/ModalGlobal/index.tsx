@@ -1,13 +1,13 @@
-import React, {CSSProperties, isValidElement} from "react";
-import {Modal} from "antd";
-import store, {useAppSelector} from "@/redux/store";
 import {
   setContentModal,
   setOptionModal,
   useCloseModal,
 } from "@/redux/slices/ModalSlice";
-import "./index.scss";
+import store, {useAppSelector} from "@/redux/store";
 import {useWindowDimensions} from "@/utils/layout/get-window";
+import {Modal} from "antd";
+import React, {CSSProperties, isValidElement} from "react";
+import "./index.scss";
 
 interface IModalGlobalProps {
   content: React.JSX.Element;

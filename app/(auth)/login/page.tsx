@@ -1,4 +1,3 @@
-import React from "react";
 import CheckLogin from "@/app/(auth)/login/check-login";
 
 export default function LoginComponent(): JSX.Element {

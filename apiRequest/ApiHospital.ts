@@ -62,9 +62,9 @@ interface IUpdateHospitalBody {
   data: ICreateHospitalForm;
 }
 const path = {
-  root: "/hospitals",
-  create: "/hospitals/create",
-  update: "/hospitals/update",
+  root: "/api/hospitals",
+  create: "/api/hospitals/create",
+  update: "/api/hospitals/update",
 };
 
 const getListHospital = (params: IParamsHospital) => {

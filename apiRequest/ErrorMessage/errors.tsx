@@ -1,4 +1,4 @@
-import {EntityError, IDataError} from "@/apiRequest/http";
+import {IDataError} from "@/apiRequest/http";
 import {notification} from "antd";
 import {toString} from "lodash";
 

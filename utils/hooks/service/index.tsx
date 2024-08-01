@@ -1,6 +1,6 @@
+import ApiService, {IParamsService} from "@/apiRequest/ApiService";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiService, {IParamsService} from "@/apiRequest/ApiService";
 import {notification} from "antd";
 
 const useQueryGetListService = (params: IParamsService) => {
@@ -55,9 +55,9 @@ const useDeleteService = () => {
 };
 
 export {
-  useQueryGetListService,
   useCreateService,
-  useUpdateService,
-  useQueryGetServiceById,
   useDeleteService,
+  useQueryGetListService,
+  useQueryGetServiceById,
+  useUpdateService,
 };

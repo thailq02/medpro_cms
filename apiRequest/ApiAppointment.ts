@@ -72,10 +72,10 @@ interface IGetFullAppointmentsRes {
 }
 
 const path = {
-  root: "appointments",
-  delete: "appointments/delete",
-  getByDoctorId: "appointments/doctor",
-  updateStatus: "appointments/update/status",
+  root: "/api/appointments",
+  delete: "/api/appointments/delete",
+  getByDoctorId: "/api/appointments/doctor",
+  updateStatus: "/api/appointments/update/status",
 };
 
 const apiAppointment = {

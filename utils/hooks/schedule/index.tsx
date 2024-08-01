@@ -1,9 +1,9 @@
-import QUERY_KEY from "@/config/QUERY_KEY";
-import {useMutation, useQuery} from "@tanstack/react-query";
 import ApiSchedule, {
   IParamsSchedule,
   IParamsScheduleByDoctorID,
 } from "@/apiRequest/ApiSchedule";
+import QUERY_KEY from "@/config/QUERY_KEY";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {notification} from "antd";
 
 const useQueryGetListSchedule = (params: IParamsSchedule) => {
@@ -72,10 +72,10 @@ const useDeleteSchedule = () => {
 };
 
 export {
-  useQueryGetListSchedule,
-  useQueryGetScheduleById,
-  useQueryGetListScheduleByDoctorId,
   useCreateSchedule,
-  useUpdateSchedule,
   useDeleteSchedule,
+  useQueryGetListSchedule,
+  useQueryGetListScheduleByDoctorId,
+  useQueryGetScheduleById,
+  useUpdateSchedule,
 };

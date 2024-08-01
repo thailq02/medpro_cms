@@ -1,6 +1,6 @@
+import ApiCategory, {IParamsCategories} from "@/apiRequest/ApiCategory";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiCategory, {IParamsCategories} from "@/apiRequest/ApiCategory";
 import {notification} from "antd";
 
 const useQueryGetListCategory = (params: IParamsCategories) => {
@@ -54,9 +54,9 @@ const useDeleteCategory = () => {
   });
 };
 export {
-  useQueryGetListCategory,
-  useQueryGetCategoryById,
   useCreateCategory,
-  useUpdateCategory,
   useDeleteCategory,
+  useQueryGetCategoryById,
+  useQueryGetListCategory,
+  useUpdateCategory,
 };

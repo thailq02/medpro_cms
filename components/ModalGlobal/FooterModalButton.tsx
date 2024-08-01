@@ -1,4 +1,3 @@
-import React from "react";
 import {useCloseModal} from "@/redux/slices/ModalSlice";
 import {Button, Space} from "antd";
 

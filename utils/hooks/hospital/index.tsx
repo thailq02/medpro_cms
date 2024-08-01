@@ -1,6 +1,6 @@
+import ApiHospital, {IParamsHospital} from "@/apiRequest/ApiHospital";
 import QUERY_KEY from "@/config/QUERY_KEY";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import ApiHospital, {IParamsHospital} from "@/apiRequest/ApiHospital";
 import {notification} from "antd";
 
 const useQueryGetListHospital = (params: IParamsHospital) => {
@@ -39,8 +39,8 @@ const useUpdateHospital = () => {
   });
 };
 export {
-  useQueryGetListHospital,
   useCreateHospital,
   useQueryGetHospitalById,
+  useQueryGetListHospital,
   useUpdateHospital,
 };
