@@ -117,6 +117,7 @@ const request = async <TResponse>(
       ? options?.body
       : JSON.stringify(options.body)
     : undefined;
+
   const baseHeaders =
     options?.isFormData || options?.body instanceof FormData
       ? {
@@ -126,6 +127,7 @@ const request = async <TResponse>(
           "Content-Type": "application/json",
           "Authorization": getAuthorization(defaultOptions),
         };
+
   const res = await fetch(fullUrl, {
     ...options,
     headers: {
