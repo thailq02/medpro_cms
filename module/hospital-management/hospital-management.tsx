@@ -1,5 +1,6 @@
 "use client";
 import {IHospitalBody} from "@/apiRequest/ApiHospital";
+import {QUERY_PARAMS} from "@/apiRequest/common";
 import {
   ActionButton,
   ButtonAdd,
@@ -12,7 +13,10 @@ import TableGlobal from "@/components/TableGlobal";
 import ContentModalCreateHospital from "@/module/hospital-management/modal-create-hospital";
 import ContentModalEditHospital from "@/module/hospital-management/modal-edit-hospital";
 import {useQueryGetListCategory} from "@/utils/hooks/category";
-import {useQueryGetListHospital} from "@/utils/hooks/hospital";
+import {
+  useDeleteHospital,
+  useQueryGetListHospital,
+} from "@/utils/hooks/hospital";
 import {useQueryGetListMedicalBookingForms} from "@/utils/hooks/medical-booking-forms";
 import useSearchParams, {
   paramsDefaultCommon,
@@ -21,8 +25,6 @@ import {Image, Row, Space} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {useMemo} from "react";
 import "./index.scss";
-
-const QUERY_FULL = {limit: 99, page: 1};
 
 export default function HospitalManagement() {
   const {params, handleChangePagination, setSearchValue} =
@@ -33,8 +35,9 @@ export default function HospitalManagement() {
     refetch,
   } = useQueryGetListHospital(params);
   const {data: medicalBookingForms} =
-    useQueryGetListMedicalBookingForms(QUERY_FULL);
-  const {data: categories} = useQueryGetListCategory(QUERY_FULL);
+    useQueryGetListMedicalBookingForms(QUERY_PARAMS);
+  const {data: categories} = useQueryGetListCategory(QUERY_PARAMS);
+  const {mutate: DeleteHospitalMutation} = useDeleteHospital();
 
   const listCategories = useMemo(() => {
     return categories?.payload?.data.map((item) => ({
@@ -72,6 +75,10 @@ export default function HospitalManagement() {
         classNames: "modal-container-hospital",
       },
     });
+  };
+
+  const handleDeleteHospital = (id: string) => {
+    DeleteHospitalMutation(id, {onSuccess: () => refetch()});
   };
 
   const columns: ColumnsType<IHospitalBody> = [
@@ -165,7 +172,7 @@ export default function HospitalManagement() {
               />
               <ActionButton
                 type={EButtonAction.DELETE}
-                onClick={() => undefined}
+                onClick={() => handleDeleteHospital(record._id as string)}
               />
             </Space>
           </Row>

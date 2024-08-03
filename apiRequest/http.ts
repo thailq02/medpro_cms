@@ -101,17 +101,13 @@ const request = async <TResponse>(
       ? process.env.NEXT_PUBLIC_API_ENDPOINT
       : options.baseUrl;
 
-  console.log("request ~ baseUrl", baseUrl);
-  console.log("request ~ token", getAuthorization(defaultOptions));
   let fullUrl = url.startsWith("/") ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
 
   if (options?.params) {
     const queryString = new URLSearchParams(options.params as any).toString();
     fullUrl += `?${queryString}`;
   }
-  // fullUrl = http://localhost:4004/users?limit=5&page=1
 
-  // Đối với upload file thì ko thể dùng JSON.stringify nên phải check xem body có FormData hay không
   const body = options?.body
     ? options?.body instanceof FormData || options?.isFormData
       ? options?.body
@@ -139,7 +135,7 @@ const request = async <TResponse>(
   });
 
   const payload: TResponse = await res.json();
-  console.log("request ~ payload", payload);
+  // console.log("request ~ payload", payload);
   const data = {
     status: res.status,
     payload,

@@ -65,12 +65,13 @@ const path = {
   root: "/api/hospitals",
   create: "/api/hospitals/create",
   update: "/api/hospitals/update",
+  delete: "/api/hospitals/delete",
 };
 
 const getListHospital = (params: IParamsHospital) => {
   return http.get<IGetListHospitalRes>(path.root, {
     params: params as CommonParams<IParamsHospital>,
-    cache: "no-cache",
+    cache: "no-store",
   });
 };
 const getHospitalById = (id: string) => {
@@ -82,9 +83,13 @@ const createHospital = (data: ICreateHospitalForm) => {
 const updateHospital = ({id, data}: IUpdateHospitalBody) => {
   return http.patch<ICreateHospitalRes>(`${path.update}/${id}`, data);
 };
+const deleteHospital = (id: string) => {
+  return http.delete<ICreateHospitalRes>(`${path.delete}/${id}`);
+};
 export default {
   getListHospital,
   createHospital,
   getHospitalById,
   updateHospital,
+  deleteHospital,
 };

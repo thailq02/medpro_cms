@@ -38,8 +38,20 @@ const useUpdateHospital = () => {
     },
   });
 };
+const useDeleteHospital = () => {
+  return useMutation({
+    mutationFn: ApiHospital.deleteHospital,
+    onSuccess: () => {
+      notification.success({
+        message: "Xoá bệnh viện thành công",
+        duration: 3,
+      });
+    },
+  });
+};
 export {
   useCreateHospital,
+  useDeleteHospital,
   useQueryGetHospitalById,
   useQueryGetListHospital,
   useUpdateHospital,
